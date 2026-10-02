@@ -164,6 +164,36 @@ const ChartAnalysis = (() => {
     }
     ctx.restore();
   }
-  return { validate, analyze, troughs, jets, validateWindBands, drawWindBands, windPalette, validateJetGuides, strongestCenter, drawJetAxes };
+  const symbolPalette = Object.freeze({ L: "#dc2626", H: "#2563eb", C: "#38bdf8", W: "#f97316" });
+  function validateSymbols(data, chart) {
+    if (!data || data.schema_version !== 1 || data.source_sha256 !== chart.source_sha256 || data.image_sha256 !== chart.image_sha256 || data.observation_time !== chart.observation_time || data.width !== chart.width || data.height !== chart.height || !Array.isArray(data.symbols) || data.symbols.length !== 30) throw new Error("文字の資料が原図と一致しません");
+    const counts = { L: 0, H: 0, C: 0, W: 0 };
+    for (const symbol of data.symbols) {
+      if (!Object.keys(symbolPalette).includes(symbol.letter) || ![300, 500].includes(symbol.pressure_hpa) || !Array.isArray(symbol.bounds) || symbol.bounds.length !== 4 || !symbol.bounds.every(Number.isFinite) || !Array.isArray(symbol.strokes) || symbol.strokes.length !== (symbol.letter === "H" ? 3 : 1)) throw new Error("文字の形式を確認できません");
+      const [left, top, right, bottom] = symbol.bounds;
+      const lower = symbol.pressure_hpa === 300 ? 0 : chart.height / 2;
+      const upper = symbol.pressure_hpa === 300 ? chart.height / 2 : chart.height;
+      if (!(0 <= left && left < right && right <= chart.width && lower <= top && top < bottom && bottom <= upper && right - left <= 30 && bottom - top <= 40)) throw new Error("文字の位置を確認できません");
+      for (const stroke of symbol.strokes) {
+        if (!Number.isFinite(stroke.width_px) || stroke.width_px < 1 || stroke.width_px > 4 || !["butt", "round", "square"].includes(stroke.line_cap) || !Array.isArray(stroke.points) || stroke.points.length < 2 || stroke.points.length > 10 || !stroke.points.every((p) => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && p[0] >= left && p[0] <= right && p[1] >= top && p[1] <= bottom)) throw new Error("文字の線を確認できません");
+      }
+      counts[symbol.letter]++;
+    }
+    if (counts.L !== 7 || counts.H !== 8 || counts.C !== 9 || counts.W !== 6) throw new Error("文字の種類が原図と一致しません");
+    return data;
+  }
+  function drawSymbols(ctx, data) {
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.lineJoin = "miter";
+    for (const symbol of data.symbols) for (const stroke of symbol.strokes) {
+      ctx.strokeStyle = symbolPalette[symbol.letter]; ctx.lineWidth = stroke.width_px; ctx.lineCap = stroke.line_cap;
+      ctx.beginPath(); ctx.moveTo(...stroke.points[0]);
+      for (const point of stroke.points.slice(1)) ctx.lineTo(...point);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  return { validate, analyze, troughs, jets, validateWindBands, drawWindBands, windPalette, validateJetGuides, strongestCenter, drawJetAxes, symbolPalette, validateSymbols, drawSymbols };
 })();
 if (typeof module !== "undefined") module.exports = ChartAnalysis;

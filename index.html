@@ -28,6 +28,11 @@
     <div class="panel-heading"><strong>操作</strong><button type="button" id="panel-close" aria-label="操作パネルを左に折りたたむ" aria-controls="control-panel" aria-expanded="true">‹</button></div>
     <div class="panel-content">
     <p id="chart-info">AUPQ35 · 300 / 500hPa · 図を読み込み中</p>
+    <section class="panel-section" aria-labelledby="symbol-heading">
+      <h2 id="symbol-heading">原図の文字を色分け</h2>
+      <button type="button" id="symbol-color" aria-pressed="false" disabled>L・H・C・Wを色分け</button>
+      <p class="symbol-legend"><span class="symbol-l">L：赤</span><span class="symbol-h">H：青</span><span class="symbol-c">C：水色</span><span class="symbol-w">W：オレンジ</span></p>
+    </section>
     <section class="panel-section" aria-labelledby="wind-heading">
       <h2 id="wind-heading">風速の色塗り · 上段300hPa</h2>
       <button type="button" id="wind" class="wind-button" aria-pressed="false" disabled>風速を色塗り</button>
@@ -94,6 +99,7 @@
         <canvas id="wind-layer" aria-label="300hPa等風速線に沿った緑色の塗り分け"></canvas>
         <canvas id="analysis-layer" aria-label="500hPaのトラフの推定候補"></canvas>
         <canvas id="jet-layer" aria-label="300hPaの強風帯の中心を流れに沿ってたどる赤い矢印"></canvas>
+        <canvas id="symbol-layer" aria-label="原図のLは赤、Hは青、Cは水色、Wはオレンジ。文字部分だけの色分け"></canvas>
         <canvas id="ink" aria-label="天気図の色塗り面"></canvas>
       </div>
     </div>

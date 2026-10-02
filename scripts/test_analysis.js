@@ -4,8 +4,26 @@ const fs = require("node:fs");
 const path = require("node:path");
 const analysis = require("../analysis.js");
 const root = path.resolve(__dirname, "..");
+const marks = JSON.parse(fs.readFileSync(path.join(root, "center-symbols.json")));
 const actual = JSON.parse(fs.readFileSync(path.join(root, "contours.json")));
 const chart = JSON.parse(fs.readFileSync(path.join(root, "chart.json")));
+analysis.validateSymbols(marks, chart);
+assert.deepEqual(analysis.symbolPalette, { L: "#dc2626", H: "#2563eb", C: "#38bdf8", W: "#f97316" });
+for (const key of ["source_sha256", "image_sha256", "observation_time", "width", "height"]) assert.throws(() => analysis.validateSymbols({ ...marks, [key]: "mismatch" }, chart));
+for (const change of [
+  (m) => { m.symbols.pop(); },
+  (m) => { m.symbols[0].letter = "X"; },
+  (m) => { m.symbols[0].pressure_hpa = 500; },
+  (m) => { m.symbols[0].strokes[0].width_px = 30; },
+  (m) => { m.symbols[0].strokes[0].points[0][0] = -1; },
+  (m) => { m.symbols[0].strokes[0].points[0][1] = NaN; }
+]) { const bad = structuredClone(marks); change(bad); assert.throws(() => analysis.validateSymbols(bad, chart)); }
+const symbolStrokes = [];
+const symbolCtx = { save(){}, restore(){}, beginPath(){}, moveTo(){}, lineTo(){}, stroke(){symbolStrokes.push({ color:this.strokeStyle, width:this.lineWidth, composite:this.globalCompositeOperation });}, fill(){throw Error("symbol background fill forbidden");}, fillRect(){throw Error("symbol rectangle fill forbidden");} };
+analysis.drawSymbols(symbolCtx, marks);
+assert.equal(symbolStrokes.length, marks.symbols.reduce((n,s) => n+s.strokes.length,0));
+assert.ok(symbolStrokes.every(s => Object.values(analysis.symbolPalette).includes(s.color) && s.composite === "source-over" && s.width <= 4));
+console.log("CENTER_SYMBOL_COLORS_OK fixed_glyphs=30 source_binding=checked background_fill=absent malformed_data=blocked");
 const pole = [1400, -300];
 function panel(radii, bend = 0) {
   return { pole, curves: radii.map((radius) => Array.from({ length: 81 }, (_, i) => {

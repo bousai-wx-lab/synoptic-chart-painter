@@ -13,6 +13,14 @@ const jetLayer = byId("jet-layer");
 const jetContext = jetLayer.getContext("2d");
 const windLayer = byId("wind-layer");
 const windContext = windLayer.getContext("2d");
+const symbolLayer = byId("symbol-layer");
+const symbolContext = symbolLayer.getContext("2d");
+const symbolMask = document.createElement("canvas");
+const symbolMaskContext = symbolMask.getContext("2d");
+let originalPixels = null;
+let symbols = null;
+let showSymbols = true;
+let symbolError = "";
 let windBands = null;
 let showWind = false;
 let candidates = null;
@@ -44,7 +52,10 @@ function controls() {
   byId("wind").disabled = !ready || !windBands;
   byId("wind").setAttribute("aria-pressed", String(showWind));
   byId("wind").textContent = showWind ? "色塗りを外す" : "風速を色塗り";
-  byId("original").disabled = !showWind && !showTrough && !showJet;
+  byId("symbol-color").disabled = !ready || !symbols;
+  byId("symbol-color").setAttribute("aria-pressed", String(Boolean(showSymbols && symbols)));
+  byId("symbol-color").textContent = showSymbols && symbols ? "文字の色分けを外す" : "L・H・C・Wを色分け";
+  byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols);
   byId("trough").setAttribute("aria-pressed", String(showTrough));
   byId("jet").setAttribute("aria-pressed", String(showJet));
   byId("zoom-in").disabled = !ready || (!fitView && zoomFactor >= 4);
@@ -53,8 +64,9 @@ function controls() {
   paper.dataset.trough = String(showTrough);
   paper.dataset.jet = String(showJet);
   paper.dataset.wind = String(showWind);
-  const layers = [showWind ? "300hPa 風速を色分け中" : "", showTrough ? `トラフ候補${candidates.troughs.length}本` : "", showJet ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
-  byId("status").textContent = analysisError || (layers.length ? layers.join("・") : "原図を表示中");
+  paper.dataset.symbols = String(Boolean(showSymbols && symbols));
+  const layers = [showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showWind ? "300hPa 風速を色分け中" : "", showTrough ? `トラフ候補${candidates.troughs.length}本` : "", showJet ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
+  byId("status").textContent = [symbolError, analysisError].filter(Boolean).join("・") || (layers.length ? layers.join("・") : "原図を表示中");
 }
 
 function line(ctx, points, width, color) {
@@ -93,13 +105,41 @@ byId("wind").addEventListener("click", () => {
   if (!ready || !windBands) return;
   showWind = !showWind; drawWind(); controls();
 });
+function drawSymbols() {
+  symbolContext.clearRect(0, 0, symbolLayer.width, symbolLayer.height);
+  if (!showSymbols || !symbols || !originalPixels) return;
+  const output = symbolContext.createImageData(symbolLayer.width, symbolLayer.height);
+  for (const symbol of symbols.symbols) {
+    const [left, top, right, bottom] = symbol.bounds;
+    const x0 = Math.floor(left - 4), y0 = Math.floor(top - 4), width = Math.ceil(right + 4) - x0, height = Math.ceil(bottom + 4) - y0;
+    symbolMaskContext.clearRect(x0, y0, width, height);
+    // A one-pixel selection tolerance captures the source renderer's ink fringe.
+    // Only existing nonwhite ink can be recolored; the tolerance adds no paint.
+    ChartAnalysis.drawSymbols(symbolMaskContext, { symbols: [{ ...symbol, strokes: symbol.strokes.map((s) => ({ ...s, width_px: s.width_px + 1 })) }] });
+    const mask = symbolMaskContext.getImageData(x0, y0, width, height).data;
+    const rgb = ChartAnalysis.symbolPalette[symbol.letter].slice(1).match(/../g).map((v) => parseInt(v, 16));
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      if (mask[(y * width + x) * 4 + 3] <= 16) continue;
+      const index = ((y0 + y) * symbolLayer.width + x0 + x) * 4;
+      const gray = originalPixels.data[index];
+      if (gray === 255) continue;
+      for (let channel = 0; channel < 3; channel++) output.data[index + channel] = Math.round(gray + rgb[channel] * (1 - gray / 255));
+      output.data[index + 3] = 255;
+    }
+  }
+  symbolContext.putImageData(output, 0, 0);
+}
+byId("symbol-color").addEventListener("click", () => {
+  if (!ready || !symbols) return;
+  showSymbols = !showSymbols; drawSymbols(); controls();
+});
 for (const id of ["analyze", "trough", "jet", "original"]) byId(id).addEventListener("click", () => {
-  if (!candidates || !ready) return;
+  if (!ready || (id !== "original" && !candidates)) return;
   if (id === "analyze") showTrough = showJet = true;
   if (id === "trough") showTrough = !showTrough;
   if (id === "jet") showJet = !showJet;
-  if (id === "original") showWind = showTrough = showJet = false;
-  drawAnalysis(); drawWind(); controls();
+  if (id === "original") showWind = showTrough = showJet = showSymbols = false;
+  drawAnalysis(); drawWind(); drawSymbols(); controls();
 });
 
 function path(stroke) {
@@ -282,10 +322,15 @@ byId("save").addEventListener("click", () => {
   ctx.drawImage(chart, 0, 0);
   ctx.globalCompositeOperation = "multiply"; ctx.drawImage(windLayer, 0, 0); ctx.drawImage(analysisLayer, 0, 0);
   ctx.globalCompositeOperation = "source-over"; ctx.drawImage(jetLayer, 0, 0);
+  ctx.drawImage(symbolLayer, 0, 0);
   ctx.globalCompositeOperation = "multiply"; ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = "#243247"; ctx.font = "24px sans-serif";
   ctx.fillText(`出典：気象庁 AUPQ35（画像化） / ${chartLabel}`, 26, ink.height + 38);
   ctx.fillText(`解析案：${showTrough ? "500hPaトラフ候補 " : ""}${showJet ? "300hPa強風軸候補" : ""}${!showTrough && !showJet ? "表示なし" : ""} / 手描き：利用者`, 26, ink.height + 76);
+  if (showSymbols && symbols) for (const [index, letter] of ["L", "H", "C", "W"].entries()) {
+    ctx.fillStyle = ChartAnalysis.symbolPalette[letter]; ctx.fillText(letter, 1610 + index * 90, ink.height + 76);
+  }
+  ctx.fillStyle = "#243247";
   ctx.font = "22px sans-serif"; ctx.fillText(showWind ? "風速（300hPa）" : "風速の色塗り：表示なし", 26, ink.height + 116);
   if (showWind) for (const [index, color] of ChartAnalysis.windPalette.entries()) {
     const x = 230 + index * 260;
@@ -317,7 +362,12 @@ function initialize() {
   analysisLayer.width = chart.naturalWidth; analysisLayer.height = chart.naturalHeight;
   jetLayer.width = chart.naturalWidth; jetLayer.height = chart.naturalHeight;
   windLayer.width = chart.naturalWidth; windLayer.height = chart.naturalHeight;
-  ready = true; paper.dataset.ready = "true"; selectMode("move"); drawAnalysis(); drawWind(); fit(); controls();
+  symbolLayer.width = chart.naturalWidth; symbolLayer.height = chart.naturalHeight;
+  symbolMask.width = chart.naturalWidth; symbolMask.height = chart.naturalHeight;
+  symbolMaskContext.drawImage(chart, 0, 0);
+  originalPixels = symbolMaskContext.getImageData(0, 0, chart.naturalWidth, chart.naturalHeight);
+  symbolMaskContext.clearRect(0, 0, symbolMask.width, symbolMask.height);
+  ready = true; paper.dataset.ready = "true"; selectMode("move"); drawAnalysis(); drawWind(); drawSymbols(); fit(); controls();
 }
 chart.addEventListener("load", initialize);
 chart.addEventListener("error", () => { byId("status").textContent = "図を読み込めませんでした。再読み込みしてください。"; });
@@ -336,3 +386,11 @@ async function loadAnalysis() {
   drawAnalysis(); drawWind(); controls();
 }
 loadAnalysis().catch(() => { analysisError = "解析資料を確認できません。原図の閲覧・手描きは使えます。"; byId("chart-info").textContent = "AUPQ35 · 2026年10月2日 09:00 JST（00UTC）· 自動更新なし"; controls(); });
+async function loadSymbols() {
+  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("center-symbols.json", { cache: "no-store" })]);
+  if (responses.some((r) => !r.ok)) throw new Error("文字の資料を読み込めませんでした");
+  const [data, marks] = await Promise.all(responses.map((r) => r.json()));
+  symbols = ChartAnalysis.validateSymbols(marks, data);
+  drawSymbols(); controls();
+}
+loadSymbols().catch(() => { symbols = null; symbolError = "文字の資料を確認できません。原図の文字を表示します。"; drawSymbols(); controls(); });
