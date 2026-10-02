@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool_slug": "synoptic-chart-painter",
-  "generated_at": "2026-10-02T11:42:43.989395+00:00",
+  "generated_at": "2026-10-02T12:16:37.189480+00:00",
   "files": [
     {
       "path": ".github/workflows/privacy-gate.yml",
@@ -47,8 +47,8 @@
     },
     {
       "path": "app.js",
-      "bytes": 13070,
-      "sha256": "ffde1abe6ac1d9e923c500c5eaefdbc0106f9f0c4f2969ba2e3b8cf81885b40e",
+      "bytes": 15158,
+      "sha256": "0f1bfb5486429b7e6c3e01803e695eb6d69f70448a55e89f24f9296fbba0cb86",
       "mime_type": "text/javascript"
     },
     {
@@ -71,14 +71,14 @@
     },
     {
       "path": "index.html",
-      "bytes": 6167,
-      "sha256": "cae31c1f6353750f0af3757956bd88c4ceac570a9d0ecffb9a5a536da1fee520",
+      "bytes": 7816,
+      "sha256": "2fb34830ae16378d3292ad395ebefefcd391a92d1b866298528c1255a261cf42",
       "mime_type": "text/html"
     },
     {
       "path": "release-allowlist.json",
-      "bytes": 1518,
-      "sha256": "3cb68b3efdb953e8a6a14f77cc4d50603191980def6a99a91e1b3e147340ef8e",
+      "bytes": 1556,
+      "sha256": "8052bdd38eb9c91721613ff1d6f347571546fb41badbe26afd629176011e5a9b",
       "mime_type": "application/json"
     },
     {
@@ -119,8 +119,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 5296,
-      "sha256": "f471a82dc64756bdc71e207140bdf1dceea2e84fffdaa864a8fe6f2e51036996",
+      "bytes": 7603,
+      "sha256": "e2288aaa71c976b9f0208e622e9c23f02e686a0403b83a081bddff09fc591dc5",
       "mime_type": "text/css"
     }
   ]

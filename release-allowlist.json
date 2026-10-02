@@ -27,7 +27,9 @@
   "allowed_external_hosts": [
     "www.jma.go.jp",
     "github.com",
-    "bousai-wx-lab.github.io"
+    "bousai-wx-lab.github.io",
+    "bousai-wx-lab.com",
+    "x.com"
   ],
   "allowed_browser_api_fragments": {},
   "allowed_binary_assets": [

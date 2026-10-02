@@ -23,6 +23,9 @@ let pan = null;
 let ready = false;
 let chartLabel = "AUPQ35";
 let exportUrl = null;
+let zoomFactor = 1;
+let fitView = true;
+const zoomSteps = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
 
 function controls() {
   const afterClear = history.slice(history.map((s) => s.kind).lastIndexOf("clear") + 1);
@@ -35,8 +38,8 @@ function controls() {
   byId("original").disabled = !showTrough && !showJet;
   byId("trough").setAttribute("aria-pressed", String(showTrough));
   byId("jet").setAttribute("aria-pressed", String(showJet));
-  byId("zoom-in").disabled = !ready || byId("zoom").value === "4";
-  byId("zoom-out").disabled = !ready || byId("zoom").value === "0.25";
+  byId("zoom-in").disabled = !ready || (!fitView && zoomFactor >= 4);
+  byId("zoom-out").disabled = !ready || (!fitView && zoomFactor <= 0.25);
   paper.dataset.strokes = String(history.length);
   paper.dataset.trough = String(showTrough);
   paper.dataset.jet = String(showJet);
@@ -120,30 +123,68 @@ function selectMode(next) {
   byId("hint").textContent = mode === "move" ? "拡大した図をドラッグして移動します。" : mode === "erase" ? "色塗りだけを消します。原図は残ります。" : "ドラッグして色を塗ります。原図の黒い線は残ります。";
 }
 
-function fit() {
+function viewSize() {
+  const style = getComputedStyle(viewport);
+  return {
+    width: Math.max(1, viewport.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)),
+    height: Math.max(1, viewport.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom))
+  };
+}
+function updateZoomLabel() {
+  const exact = zoomSteps.find((step) => Math.abs(step - zoomFactor) < 0.0001);
+  byId("custom-zoom").hidden = fitView || Boolean(exact);
+  byId("custom-zoom").textContent = `${Math.round(zoomFactor * 100)}%`;
+  byId("zoom").value = fitView ? "fit" : exact ? String(exact) : "custom";
+}
+function fit(anchor) {
   if (!ready || pointer !== null) return;
   const viewRect = viewport.getBoundingClientRect(), oldRect = paper.getBoundingClientRect();
-  const center = { x: (viewRect.left + viewport.clientWidth / 2 - oldRect.left) / oldRect.width, y: (viewRect.top + viewport.clientHeight / 2 - oldRect.top) / oldRect.height };
-  const zoom = byId("zoom").value;
-  const base = Math.max(220, viewport.clientWidth - (innerWidth <= 640 ? 16 : 28));
-  const width = zoom === "fit" ? Math.min(base, Math.max(150, viewport.clientHeight - 28) * ink.width / ink.height) : base * Number(zoom);
+  const focus = anchor || { x: viewRect.left + viewport.clientWidth / 2, y: viewRect.top + viewport.clientHeight / 2 };
+  const center = { x: (focus.x - oldRect.left) / oldRect.width, y: (focus.y - oldRect.top) / oldRect.height };
+  const size = viewSize();
+  const width = fitView ? Math.min(size.width, size.height * ink.width / ink.height) : size.width * zoomFactor;
   paper.style.width = `${Math.floor(width)}px`;
   paper.style.height = `${Math.floor(width) * ink.height / ink.width}px`;
-  if (zoom === "fit") { viewport.scrollTop = 0; viewport.scrollLeft = 0; }
-  else { const rect = paper.getBoundingClientRect(); viewport.scrollLeft += rect.left + center.x * rect.width - viewRect.left - viewport.clientWidth / 2; viewport.scrollTop += rect.top + center.y * rect.height - viewRect.top - viewport.clientHeight / 2; }
+  if (fitView) { viewport.scrollTop = 0; viewport.scrollLeft = 0; zoomFactor = Math.floor(width) / size.width; }
+  else { const rect = paper.getBoundingClientRect(); viewport.scrollLeft += rect.left + center.x * rect.width - focus.x; viewport.scrollTop += rect.top + center.y * rect.height - focus.y; }
+  updateZoomLabel();
   controls();
+}
+function setZoom(factor, anchor) {
+  if (!ready || pointer !== null) return;
+  zoomFactor = Math.max(0.25, Math.min(4, factor)); fitView = false; fit(anchor);
 }
 function zoomBy(direction) {
   if (!ready || pointer !== null) return;
-  const base = Math.max(220, viewport.clientWidth - (innerWidth <= 640 ? 16 : 28));
-  const factor = paper.offsetWidth / base;
-  const steps = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
-  byId("zoom").value = String(direction > 0 ? (steps.find((x) => x > factor + 0.005) || 4) : ([...steps].reverse().find((x) => x < factor - 0.005) || 0.25));
-  fit();
+  setZoom(direction > 0 ? (zoomSteps.find((x) => x > zoomFactor + 0.005) || 4) : ([...zoomSteps].reverse().find((x) => x < zoomFactor - 0.005) || 0.25));
 }
 byId("zoom-in").addEventListener("click", () => zoomBy(1));
 byId("zoom-out").addEventListener("click", () => zoomBy(-1));
-byId("fit").addEventListener("click", () => { byId("zoom").value = "fit"; fit(); });
+byId("fit").addEventListener("click", () => { fitView = true; fit(); });
+viewport.addEventListener("wheel", (event) => {
+  if (!ready || pointer !== null || !event.deltaY) return;
+  event.preventDefault();
+  const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewport.clientHeight : 1);
+  setZoom(zoomFactor * Math.exp(-Math.max(-120, Math.min(120, pixels)) * 0.0025), { x: event.clientX, y: event.clientY });
+}, { passive: false });
+
+function setPanel(open, focus = false) {
+  if (pointer !== null) return;
+  byId("workspace").classList.toggle("panel-collapsed", !open);
+  byId("control-panel").hidden = !open;
+  byId("panel-open").hidden = open;
+  byId("panel-close").setAttribute("aria-expanded", String(open));
+  byId("panel-open").setAttribute("aria-expanded", String(open));
+  if (focus) byId(open ? "panel-close" : "panel-open").focus();
+}
+byId("panel-close").addEventListener("click", () => setPanel(false, true));
+byId("panel-open").addEventListener("click", () => setPanel(true, true));
+const narrowView = matchMedia("(max-width: 720px)");
+setPanel(!narrowView.matches);
+narrowView.addEventListener("change", (event) => setPanel(!event.matches));
+const compactLinks = matchMedia("(max-width: 1100px)");
+byId("links").open = !compactLinks.matches;
+compactLinks.addEventListener("change", (event) => { byId("links").open = !event.matches; });
 byId("manual").addEventListener("toggle", () => selectMode(byId("manual").open ? "paint" : "move"));
 
 function point(event) {
@@ -204,8 +245,11 @@ byId("clear").addEventListener("click", () => byId("clear-dialog").showModal());
 byId("clear-dialog").addEventListener("close", () => {
   if (byId("clear-dialog").returnValue === "clear") { history.push({ kind: "clear" }); future.length = 0; render(); controls(); }
 });
-byId("zoom").addEventListener("change", fit);
-new ResizeObserver(fit).observe(viewport);
+byId("zoom").addEventListener("change", (event) => {
+  if (event.target.value === "fit") { fitView = true; fit(); }
+  else if (event.target.value !== "custom") setZoom(Number(event.target.value));
+});
+new ResizeObserver(() => fit()).observe(viewport);
 
 byId("save").addEventListener("click", () => {
   const output = document.createElement("canvas");
