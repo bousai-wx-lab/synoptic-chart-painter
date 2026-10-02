@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <meta name="description" content="気象庁の専門天気図の等風速線に沿って、風速を緑色で段階的に塗り分けるカラーノート。">
-  <title>専門天気図カラーノート | Bousai Wx Lab</title>
+  <meta name="description" content="天気図解析マスター（Weather Chart Analysis Master）。気象庁の専門天気図に風速帯の色塗りとトラフ・強風軸の候補を重ねる解析補助ツール。">
+  <meta name="application-name" content="Weather Chart Analysis Master">
+  <title>天気図解析マスター | Weather Chart Analysis Master | Bousai Wx Lab</title>
   <link rel="stylesheet" href="styles.css">
   <script src="analysis.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <h1>専門天気図カラーノート</h1><span class="edition">解析試作版</span>
+    <h1 title="Weather Chart Analysis Master">天気図解析マスター</h1><span class="edition">解析試作版</span>
     <details id="links" class="header-links"><summary>リンク</summary><nav aria-label="関連リンク">
       <a href="https://bousai-wx-lab.com/" target="_blank" rel="noopener noreferrer">Bousai Wx Lab ブログ</a>
       <a href="https://x.com/bousai_wx_lab" target="_blank" rel="noopener noreferrer" aria-label="Bousai Wx LabのX">X</a>
@@ -99,6 +100,7 @@
     </section>
   </main>
   <footer>
+    <span lang="en">Weather Chart Analysis Master</span>
     <span>出典：<a href="https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq35_00.pdf" target="_blank" rel="noopener noreferrer">気象庁 AUPQ35 原図PDF</a>（画像化）</span>
     <span>解析案は本ツールの推定で、気象庁の解析ではありません。</span>
   </footer>

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "tool_slug": "synoptic-chart-painter",
+  "tool_slug": "weather-chart-analysis-master",
   "allowed_files": [
     ".github/workflows/privacy-gate.yml",
     ".gitignore",
@@ -54,8 +54,8 @@
     }
   ],
   "allowed_remote_urls": [
-    "https://github.com/bousai-wx-lab/synoptic-chart-painter",
-    "https://github.com/bousai-wx-lab/synoptic-chart-painter.git"
+    "https://github.com/bousai-wx-lab/weather-chart-analysis-master",
+    "https://github.com/bousai-wx-lab/weather-chart-analysis-master.git"
   ],
   "max_file_bytes": 150000,
   "required_checkout_sha": "11d5960a326750d5838078e36cf38b85af677262"

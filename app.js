@@ -293,7 +293,7 @@ byId("save").addEventListener("click", () => {
     ctx.fillStyle = "#243247"; ctx.fillText(windLabels[index], x + 42, ink.height + 116);
   }
   ctx.fillText("赤矢印：等風速線の強い帯の中心（流れの経路はこの1枚で確認）。トラフ：等高度線の曲がりから推定。", 26, ink.height + 155);
-  ctx.fillText("気象庁の公式の着色・解析ではありません。専門天気図カラーノート · Bousai Wx Lab", 26, ink.height + 193);
+  ctx.fillText("気象庁の公式の着色・解析ではありません。天気図解析マスター · Weather Chart Analysis Master · Bousai Wx Lab", 26, ink.height + 193);
   output.toBlob((blob) => {
     if (!blob) { byId("status").textContent = "保存できませんでした"; return; }
     if (exportUrl) URL.revokeObjectURL(exportUrl);

@@ -1,4 +1,8 @@
-# 専門天気図カラーノート
+# 天気図解析マスター
+
+Weather Chart Analysis Master
+
+[ツールを開く](https://bousai-wx-lab.github.io/weather-chart-analysis-master/)
 
 気象庁のアジア500hPa・300hPa高度・気温・風・等風速線天気図（AUPQ35）1枚に、風速帯の緑色の塗り分けと、トラフ・強風軸の推定候補をボタンで重ねる静的ツールです。手描きでも補足できます。2026年10月2日00UTCの1枚だけを対象とする解析試作版です。
 
