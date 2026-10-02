@@ -9,6 +9,8 @@ const strokeLayer = document.createElement("canvas");
 const strokeContext = strokeLayer.getContext("2d");
 const analysisLayer = byId("analysis-layer");
 const analysisContext = analysisLayer.getContext("2d");
+const jetLayer = byId("jet-layer");
+const jetContext = jetLayer.getContext("2d");
 const windLayer = byId("wind-layer");
 const windContext = windLayer.getContext("2d");
 let windBands = null;
@@ -63,11 +65,9 @@ function line(ctx, points, width, color) {
 }
 function drawAnalysis() {
   analysisContext.clearRect(0, 0, analysisLayer.width, analysisLayer.height);
+  jetContext.clearRect(0, 0, jetLayer.width, jetLayer.height);
   if (!candidates) return;
-  if (showJet) for (const points of candidates.jets) {
-    analysisContext.globalAlpha = 0.16; line(analysisContext, points, 28, "#168449");
-    analysisContext.globalAlpha = 0.85; line(analysisContext, points, 6, "#168449");
-  }
+  if (showJet) ChartAnalysis.drawJetAxes(jetContext, candidates.jets, windBands.bounds);
   if (showTrough) for (const points of candidates.troughs) {
     analysisContext.globalAlpha = 0.85;
     for (const sign of [-1, 1]) line(analysisContext, points.map((p, i) => {
@@ -280,7 +280,9 @@ byId("save").addEventListener("click", () => {
   const ctx = output.getContext("2d");
   ctx.fillStyle = "white"; ctx.fillRect(0, 0, output.width, output.height);
   ctx.drawImage(chart, 0, 0);
-  ctx.globalCompositeOperation = "multiply"; ctx.drawImage(windLayer, 0, 0); ctx.drawImage(analysisLayer, 0, 0); ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
+  ctx.globalCompositeOperation = "multiply"; ctx.drawImage(windLayer, 0, 0); ctx.drawImage(analysisLayer, 0, 0);
+  ctx.globalCompositeOperation = "source-over"; ctx.drawImage(jetLayer, 0, 0);
+  ctx.globalCompositeOperation = "multiply"; ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = "#243247"; ctx.font = "24px sans-serif";
   ctx.fillText(`出典：気象庁 AUPQ35（画像化） / ${chartLabel}`, 26, ink.height + 38);
   ctx.fillText(`解析案：${showTrough ? "500hPaトラフ候補 " : ""}${showJet ? "300hPa強風軸候補" : ""}${!showTrough && !showJet ? "表示なし" : ""} / 手描き：利用者`, 26, ink.height + 76);
@@ -290,7 +292,7 @@ byId("save").addEventListener("click", () => {
     ctx.fillStyle = color; ctx.fillRect(x, ink.height + 95, 32, 24);
     ctx.fillStyle = "#243247"; ctx.fillText(windLabels[index], x + 42, ink.height + 116);
   }
-  ctx.fillText("軸候補は等高度線から推定（風向・風速は未照合）。色塗りは原図の等風速線によります。", 26, ink.height + 155);
+  ctx.fillText("赤矢印：等風速線の強い帯の中心（流れの経路はこの1枚で確認）。トラフ：等高度線の曲がりから推定。", 26, ink.height + 155);
   ctx.fillText("気象庁の公式の着色・解析ではありません。専門天気図カラーノート · Bousai Wx Lab", 26, ink.height + 193);
   output.toBlob((blob) => {
     if (!blob) { byId("status").textContent = "保存できませんでした"; return; }
@@ -313,6 +315,7 @@ function initialize() {
   ink.width = strokeLayer.width = chart.naturalWidth;
   ink.height = strokeLayer.height = chart.naturalHeight;
   analysisLayer.width = chart.naturalWidth; analysisLayer.height = chart.naturalHeight;
+  jetLayer.width = chart.naturalWidth; jetLayer.height = chart.naturalHeight;
   windLayer.width = chart.naturalWidth; windLayer.height = chart.naturalHeight;
   ready = true; paper.dataset.ready = "true"; selectMode("move"); drawAnalysis(); drawWind(); fit(); controls();
 }
@@ -320,13 +323,16 @@ chart.addEventListener("load", initialize);
 chart.addEventListener("error", () => { byId("status").textContent = "図を読み込めませんでした。再読み込みしてください。"; });
 if (chart.complete) initialize();
 async function loadAnalysis() {
-  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("contours.json", { cache: "no-store" }), fetch("wind-bands.json", { cache: "no-store" })]);
+  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("contours.json", { cache: "no-store" }), fetch("wind-bands.json", { cache: "no-store" }), fetch("jet-guides.json", { cache: "no-store" })]);
   if (responses.some((r) => !r.ok)) throw new Error("解析資料を読み込めませんでした");
-  const [data, contours, wind] = await Promise.all(responses.map((r) => r.json()));
+  const [data, contours, wind, guides] = await Promise.all(responses.map((r) => r.json()));
   chartLabel = data.observation_label;
   byId("chart-info").textContent = `AUPQ35 · 上段300hPa / 下段500hPa · ${chartLabel} · 自動更新なし`;
-  candidates = ChartAnalysis.analyze(ChartAnalysis.validate(contours, data));
-  windBands = ChartAnalysis.validateWindBands(wind, data);
+  const checkedContours = ChartAnalysis.validate(contours, data);
+  const checkedWind = ChartAnalysis.validateWindBands(wind, data);
+  const checkedGuides = ChartAnalysis.validateJetGuides(guides, data, checkedWind);
+  candidates = ChartAnalysis.analyze(checkedContours, checkedWind, checkedGuides);
+  windBands = checkedWind;
   drawAnalysis(); drawWind(); controls();
 }
 loadAnalysis().catch(() => { analysisError = "解析資料を確認できません。原図の閲覧・手描きは使えます。"; byId("chart-info").textContent = "AUPQ35 · 2026年10月2日 09:00 JST（00UTC）· 自動更新なし"; controls(); });

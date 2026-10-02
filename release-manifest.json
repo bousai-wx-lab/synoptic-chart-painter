@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool_slug": "synoptic-chart-painter",
-  "generated_at": "2026-10-02T12:55:18.220522+00:00",
+  "generated_at": "2026-10-02T13:40:43.568482+00:00",
   "files": [
     {
       "path": ".github/workflows/privacy-gate.yml",
@@ -11,8 +11,8 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 427,
-      "sha256": "4e2acf752d0ff3cae8330fefac1822a0d5784177c46b059c98b89603b76a0cee",
+      "bytes": 444,
+      "sha256": "e68363cb8f7347907e999d9497ebeba69817e0282891633722a8fcf7e36b646b",
       "mime_type": "application/octet-stream"
     },
     {
@@ -29,8 +29,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 8434,
-      "sha256": "e8e17aa743825971c9f1e2afcd0967dcef2f8abd781b5f5ab6a645c6f99880f9",
+      "bytes": 9561,
+      "sha256": "0bbe4a691a4bfdd5d9cd18a8fc2b12273f7f7a2be36657fe62a0966006acba17",
       "mime_type": "text/markdown"
     },
     {
@@ -41,14 +41,14 @@
     },
     {
       "path": "analysis.js",
-      "bytes": 7522,
-      "sha256": "751148df500323497ad24382747b7bf2ae37179647d0e728e34c2a58c3dad3aa",
+      "bytes": 11136,
+      "sha256": "ddf4681363858303e1f9a1453be8cfffb9b066d4f8a6c8277cb511f126c93b3a",
       "mime_type": "text/javascript"
     },
     {
       "path": "app.js",
-      "bytes": 17064,
-      "sha256": "6b16d4126c12ab3eb3a1462b066d8ff221d99d5bf70496101c5522a89e79b221",
+      "bytes": 17536,
+      "sha256": "94d9e245d8915d14251c02a232acb8d0cf9301578f21a73df579789f70cb6856",
       "mime_type": "text/javascript"
     },
     {
@@ -71,14 +71,20 @@
     },
     {
       "path": "index.html",
-      "bytes": 8425,
-      "sha256": "57745f82b825a69f1c0dd088f1669b581071cbcb3dbec9816917b9a055c59b04",
+      "bytes": 8615,
+      "sha256": "d1db3f6a82fd976d6d4da587b3ab514f677d7e993afcc1e7f28f5d8ff36cfbd9",
       "mime_type": "text/html"
     },
     {
+      "path": "jet-guides.json",
+      "bytes": 739,
+      "sha256": "3b182037a704c82c9fc0fde5ed2e3661ed9262cdce2f64c4497588c1a862a9b9",
+      "mime_type": "application/json"
+    },
+    {
       "path": "release-allowlist.json",
-      "bytes": 1579,
-      "sha256": "9b6e4661eaee8abdc6cf9cad06eaa0df9468cfce415be8c132976843dca28dc1",
+      "bytes": 1602,
+      "sha256": "15fe220cd52c10e817db87ef8c76775ff0f12977291294c5c7ef02e0e939b2d1",
       "mime_type": "application/json"
     },
     {
@@ -95,8 +101,8 @@
     },
     {
       "path": "scripts/test_analysis.js",
-      "bytes": 5402,
-      "sha256": "bcb0751614e3a5cb6f189e28c16d514478a05ac891b04ec6dc315ad524675b8d",
+      "bytes": 8737,
+      "sha256": "177d6298d24bd10a62bdd32644081cacb6571b00f42253b4df8f17533061bd7b",
       "mime_type": "text/javascript"
     },
     {
@@ -119,8 +125,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 8212,
-      "sha256": "ae8a448f4622b09b05a17c4e2b623751805f9ed554f0d0670bf105ca847659f1",
+      "bytes": 8410,
+      "sha256": "53920fc9538ede3d50f8f34e9d184cba097e3d4e613b3757cf0930e1a36e7efa",
       "mime_type": "text/css"
     },
     {

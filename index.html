@@ -41,7 +41,7 @@
         <button type="button" id="jet" aria-pressed="false" disabled>強風軸候補</button>
         <button type="button" id="original" disabled>原図だけ</button>
       </div>
-      <div class="analysis-note"><span class="legend trough-key">500hPa トラフ候補</span><span class="legend jet-key">300hPa 強風軸候補</span><p>等高度線の曲がり・密集から推定。風向・風速は未照合です。</p></div>
+      <div class="analysis-note"><span class="legend trough-key">500hPa トラフ候補</span><span class="legend jet-key">300hPa 強風軸候補 →</span><p>赤矢印：各強風帯の最も強い帯の中心。流れの経路はこの1枚で確認。<br>トラフ：等高度線の曲がりから推定。</p></div>
     </section>
     <section class="panel-section" aria-labelledby="view-heading">
       <h2 id="view-heading">表示</h2>
@@ -91,7 +91,8 @@
       <div id="paper" data-ready="false" data-strokes="0">
         <img id="chart" src="assets/aupq35.png" alt="気象庁AUPQ35。2026年10月2日00UTCの300hPaと500hPaの高度・気温・風の実況図。上段は300hPa、下段は500hPa。" draggable="false">
         <canvas id="wind-layer" aria-label="300hPa等風速線に沿った緑色の塗り分け"></canvas>
-        <canvas id="analysis-layer" aria-label="トラフ・強風軸の推定候補"></canvas>
+        <canvas id="analysis-layer" aria-label="500hPaのトラフの推定候補"></canvas>
+        <canvas id="jet-layer" aria-label="300hPaの強風帯の中心を流れに沿ってたどる赤い矢印"></canvas>
         <canvas id="ink" aria-label="天気図の色塗り面"></canvas>
       </div>
     </div>

@@ -14,6 +14,7 @@
     "chart.json",
     "contours.json",
     "index.html",
+    "jet-guides.json",
     "release-allowlist.json",
     "release-manifest.json",
     "scripts/build_pages_artifact.py",

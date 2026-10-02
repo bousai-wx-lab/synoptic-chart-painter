@@ -25,7 +25,7 @@ h2 { margin: 0 0 9px; font-size: 12px; color: #164b68; }
 .analysis-note { display: flex; flex-direction: column; gap: 6px; font-size: 11px; margin-top: 10px; color: #58677a; }
 .analysis-note p { margin: 2px 0 0; line-height: 1.6; }
 .legend { display: inline-flex; align-items: center; gap: 6px; }
-.legend::before { content: ''; width: 22px; height: 0; border-top: 3px solid #168449; }
+.legend::before { content: ''; width: 22px; height: 0; border-top: 3px solid #f02020; }
 .trough-key::before { border-top: 5px double #9a4b16; }
 .wind-button { width: 100%; color: #17683e; border-color: #50a97b; font-weight: 600; }
 .wind-button[aria-pressed='true'] { color: #fff; background: #17683e; border-color: #17683e; box-shadow: none; }
@@ -65,10 +65,13 @@ input[type='color'] { display: block; border: 0; padding: 0; width: 30px; height
 #status { position: absolute; top: 10px; right: 16px; z-index: 2; font-size: 10px; color: #536579; background: #f8fafcde; padding: 3px 7px; border-radius: 3px; max-width: calc(100% - 92px); pointer-events: none; }
 .panel-open { position: absolute; left: 0; top: 10px; z-index: 3; padding: 4px 9px; border-radius: 0 5px 5px 0; color: #164b68; box-shadow: 1px 2px 6px #2432471a; }
 #viewport { flex: 1; min-width: 0; min-height: 0; overflow: auto; padding: 10px; overscroll-behavior: contain; scrollbar-gutter: stable; }
-#paper { position: relative; margin: auto; box-shadow: 0 1px 9px #2a3c5124; background: #fff; width: min(100%, 650px); aspect-ratio: 2048 / 2993; }
+#paper { position: relative; isolation: isolate; margin: auto; box-shadow: 0 1px 9px #2a3c5124; background: #fff; width: min(100%, 650px); aspect-ratio: 2048 / 2993; }
 #chart { display: block; width: 100%; height: 100%; user-select: none; }
 #wind-layer, #analysis-layer { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; pointer-events: none; }
-#ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; }
+#wind-layer { z-index: 1; }
+#analysis-layer { z-index: 2; }
+#jet-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+#ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; z-index: 4; }
 #ink[data-mode='move'] { cursor: grab; } #ink[data-dragging='true'][data-mode='move'] { cursor: grabbing; }
 footer { display: flex; justify-content: space-between; flex-wrap: wrap; flex-shrink: 0; gap: 2px 14px; font-size: 10px; color: #68778b; background: #fff; border-top: 1px solid #d4dce6; padding: 4px 12px; }
 a { color: #315f8a; text-underline-offset: 2px; }
