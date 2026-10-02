@@ -27,6 +27,12 @@ h2 { margin: 0 0 9px; font-size: 12px; color: #164b68; }
 .legend { display: inline-flex; align-items: center; gap: 6px; }
 .legend::before { content: ''; width: 22px; height: 0; border-top: 3px solid #168449; }
 .trough-key::before { border-top: 5px double #9a4b16; }
+.wind-button { width: 100%; color: #17683e; border-color: #50a97b; font-weight: 600; }
+.wind-button[aria-pressed='true'] { color: #fff; background: #17683e; border-color: #17683e; box-shadow: none; }
+.wind-button[aria-pressed='true']:hover { background: #125431; }
+.wind-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; margin-top: 10px; font-size: 10px; color: #405367; }
+.wind-swatch { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.wind-swatch i { width: 18px; height: 12px; flex-shrink: 0; border: 1px solid #316f4b4d; border-radius: 2px; }
 summary { cursor: pointer; font-size: 12px; color: #164b68; font-weight: 600; }
 .toolbar { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
 .group { display: flex; align-items: center; gap: 5px; }
@@ -61,7 +67,7 @@ input[type='color'] { display: block; border: 0; padding: 0; width: 30px; height
 #viewport { flex: 1; min-width: 0; min-height: 0; overflow: auto; padding: 10px; overscroll-behavior: contain; scrollbar-gutter: stable; }
 #paper { position: relative; margin: auto; box-shadow: 0 1px 9px #2a3c5124; background: #fff; width: min(100%, 650px); aspect-ratio: 2048 / 2993; }
 #chart { display: block; width: 100%; height: 100%; user-select: none; }
-#analysis-layer { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; pointer-events: none; }
+#wind-layer, #analysis-layer { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; pointer-events: none; }
 #ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; }
 #ink[data-mode='move'] { cursor: grab; } #ink[data-dragging='true'][data-mode='move'] { cursor: grabbing; }
 footer { display: flex; justify-content: space-between; flex-wrap: wrap; flex-shrink: 0; gap: 2px 14px; font-size: 10px; color: #68778b; background: #fff; border-top: 1px solid #d4dce6; padding: 4px 12px; }

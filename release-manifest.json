@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool_slug": "synoptic-chart-painter",
-  "generated_at": "2026-10-02T12:16:37.189480+00:00",
+  "generated_at": "2026-10-02T12:55:18.220522+00:00",
   "files": [
     {
       "path": ".github/workflows/privacy-gate.yml",
@@ -11,8 +11,8 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 410,
-      "sha256": "00e1033f60b9a44a9eda3f63fa834fb21568ebf949839644527298c2ec928140",
+      "bytes": 427,
+      "sha256": "4e2acf752d0ff3cae8330fefac1822a0d5784177c46b059c98b89603b76a0cee",
       "mime_type": "application/octet-stream"
     },
     {
@@ -29,8 +29,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6696,
-      "sha256": "444ce4f6a9be507ee85fdd79061d63b59826fd464b984e75f67458cbc04790d6",
+      "bytes": 8434,
+      "sha256": "e8e17aa743825971c9f1e2afcd0967dcef2f8abd781b5f5ab6a645c6f99880f9",
       "mime_type": "text/markdown"
     },
     {
@@ -41,14 +41,14 @@
     },
     {
       "path": "analysis.js",
-      "bytes": 5360,
-      "sha256": "1dff020e133516334ee407c91f50a266d00b1a65188e59b9325f334c73ff2f4c",
+      "bytes": 7522,
+      "sha256": "751148df500323497ad24382747b7bf2ae37179647d0e728e34c2a58c3dad3aa",
       "mime_type": "text/javascript"
     },
     {
       "path": "app.js",
-      "bytes": 15158,
-      "sha256": "0f1bfb5486429b7e6c3e01803e695eb6d69f70448a55e89f24f9296fbba0cb86",
+      "bytes": 17064,
+      "sha256": "6b16d4126c12ab3eb3a1462b066d8ff221d99d5bf70496101c5522a89e79b221",
       "mime_type": "text/javascript"
     },
     {
@@ -71,14 +71,14 @@
     },
     {
       "path": "index.html",
-      "bytes": 7816,
-      "sha256": "2fb34830ae16378d3292ad395ebefefcd391a92d1b866298528c1255a261cf42",
+      "bytes": 8425,
+      "sha256": "57745f82b825a69f1c0dd088f1669b581071cbcb3dbec9816917b9a055c59b04",
       "mime_type": "text/html"
     },
     {
       "path": "release-allowlist.json",
-      "bytes": 1556,
-      "sha256": "8052bdd38eb9c91721613ff1d6f347571546fb41badbe26afd629176011e5a9b",
+      "bytes": 1579,
+      "sha256": "9b6e4661eaee8abdc6cf9cad06eaa0df9468cfce415be8c132976843dca28dc1",
       "mime_type": "application/json"
     },
     {
@@ -95,8 +95,8 @@
     },
     {
       "path": "scripts/test_analysis.js",
-      "bytes": 2776,
-      "sha256": "0c3308a54e3d64f4473db3e678ebd662ff1955d128d6970982cb0583c0b26dd0",
+      "bytes": 5402,
+      "sha256": "bcb0751614e3a5cb6f189e28c16d514478a05ac891b04ec6dc315ad524675b8d",
       "mime_type": "text/javascript"
     },
     {
@@ -119,9 +119,15 @@
     },
     {
       "path": "styles.css",
-      "bytes": 7603,
-      "sha256": "e2288aaa71c976b9f0208e622e9c23f02e686a0403b83a081bddff09fc591dc5",
+      "bytes": 8212,
+      "sha256": "ae8a448f4622b09b05a17c4e2b623751805f9ed554f0d0670bf105ca847659f1",
       "mime_type": "text/css"
+    },
+    {
+      "path": "wind-bands.json",
+      "bytes": 59363,
+      "sha256": "0cf92ba6d39a7b8c49d6353aaa9d03259692e68c4ba1c8d26141adebd678b8b7",
+      "mime_type": "application/json"
     }
   ]
 }

@@ -1,5 +1,5 @@
 "use strict";
-// Geometry-only candidates. Wind speed and direction have not been decoded.
+// Geometry-only axis candidates and separately reviewed printed isotach regions.
 const ChartAnalysis = (() => {
   const median = (numbers) => {
     const sorted = [...numbers].sort((a, b) => a - b);
@@ -84,6 +84,34 @@ const ChartAnalysis = (() => {
   function analyze(data) {
     return { troughs: troughs(data.panels[1]), jets: jets(data.panels[0]) };
   }
-  return { validate, analyze, troughs, jets };
+  const windPalette = ["#dcfce7", "#a7edbc", "#65d58d", "#2aaf63", "#087c3d"];
+  function validateWindBands(data, chart) {
+    if (data.schema_version !== 1 || data.source_sha256 !== chart.source_sha256 || data.image_sha256 !== chart.image_sha256 || data.observation_time !== chart.observation_time || data.width !== chart.width || data.height !== chart.height || data.pressure_hpa !== 300 || data.unit !== "kt" || !Array.isArray(data.bands) || data.bands.length !== 5 || !Array.isArray(data.bounds) || data.bounds.length !== 4 || !data.bounds.every(Number.isFinite)) throw new Error("風速の資料が原図と一致しません");
+    const [left, top, right, bottom] = data.bounds;
+    if (!(0 <= left && left < right && right <= chart.width && 0 <= top && top < bottom && bottom <= chart.height / 2)) throw new Error("風速の表示範囲が不正です");
+    for (const [index, band] of data.bands.entries()) {
+      if (band.min_kt !== 40 + index * 20 || !Array.isArray(band.rings) || !band.rings.length || band.rings.length > 10) throw new Error("風速の区分が不正です");
+      for (const ring of band.rings) if (!Array.isArray(ring) || ring.length < 3 || ring.length > 2000 || !ring.every((p) => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && p[0] >= left && p[0] <= right && p[1] >= top && p[1] <= bottom)) throw new Error("風速の境界を確認できません");
+    }
+    return data;
+  }
+  function drawWindBands(ctx, data) {
+    ctx.save();
+    const [left, top, right, bottom] = data.bounds;
+    ctx.beginPath(); ctx.rect(left, top, right - left, bottom - top); ctx.clip();
+    // Threshold regions overlap: the highest interval supplies one opaque color.
+    // Even-odd filling leaves genuine weak-wind holes uncolored.
+    for (const [index, band] of data.bands.entries()) {
+      ctx.fillStyle = windPalette[index]; ctx.beginPath();
+      for (const ring of band.rings) {
+        ctx.moveTo(...ring[0]);
+        for (const point of ring.slice(1)) ctx.lineTo(...point);
+        ctx.closePath();
+      }
+      ctx.fill("evenodd");
+    }
+    ctx.restore();
+  }
+  return { validate, analyze, troughs, jets, validateWindBands, drawWindBands, windPalette };
 })();
 if (typeof module !== "undefined") module.exports = ChartAnalysis;

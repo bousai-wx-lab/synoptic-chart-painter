@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <meta name="description" content="気象庁の専門天気図に、トラフ・強風軸の候補をボタンで重ねて読めるカラーノート。">
+  <meta name="description" content="気象庁の専門天気図の等風速線に沿って、風速を緑色で段階的に塗り分けるカラーノート。">
   <title>専門天気図カラーノート | Bousai Wx Lab</title>
   <link rel="stylesheet" href="styles.css">
   <script src="analysis.js" defer></script>
@@ -27,6 +27,12 @@
     <div class="panel-heading"><strong>操作</strong><button type="button" id="panel-close" aria-label="操作パネルを左に折りたたむ" aria-controls="control-panel" aria-expanded="true">‹</button></div>
     <div class="panel-content">
     <p id="chart-info">AUPQ35 · 300 / 500hPa · 図を読み込み中</p>
+    <section class="panel-section" aria-labelledby="wind-heading">
+      <h2 id="wind-heading">風速の色塗り · 上段300hPa</h2>
+      <button type="button" id="wind" class="wind-button" aria-pressed="false" disabled>風速を色塗り</button>
+      <div id="wind-legend" class="wind-legend" aria-label="風速の色分け、単位はノット"></div>
+      <p class="gesture-note">等風速線に沿って20kt刻みで色分け。<br>40kt未満は着色しません。</p>
+    </section>
     <section class="panel-section" aria-labelledby="analysis-heading">
       <h2 id="analysis-heading">解析候補</h2>
       <div class="group analysis-buttons">
@@ -84,6 +90,7 @@
     <div id="viewport" tabindex="0" aria-label="天気図。ホイールで拡大・縮小、移動モードでドラッグして移動できます。">
       <div id="paper" data-ready="false" data-strokes="0">
         <img id="chart" src="assets/aupq35.png" alt="気象庁AUPQ35。2026年10月2日00UTCの300hPaと500hPaの高度・気温・風の実況図。上段は300hPa、下段は500hPa。" draggable="false">
+        <canvas id="wind-layer" aria-label="300hPa等風速線に沿った緑色の塗り分け"></canvas>
         <canvas id="analysis-layer" aria-label="トラフ・強風軸の推定候補"></canvas>
         <canvas id="ink" aria-label="天気図の色塗り面"></canvas>
       </div>

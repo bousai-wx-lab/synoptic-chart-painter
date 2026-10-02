@@ -22,7 +22,8 @@
     "scripts/test_analysis.js",
     "scripts/test_privacy_gate.py",
     "scripts/update_manifest.py",
-    "styles.css"
+    "styles.css",
+    "wind-bands.json"
   ],
   "allowed_external_hosts": [
     "www.jma.go.jp",
