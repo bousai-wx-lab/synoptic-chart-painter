@@ -9,6 +9,15 @@ h1 { font-size: 19px; font-weight: 700; margin: 0; letter-spacing: .02em; }
 header p { margin: 5px 0 0; font-size: 12px; color: #58677a; }
 main { min-height: 0; flex: 1; display: flex; flex-direction: column; }
 .toolbar { display: flex; gap: 8px 16px; flex-wrap: wrap; align-items: center; padding: 10px 18px; background: #fff; border-bottom: 1px solid #d4dce6; }
+.analysis-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; padding: 10px 18px 8px; background: #fff; }
+.analysis-buttons { flex-wrap: wrap; }
+.analysis-note { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 11px; padding: 0 18px 8px; background: #fff; color: #58677a; border-bottom: 1px solid #d4dce6; }
+.legend { display: inline-flex; align-items: center; gap: 5px; }
+.legend::before { content: ""; width: 22px; height: 0; border-top: 3px solid #168449; }
+.trough-key::before { border-top: 5px double #9a4b16; }
+#manual { background: #fff; }
+summary { cursor: pointer; font-size: 12px; padding: 6px 18px; color: #58677a; }
+#zoom-in, #zoom-out { min-width: 34px; font-weight: 700; font-size: 18px; }
 .group { display: flex; align-items: center; gap: 5px; }
 button, select { font: inherit; font-size: 12px; min-height: 34px; border: 1px solid #ccd5e1; border-radius: 5px; background: #fff; color: #243247; padding: 5px 9px; cursor: pointer; }
 button:hover:not(:disabled) { background: #f0f5fb; }
@@ -29,6 +38,7 @@ input[type="color"] { display: block; border: 0; padding: 0; width: 30px; height
 #viewport { flex: 1; min-height: 100px; overflow: auto; padding: 14px; overscroll-behavior: contain; }
 #paper { position: relative; margin: auto; box-shadow: 0 1px 9px #2a3c5124; background: #fff; width: min(100%, 650px); aspect-ratio: 2048 / 2993; }
 #chart { display: block; width: 100%; height: 100%; user-select: none; }
+#analysis-layer { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; pointer-events: none; }
 #ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; }
 #ink[data-mode="move"] { cursor: grab; } #ink[data-dragging="true"][data-mode="move"] { cursor: grabbing; }
 footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px 14px; font-size: 10px; color: #68778b; background: #fff; border-top: 1px solid #d4dce6; padding: 7px 18px; }
@@ -39,6 +49,8 @@ dialog::backdrop { background: #23334b55; } dialog p { margin: 0 0 14px; } dialo
 @media (max-width: 640px) {
   header { padding: 10px 10px 8px; } h1 { font-size: 17px; } .brand { display: none; }
   .toolbar { padding: 8px 10px; gap: 7px 10px; } button, select { min-height: 38px; }
+  .analysis-toolbar { padding: 8px 10px; gap: 7px; } .analysis-note { padding: 0 10px 7px; gap: 3px 10px; font-size: 10px; }
+  .analysis-toolbar .view { flex-wrap: wrap; gap: 4px; } summary { padding: 6px 10px; }
   .palette { gap: 6px; } .swatch { min-width: 34px; } .custom-color { display: none; }
   .settings { gap: 8px; } .view { margin-left: 0; } .hint { padding: 5px 10px; flex-wrap: wrap; gap: 2px; }
   #viewport { padding: 8px; } footer { padding: 5px 10px; } .privacy-note { display: none; }

@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
   "tool_slug": "synoptic-chart-painter",
-  "generated_at": "2026-10-02T10:33:51.597467+00:00",
+  "generated_at": "2026-10-02T11:42:43.989395+00:00",
   "files": [
     {
       "path": ".github/workflows/privacy-gate.yml",
-      "bytes": 3605,
-      "sha256": "d07f64ab5d1fd1fe13fb6b5a8120af522ef6fc86a38b0470c2cb39dfca7ba636",
+      "bytes": 3692,
+      "sha256": "a092de16701281b2ff452b856a70e38107e25287d19be490a98216f312002e25",
       "mime_type": "application/yaml"
     },
     {
       "path": ".gitignore",
-      "bytes": 356,
-      "sha256": "482a0604bac829863037c634641b8093b78c4abb46fbc2fbbfe2dc257ca6120a",
+      "bytes": 410,
+      "sha256": "00e1033f60b9a44a9eda3f63fa834fb21568ebf949839644527298c2ec928140",
       "mime_type": "application/octet-stream"
     },
     {
@@ -29,8 +29,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 3321,
-      "sha256": "6dd51e9f8909c6bced0d34a6c80d4b1f3c44e12179cd9aaa0c539a15209dadfa",
+      "bytes": 6696,
+      "sha256": "444ce4f6a9be507ee85fdd79061d63b59826fd464b984e75f67458cbc04790d6",
       "mime_type": "text/markdown"
     },
     {
@@ -40,9 +40,15 @@
       "mime_type": "text/markdown"
     },
     {
+      "path": "analysis.js",
+      "bytes": 5360,
+      "sha256": "1dff020e133516334ee407c91f50a266d00b1a65188e59b9325f334c73ff2f4c",
+      "mime_type": "text/javascript"
+    },
+    {
       "path": "app.js",
-      "bytes": 8280,
-      "sha256": "7008a8f59615ff80984f733395344fb3bb58bed72230c6b51952538a0b027f50",
+      "bytes": 13070,
+      "sha256": "ffde1abe6ac1d9e923c500c5eaefdbc0106f9f0c4f2969ba2e3b8cf81885b40e",
       "mime_type": "text/javascript"
     },
     {
@@ -58,15 +64,21 @@
       "mime_type": "application/json"
     },
     {
+      "path": "contours.json",
+      "bytes": 72765,
+      "sha256": "75f9a3c43e81a53b0453444dd99af73fd5462c47ac93bbe5ae92b7759e6f8645",
+      "mime_type": "application/json"
+    },
+    {
       "path": "index.html",
-      "bytes": 4654,
-      "sha256": "424fcebe015812a0371ea3ee99ff7d51f6894a423d257d4f0aed636a911ca909",
+      "bytes": 6167,
+      "sha256": "cae31c1f6353750f0af3757956bd88c4ceac570a9d0ecffb9a5a536da1fee520",
       "mime_type": "text/html"
     },
     {
       "path": "release-allowlist.json",
-      "bytes": 1446,
-      "sha256": "f9fd0f741640dbe925f498d7796dd133cdb4d57094487ced6b848b9fcd7982ee",
+      "bytes": 1518,
+      "sha256": "3cb68b3efdb953e8a6a14f77cc4d50603191980def6a99a91e1b3e147340ef8e",
       "mime_type": "application/json"
     },
     {
@@ -80,6 +92,12 @@
       "bytes": 28424,
       "sha256": "c447258820041b75816891a166087109bfe4c4995d9812b5be758405898fa4a1",
       "mime_type": "text/x-python"
+    },
+    {
+      "path": "scripts/test_analysis.js",
+      "bytes": 2776,
+      "sha256": "0c3308a54e3d64f4473db3e678ebd662ff1955d128d6970982cb0583c0b26dd0",
+      "mime_type": "text/javascript"
     },
     {
       "path": "scripts/test_pages_release.py",
@@ -101,8 +119,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 4219,
-      "sha256": "e7d14c14ddb0cc6f4a9da41f02e6fc29c1f8828d19d98aa4b5c9826da2df5af8",
+      "bytes": 5296,
+      "sha256": "f471a82dc64756bdc71e207140bdf1dceea2e84fffdaa864a8fe6f2e51036996",
       "mime_type": "text/css"
     }
   ]

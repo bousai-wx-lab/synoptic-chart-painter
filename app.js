@@ -7,9 +7,15 @@ const paper = byId("paper");
 const viewport = byId("viewport");
 const strokeLayer = document.createElement("canvas");
 const strokeContext = strokeLayer.getContext("2d");
+const analysisLayer = byId("analysis-layer");
+const analysisContext = analysisLayer.getContext("2d");
+let candidates = null;
+let showTrough = false;
+let showJet = false;
+let analysisError = "";
 const history = [];
 const future = [];
-let mode = "paint";
+let mode = "move";
 let color = "#2563eb";
 let active = null;
 let pointer = null;
@@ -19,13 +25,56 @@ let chartLabel = "AUPQ35";
 let exportUrl = null;
 
 function controls() {
+  const afterClear = history.slice(history.map((s) => s.kind).lastIndexOf("clear") + 1);
+  const paintCount = afterClear.filter((s) => s.kind === "paint").length;
   byId("undo").disabled = !history.length;
   byId("redo").disabled = !future.length;
-  byId("clear").disabled = !history.length;
+  byId("clear").disabled = !paintCount;
   byId("save").disabled = !ready;
+  for (const id of ["analyze", "trough", "jet"]) byId(id).disabled = !ready || !candidates;
+  byId("original").disabled = !showTrough && !showJet;
+  byId("trough").setAttribute("aria-pressed", String(showTrough));
+  byId("jet").setAttribute("aria-pressed", String(showJet));
+  byId("zoom-in").disabled = !ready || byId("zoom").value === "4";
+  byId("zoom-out").disabled = !ready || byId("zoom").value === "0.25";
   paper.dataset.strokes = String(history.length);
-  byId("status").textContent = history.length ? `${history.length}筆` : "色塗りなし";
+  paper.dataset.trough = String(showTrough);
+  paper.dataset.jet = String(showJet);
+  const layers = [showTrough ? `トラフ候補${candidates.troughs.length}本` : "", showJet ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
+  byId("status").textContent = analysisError || (layers.length ? layers.join("・") : "原図を表示中");
 }
+
+function line(ctx, points, width, color) {
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.beginPath(); ctx.moveTo(...points[0]);
+  for (const point of points.slice(1)) ctx.lineTo(...point);
+  ctx.stroke();
+}
+function drawAnalysis() {
+  analysisContext.clearRect(0, 0, analysisLayer.width, analysisLayer.height);
+  if (!candidates) return;
+  if (showJet) for (const points of candidates.jets) {
+    analysisContext.globalAlpha = 0.16; line(analysisContext, points, 28, "#168449");
+    analysisContext.globalAlpha = 0.85; line(analysisContext, points, 6, "#168449");
+  }
+  if (showTrough) for (const points of candidates.troughs) {
+    analysisContext.globalAlpha = 0.85;
+    for (const sign of [-1, 1]) line(analysisContext, points.map((p, i) => {
+      const left = points[Math.max(0, i - 1)], right = points[Math.min(points.length - 1, i + 1)];
+      const dx = right[0] - left[0], dy = right[1] - left[1], length = Math.hypot(dx, dy) || 1;
+      return [p[0] - sign * dy * 5 / length, p[1] + sign * dx * 5 / length];
+    }), 4, "#9a4b16");
+  }
+  analysisContext.globalAlpha = 1;
+}
+for (const id of ["analyze", "trough", "jet", "original"]) byId(id).addEventListener("click", () => {
+  if (!candidates || !ready) return;
+  if (id === "analyze") showTrough = showJet = true;
+  if (id === "trough") showTrough = !showTrough;
+  if (id === "jet") showJet = !showJet;
+  if (id === "original") showTrough = showJet = false;
+  drawAnalysis(); controls();
+});
 
 function path(stroke) {
   strokeContext.clearRect(0, 0, ink.width, ink.height);
@@ -73,13 +122,29 @@ function selectMode(next) {
 
 function fit() {
   if (!ready || pointer !== null) return;
+  const viewRect = viewport.getBoundingClientRect(), oldRect = paper.getBoundingClientRect();
+  const center = { x: (viewRect.left + viewport.clientWidth / 2 - oldRect.left) / oldRect.width, y: (viewRect.top + viewport.clientHeight / 2 - oldRect.top) / oldRect.height };
   const zoom = byId("zoom").value;
   const base = Math.max(220, viewport.clientWidth - (innerWidth <= 640 ? 16 : 28));
   const width = zoom === "fit" ? Math.min(base, Math.max(150, viewport.clientHeight - 28) * ink.width / ink.height) : base * Number(zoom);
-  paper.style.width = `${Math.round(width)}px`;
-  paper.style.height = `${Math.round(width * ink.height / ink.width)}px`;
+  paper.style.width = `${Math.floor(width)}px`;
+  paper.style.height = `${Math.floor(width) * ink.height / ink.width}px`;
   if (zoom === "fit") { viewport.scrollTop = 0; viewport.scrollLeft = 0; }
+  else { const rect = paper.getBoundingClientRect(); viewport.scrollLeft += rect.left + center.x * rect.width - viewRect.left - viewport.clientWidth / 2; viewport.scrollTop += rect.top + center.y * rect.height - viewRect.top - viewport.clientHeight / 2; }
+  controls();
 }
+function zoomBy(direction) {
+  if (!ready || pointer !== null) return;
+  const base = Math.max(220, viewport.clientWidth - (innerWidth <= 640 ? 16 : 28));
+  const factor = paper.offsetWidth / base;
+  const steps = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
+  byId("zoom").value = String(direction > 0 ? (steps.find((x) => x > factor + 0.005) || 4) : ([...steps].reverse().find((x) => x < factor - 0.005) || 0.25));
+  fit();
+}
+byId("zoom-in").addEventListener("click", () => zoomBy(1));
+byId("zoom-out").addEventListener("click", () => zoomBy(-1));
+byId("fit").addEventListener("click", () => { byId("zoom").value = "fit"; fit(); });
+byId("manual").addEventListener("toggle", () => selectMode(byId("manual").open ? "paint" : "move"));
 
 function point(event) {
   const rect = ink.getBoundingClientRect();
@@ -144,14 +209,16 @@ new ResizeObserver(fit).observe(viewport);
 
 byId("save").addEventListener("click", () => {
   const output = document.createElement("canvas");
-  output.width = ink.width; output.height = ink.height + 100;
+  output.width = ink.width; output.height = ink.height + 160;
   const ctx = output.getContext("2d");
   ctx.fillStyle = "white"; ctx.fillRect(0, 0, output.width, output.height);
   ctx.drawImage(chart, 0, 0);
-  ctx.globalCompositeOperation = "multiply"; ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
+  ctx.globalCompositeOperation = "multiply"; ctx.drawImage(analysisLayer, 0, 0); ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = "#243247"; ctx.font = "24px sans-serif";
   ctx.fillText(`出典：気象庁 AUPQ35（画像化） / ${chartLabel}`, 26, ink.height + 38);
-  ctx.fillText("着色：利用者 / 専門天気図カラーノート · Bousai Wx Lab", 26, ink.height + 76);
+  ctx.fillText(`解析案：${showTrough ? "500hPaトラフ候補 " : ""}${showJet ? "300hPa強風軸候補" : ""}${!showTrough && !showJet ? "表示なし" : ""} / 手描き：利用者`, 26, ink.height + 76);
+  ctx.fillText("候補は等高度線の形・密集から推定。風向・風速は未照合。気象庁の解析ではありません。", 26, ink.height + 114);
+  ctx.font = "20px sans-serif"; ctx.fillText("専門天気図カラーノート · Bousai Wx Lab", 26, ink.height + 144);
   output.toBlob((blob) => {
     if (!blob) { byId("status").textContent = "保存できませんでした"; return; }
     if (exportUrl) URL.revokeObjectURL(exportUrl);
@@ -172,12 +239,19 @@ function initialize() {
   if (ready || !chart.naturalWidth) return;
   ink.width = strokeLayer.width = chart.naturalWidth;
   ink.height = strokeLayer.height = chart.naturalHeight;
-  ready = true; paper.dataset.ready = "true"; selectMode("paint"); fit(); controls();
+  analysisLayer.width = chart.naturalWidth; analysisLayer.height = chart.naturalHeight;
+  ready = true; paper.dataset.ready = "true"; selectMode("move"); drawAnalysis(); fit(); controls();
 }
 chart.addEventListener("load", initialize);
 chart.addEventListener("error", () => { byId("status").textContent = "図を読み込めませんでした。再読み込みしてください。"; });
 if (chart.complete) initialize();
-fetch("chart.json", { cache: "no-store" }).then((response) => { if (!response.ok) throw new Error("chart metadata unavailable"); return response.json(); }).then((data) => {
+async function loadAnalysis() {
+  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("contours.json", { cache: "no-store" })]);
+  if (responses.some((r) => !r.ok)) throw new Error("解析資料を読み込めませんでした");
+  const [data, contours] = await Promise.all(responses.map((r) => r.json()));
   chartLabel = data.observation_label;
   byId("chart-info").textContent = `AUPQ35 · 上段300hPa / 下段500hPa · ${chartLabel} · 自動更新なし`;
-}).catch(() => { byId("chart-info").textContent = "AUPQ35 · 2026年10月2日 09:00 JST（00UTC）· 自動更新なし"; });
+  candidates = ChartAnalysis.analyze(ChartAnalysis.validate(contours, data));
+  drawAnalysis(); controls();
+}
+loadAnalysis().catch(() => { analysisError = "解析資料を確認できません。原図の閲覧・手描きは使えます。"; byId("chart-info").textContent = "AUPQ35 · 2026年10月2日 09:00 JST（00UTC）· 自動更新なし"; controls(); });

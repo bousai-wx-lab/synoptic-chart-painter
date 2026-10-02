@@ -42,7 +42,10 @@ jobs:
           python3 -B scripts/test_privacy_gate.py
           python3 -B scripts/test_pages_release.py
       - name: Verify JavaScript syntax
-        run: node --check app.js
+        run: |
+          node --check app.js
+          node --check analysis.js
+          node scripts/test_analysis.js
 
   build-pages-artifact:
     needs: verify-public-surface

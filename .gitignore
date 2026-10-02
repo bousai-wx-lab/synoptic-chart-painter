@@ -4,6 +4,8 @@
 !404.html
 !styles.css
 !app.js
+!analysis.js
+!contours.json
 !chart.json
 !README.md
 !SECURITY.md
@@ -17,4 +19,5 @@
 !scripts/update_manifest.py
 !scripts/test_privacy_gate.py
 !scripts/test_pages_release.py
+!scripts/test_analysis.js
 !.github/workflows/privacy-gate.yml
