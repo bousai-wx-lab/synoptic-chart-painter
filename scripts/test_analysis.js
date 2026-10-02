@@ -8,6 +8,10 @@ const marks = JSON.parse(fs.readFileSync(path.join(root, "center-symbols.json"))
 const actual = JSON.parse(fs.readFileSync(path.join(root, "contours.json")));
 const chart = JSON.parse(fs.readFileSync(path.join(root, "chart.json")));
 analysis.validateSymbols(marks, chart);
+for (const [hpa, expected] of [[300, {L:5,H:5,C:9,W:6}], [500, {L:2,H:3,C:9,W:11}]]) {
+  const counts = Object.fromEntries(Object.keys(expected).map(letter => [letter, marks.symbols.filter(s => s.letter === letter && s.pressure_hpa === hpa).length]));
+  assert.deepEqual(counts, expected, `all four letter types must be covered on the ${hpa} hPa panel`);
+}
 assert.deepEqual(analysis.symbolPalette, { L: "#dc2626", H: "#2563eb", C: "#38bdf8", W: "#f97316" });
 for (const key of ["source_sha256", "image_sha256", "observation_time", "width", "height"]) assert.throws(() => analysis.validateSymbols({ ...marks, [key]: "mismatch" }, chart));
 for (const change of [
@@ -23,7 +27,7 @@ const symbolCtx = { save(){}, restore(){}, beginPath(){}, moveTo(){}, lineTo(){}
 analysis.drawSymbols(symbolCtx, marks);
 assert.equal(symbolStrokes.length, marks.symbols.reduce((n,s) => n+s.strokes.length,0));
 assert.ok(symbolStrokes.every(s => Object.values(analysis.symbolPalette).includes(s.color) && s.composite === "source-over" && s.width <= 4));
-console.log("CENTER_SYMBOL_COLORS_OK fixed_glyphs=30 source_binding=checked background_fill=absent malformed_data=blocked");
+console.log("CENTER_SYMBOL_COLORS_OK fixed_glyphs=50 both_panels=checked source_binding=checked background_fill=absent malformed_data=blocked");
 const pole = [1400, -300];
 function panel(radii, bend = 0) {
   return { pole, curves: radii.map((radius) => Array.from({ length: 81 }, (_, i) => {

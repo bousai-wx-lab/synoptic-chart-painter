@@ -166,7 +166,7 @@ const ChartAnalysis = (() => {
   }
   const symbolPalette = Object.freeze({ L: "#dc2626", H: "#2563eb", C: "#38bdf8", W: "#f97316" });
   function validateSymbols(data, chart) {
-    if (!data || data.schema_version !== 1 || data.source_sha256 !== chart.source_sha256 || data.image_sha256 !== chart.image_sha256 || data.observation_time !== chart.observation_time || data.width !== chart.width || data.height !== chart.height || !Array.isArray(data.symbols) || data.symbols.length !== 30) throw new Error("文字の資料が原図と一致しません");
+    if (!data || data.schema_version !== 1 || data.source_sha256 !== chart.source_sha256 || data.image_sha256 !== chart.image_sha256 || data.observation_time !== chart.observation_time || data.width !== chart.width || data.height !== chart.height || !Array.isArray(data.symbols) || data.symbols.length !== 50) throw new Error("文字の資料が原図と一致しません");
     const counts = { L: 0, H: 0, C: 0, W: 0 };
     for (const symbol of data.symbols) {
       if (!Object.keys(symbolPalette).includes(symbol.letter) || ![300, 500].includes(symbol.pressure_hpa) || !Array.isArray(symbol.bounds) || symbol.bounds.length !== 4 || !symbol.bounds.every(Number.isFinite) || !Array.isArray(symbol.strokes) || symbol.strokes.length !== (symbol.letter === "H" ? 3 : 1)) throw new Error("文字の形式を確認できません");
@@ -179,7 +179,7 @@ const ChartAnalysis = (() => {
       }
       counts[symbol.letter]++;
     }
-    if (counts.L !== 7 || counts.H !== 8 || counts.C !== 9 || counts.W !== 6) throw new Error("文字の種類が原図と一致しません");
+    if (counts.L !== 7 || counts.H !== 8 || counts.C !== 18 || counts.W !== 17) throw new Error("文字の種類が原図と一致しません");
     return data;
   }
   function drawSymbols(ctx, data) {
