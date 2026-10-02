@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="description" content="気象庁の専門天気図に半透明の色を重ねて読める、1枚から始めるカラーノート。">
+  <title>専門天気図カラーノート | Bousai Wx Lab</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="heading"><h1>専門天気図カラーノート</h1><span class="edition">初版</span><span class="brand">Bousai Wx Lab</span></div>
+    <p id="chart-info">AUPQ35 · 300 / 500hPa · 図を読み込み中</p>
+  </header>
+  <main>
+    <div class="toolbar" aria-label="色塗りの道具">
+      <div class="group tools" aria-label="操作">
+        <button type="button" id="paint" aria-pressed="true">色を塗る</button>
+        <button type="button" id="erase" aria-pressed="false">消しゴム</button>
+        <button type="button" id="move" aria-pressed="false">移動</button>
+      </div>
+      <div class="group palette" aria-label="色">
+        <button type="button" class="swatch blue" data-color="#2563eb" aria-label="青" aria-pressed="true">青</button>
+        <button type="button" class="swatch red" data-color="#dc2626" aria-label="赤" aria-pressed="false">赤</button>
+        <button type="button" class="swatch green" data-color="#16a34a" aria-label="緑" aria-pressed="false">緑</button>
+        <button type="button" class="swatch yellow" data-color="#eab308" aria-label="黄" aria-pressed="false">黄</button>
+        <button type="button" class="swatch purple" data-color="#9333ea" aria-label="紫" aria-pressed="false">紫</button>
+        <label class="custom-color">自由色<input type="color" id="color" value="#2563eb" aria-label="自由色"></label>
+      </div>
+      <div class="group settings">
+        <label>太さ<select id="width"><option value="5">細</option><option value="14" selected>中</option><option value="30">太</option><option value="60">極太</option></select></label>
+        <label>濃さ<select id="opacity"><option value="0.2">20%</option><option value="0.35" selected>35%</option><option value="0.6">60%</option><option value="1">100%</option></select></label>
+      </div>
+      <div class="group history">
+        <button type="button" id="undo" disabled>取り消し</button>
+        <button type="button" id="redo" disabled>やり直し</button>
+        <button type="button" id="clear" disabled>全部消す</button>
+      </div>
+      <div class="group view">
+        <label>表示<select id="zoom"><option value="fit">全体</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label>
+        <button type="button" id="save" class="save" disabled>PNG保存</button>
+      </div>
+    </div>
+    <div class="hint"><span id="hint">ドラッグして色を塗ります。原図の黒い線は残ります。</span><a id="export-link" download="aupq35-colored.png" hidden>書き出したPNG</a><span id="status" role="status" aria-live="polite">読み込み中</span></div>
+    <div id="viewport" tabindex="0" aria-label="天気図。色を塗るモードでドラッグして着色、移動モードで拡大した図を移動できます。">
+      <div id="paper" data-ready="false" data-strokes="0">
+        <img id="chart" src="assets/aupq35.png" alt="気象庁AUPQ35。2026年10月2日00UTCの300hPaと500hPaの高度・気温・風の実況図。上段は300hPa、下段は500hPa。" draggable="false">
+        <canvas id="ink" aria-label="天気図の色塗り面"></canvas>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <span>出典：<a href="https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq35_00.pdf" target="_blank" rel="noopener noreferrer">気象庁 AUPQ35 原図PDF</a>（画像化）</span>
+    <span>着色は利用者によるものです。<span class="privacy-note">着色内容は送信・自動保存しません。</span></span>
+  </footer>
+  <dialog id="clear-dialog"><form method="dialog"><p>色塗りをすべて消しますか？</p><p class="dialog-note">原図は残ります。取り消しで戻せます。</p><div><button value="cancel">戻る</button><button value="clear" class="danger">色塗りを消す</button></div></form></dialog>
+</body>
+</html>

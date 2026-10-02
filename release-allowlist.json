@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "tool_slug": "synoptic-chart-painter",
+  "allowed_files": [
+    ".github/workflows/privacy-gate.yml",
+    ".gitignore",
+    ".nojekyll",
+    "404.html",
+    "README.md",
+    "SECURITY.md",
+    "app.js",
+    "assets/aupq35.png",
+    "chart.json",
+    "index.html",
+    "release-allowlist.json",
+    "release-manifest.json",
+    "scripts/build_pages_artifact.py",
+    "scripts/privacy_gate.py",
+    "scripts/test_pages_release.py",
+    "scripts/test_privacy_gate.py",
+    "scripts/update_manifest.py",
+    "styles.css"
+  ],
+  "allowed_external_hosts": [
+    "www.jma.go.jp",
+    "github.com",
+    "bousai-wx-lab.github.io"
+  ],
+  "allowed_browser_api_fragments": {},
+  "allowed_binary_assets": [
+    {
+      "path": "assets/aupq35.png",
+      "bytes": 865797,
+      "sha256": "d7c3a4f934d3d9c20e53d472db420b743542714b10c68e985b3ccda4944db6d9",
+      "mime_type": "image/png",
+      "width": 2048,
+      "height": 2993,
+      "bit_depth": 8,
+      "color_type": 2
+    }
+  ],
+  "allowed_historical_binary_assets": [],
+  "allowed_git_identities": [
+    {
+      "name": "nature-wx-lab",
+      "email": "289840956+nature-wx-lab@users.noreply.github.com"
+    }
+  ],
+  "allowed_remote_urls": [
+    "https://github.com/bousai-wx-lab/synoptic-chart-painter",
+    "https://github.com/bousai-wx-lab/synoptic-chart-painter.git"
+  ],
+  "max_file_bytes": 150000,
+  "required_checkout_sha": "11d5960a326750d5838078e36cf38b85af677262"
+}

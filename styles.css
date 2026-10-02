@@ -1,0 +1,45 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #243247; background: #edf0f4; }
+* { box-sizing: border-box; }
+body { margin: 0; height: 100dvh; display: flex; flex-direction: column; }
+header { background: #fff; padding: 12px 18px 9px; border-bottom: 1px solid #d4dce6; }
+.heading { display: flex; align-items: center; gap: 10px; }
+h1 { font-size: 19px; font-weight: 700; margin: 0; letter-spacing: .02em; }
+.edition { font-size: 11px; padding: 2px 6px; border: 1px solid #d4dce6; border-radius: 4px; }
+.brand { margin-left: auto; font-size: 12px; color: #68778b; }
+header p { margin: 5px 0 0; font-size: 12px; color: #58677a; }
+main { min-height: 0; flex: 1; display: flex; flex-direction: column; }
+.toolbar { display: flex; gap: 8px 16px; flex-wrap: wrap; align-items: center; padding: 10px 18px; background: #fff; border-bottom: 1px solid #d4dce6; }
+.group { display: flex; align-items: center; gap: 5px; }
+button, select { font: inherit; font-size: 12px; min-height: 34px; border: 1px solid #ccd5e1; border-radius: 5px; background: #fff; color: #243247; padding: 5px 9px; cursor: pointer; }
+button:hover:not(:disabled) { background: #f0f5fb; }
+button:disabled { color: #97a1af; cursor: default; background: #f7f8fa; }
+button[aria-pressed="true"] { border-color: #1e4e83; background: #eaf2fc; box-shadow: inset 0 0 0 1px #1e4e83; }
+button:focus-visible, select:focus-visible, input:focus-visible, #viewport:focus-visible { outline: 3px solid #6ba6df; outline-offset: 2px; }
+.swatch { min-width: 32px; padding: 4px 6px; color: #fff; font-weight: 700; }
+.swatch.blue { background: #2563eb; } .swatch.red { background: #dc2626; } .swatch.green { background: #16a34a; } .swatch.yellow { background: #eab308; color: #34310a; } .swatch.purple { background: #9333ea; }
+.swatch:hover:not(:disabled) { filter: brightness(.95); }
+.swatch[aria-pressed="true"] { outline: 2px solid #243247; outline-offset: 2px; box-shadow: inset 0 0 0 2px #fff; }
+.custom-color { font-size: 10px; color: #58677a; text-align: center; }
+input[type="color"] { display: block; border: 0; padding: 0; width: 30px; height: 22px; background: none; cursor: pointer; }
+.settings { gap: 12px; } label { font-size: 12px; } label select { margin-left: 4px; }
+.view { margin-left: auto; } .save { background: #1d4f7d; border-color: #1d4f7d; color: #fff; font-weight: 600; }
+.save:hover:not(:disabled) { background: #173f64; }
+.hint { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; color: #667487; padding: 5px 18px; }
+#status { white-space: nowrap; }
+#viewport { flex: 1; min-height: 100px; overflow: auto; padding: 14px; overscroll-behavior: contain; }
+#paper { position: relative; margin: auto; box-shadow: 0 1px 9px #2a3c5124; background: #fff; width: min(100%, 650px); aspect-ratio: 2048 / 2993; }
+#chart { display: block; width: 100%; height: 100%; user-select: none; }
+#ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; }
+#ink[data-mode="move"] { cursor: grab; } #ink[data-dragging="true"][data-mode="move"] { cursor: grabbing; }
+footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px 14px; font-size: 10px; color: #68778b; background: #fff; border-top: 1px solid #d4dce6; padding: 7px 18px; }
+a { color: #315f8a; text-underline-offset: 2px; }
+dialog { max-width: calc(100vw - 32px); border: 1px solid #d4dce6; border-radius: 7px; padding: 18px; box-shadow: 0 6px 30px #18263526; }
+dialog::backdrop { background: #23334b55; } dialog p { margin: 0 0 14px; } dialog div { display: flex; justify-content: flex-end; gap: 8px; }
+.dialog-note { font-size: 12px; color: #68778b; } .danger { color: #a02929; }
+@media (max-width: 640px) {
+  header { padding: 10px 10px 8px; } h1 { font-size: 17px; } .brand { display: none; }
+  .toolbar { padding: 8px 10px; gap: 7px 10px; } button, select { min-height: 38px; }
+  .palette { gap: 6px; } .swatch { min-width: 34px; } .custom-color { display: none; }
+  .settings { gap: 8px; } .view { margin-left: 0; } .hint { padding: 5px 10px; flex-wrap: wrap; gap: 2px; }
+  #viewport { padding: 8px; } footer { padding: 5px 10px; } .privacy-note { display: none; }
+}

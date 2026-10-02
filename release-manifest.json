@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "tool_slug": "synoptic-chart-painter",
+  "generated_at": "2026-10-02T10:33:51.597467+00:00",
+  "files": [
+    {
+      "path": ".github/workflows/privacy-gate.yml",
+      "bytes": 3605,
+      "sha256": "d07f64ab5d1fd1fe13fb6b5a8120af522ef6fc86a38b0470c2cb39dfca7ba636",
+      "mime_type": "application/yaml"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 356,
+      "sha256": "482a0604bac829863037c634641b8093b78c4abb46fbc2fbbfe2dc257ca6120a",
+      "mime_type": "application/octet-stream"
+    },
+    {
+      "path": ".nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mime_type": "application/octet-stream"
+    },
+    {
+      "path": "404.html",
+      "bytes": 273,
+      "sha256": "3e0575184a4964ebf60118c3fd7b5ecf59d6b1d7bf7b20e80a1f9e6e57c61feb",
+      "mime_type": "text/html"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3321,
+      "sha256": "6dd51e9f8909c6bced0d34a6c80d4b1f3c44e12179cd9aaa0c539a15209dadfa",
+      "mime_type": "text/markdown"
+    },
+    {
+      "path": "SECURITY.md",
+      "bytes": 1472,
+      "sha256": "e83caf02c350d8d02bf2f6520bd579c2e7fbcf60e470392f7788fc812534642d",
+      "mime_type": "text/markdown"
+    },
+    {
+      "path": "app.js",
+      "bytes": 8280,
+      "sha256": "7008a8f59615ff80984f733395344fb3bb58bed72230c6b51952538a0b027f50",
+      "mime_type": "text/javascript"
+    },
+    {
+      "path": "assets/aupq35.png",
+      "bytes": 865797,
+      "sha256": "d7c3a4f934d3d9c20e53d472db420b743542714b10c68e985b3ccda4944db6d9",
+      "mime_type": "image/png"
+    },
+    {
+      "path": "chart.json",
+      "bytes": 712,
+      "sha256": "f3e78d7ca16a59106405fddf902be17f3a14b66055a33a737523ad06b72f3720",
+      "mime_type": "application/json"
+    },
+    {
+      "path": "index.html",
+      "bytes": 4654,
+      "sha256": "424fcebe015812a0371ea3ee99ff7d51f6894a423d257d4f0aed636a911ca909",
+      "mime_type": "text/html"
+    },
+    {
+      "path": "release-allowlist.json",
+      "bytes": 1446,
+      "sha256": "f9fd0f741640dbe925f498d7796dd133cdb4d57094487ced6b848b9fcd7982ee",
+      "mime_type": "application/json"
+    },
+    {
+      "path": "scripts/build_pages_artifact.py",
+      "bytes": 4723,
+      "sha256": "4ce9ae21894448d59bf3cd72a0c8df363ad0a03ec44f24d4246a6856dbc1bb2f",
+      "mime_type": "text/x-python"
+    },
+    {
+      "path": "scripts/privacy_gate.py",
+      "bytes": 28424,
+      "sha256": "c447258820041b75816891a166087109bfe4c4995d9812b5be758405898fa4a1",
+      "mime_type": "text/x-python"
+    },
+    {
+      "path": "scripts/test_pages_release.py",
+      "bytes": 4958,
+      "sha256": "2ba828d3ff6d9d07035a5e62947974d8bd629a912a794d1ef69505c5c8676127",
+      "mime_type": "text/x-python"
+    },
+    {
+      "path": "scripts/test_privacy_gate.py",
+      "bytes": 3772,
+      "sha256": "8c43d3145911dffad3f8448267ab1dbb0e23ba2ffe35c4149f40f6639bfa4b09",
+      "mime_type": "text/x-python"
+    },
+    {
+      "path": "scripts/update_manifest.py",
+      "bytes": 920,
+      "sha256": "84965a03081d0f1fc2401c0077d05ba8c9e2995119bc6d49b91d79add070c3a6",
+      "mime_type": "text/x-python"
+    },
+    {
+      "path": "styles.css",
+      "bytes": 4219,
+      "sha256": "e7d14c14ddb0cc6f4a9da41f02e6fc29c1f8828d19d98aa4b5c9826da2df5af8",
+      "mime_type": "text/css"
+    }
+  ]
+}
