@@ -8,15 +8,15 @@
   <meta name="description" content="天気図解析マスター（Weather Chart Analysis Master）。気象庁の専門天気図に風速帯の色塗りとトラフ・強風軸の候補を重ねる解析補助ツール。">
   <meta name="application-name" content="Weather Chart Analysis Master">
   <title>天気図解析マスター | Weather Chart Analysis Master | Bousai Wx Lab</title>
-  <link rel="stylesheet" href="styles.css?v=c596bcf6027dfc01">
+  <link rel="stylesheet" href="styles.css?v=82f42aea5d2b533d">
   <script src="analysis.js?v=48cc9b9fd74617ff" defer></script>
   <script src="geography.js?v=f05742dc0ce1b78a" defer></script>
   <script src="catalog.js?v=9d1519ba693ab9cf" defer></script>
-  <script src="app.js?v=168e62d53a9ed03c" defer></script>
+  <script src="app.js?v=be11c97570815017" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <h1 title="Weather Chart Analysis Master">天気図解析マスター</h1><span class="edition">解析試作版</span>
+    <h1 title="Weather Chart Analysis Master">天気図解析マスター</h1><span class="edition">固定資料・試作版</span>
     <button type="button" id="choose-chart" aria-label="天気図を選ぶ" aria-controls="control-panel">天気図 ▾</button>
     <details id="links" class="header-links"><summary>リンク</summary><nav aria-label="関連リンク">
       <a href="https://bousai-wx-lab.com/" target="_blank" rel="noopener noreferrer">Bousai Wx Lab ブログ</a>
@@ -28,30 +28,49 @@
   </header>
   <main id="workspace">
     <aside id="control-panel" aria-label="天気図の操作パネル">
-    <div class="panel-heading"><strong>操作</strong><button type="button" id="panel-close" aria-label="操作パネルを左に折りたたむ" aria-controls="control-panel" aria-expanded="true">‹</button></div>
-    <div class="panel-content">
-    <section class="chart-selection" aria-labelledby="chart-selection-heading">
-      <h2 id="chart-selection-heading">天気図を選ぶ</h2>
-      <label for="chart-select">図の種類 <span id="chart-count"></span></label>
+    <div class="panel-heading"><strong>解析パネル</strong><button type="button" id="panel-close" aria-label="操作パネルを左に折りたたむ" aria-controls="control-panel" aria-expanded="true">‹</button></div>
+    <section class="chart-selection" aria-label="選択中の天気図">
+      <label for="chart-select">天気図 <span id="chart-count"></span></label>
       <select id="chart-select" disabled><option>一覧を読み込み中</option></select>
-      <label for="source-select">基準時刻・資料</label>
-      <select id="source-select" disabled><option>読み込み中</option></select>
-      <div id="page-selection" hidden><label for="page-select">ページ</label><select id="page-select"></select></div>
-      <p id="chart-name"></p>
       <p id="chart-info">AUPQ35 · 300 / 500hPa · 図を読み込み中</p>
-      <p id="chart-note" class="gesture-note"></p>
+      <details id="source-details"><summary>資料・時刻を選ぶ</summary>
+        <label for="source-select">資料・基準時刻</label><select id="source-select" disabled><option>読み込み中</option></select>
+        <div id="page-selection" hidden><label for="page-select">ページ</label><select id="page-select"></select></div>
+        <p id="chart-name"></p><p id="chart-note" class="gesture-note"></p>
+      </details>
       <button type="button" id="chart-retry" hidden>図を再読み込み</button>
     </section>
-    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="temperature-heading">
-      <h2 id="temperature-heading">気温線 · 上段300hPa</h2>
-      <button type="button" id="temperature" aria-pressed="false" disabled>気温線を表示</button>
-      <div id="temperature-legend" class="temperature-legend" aria-label="300hPaの気温線。暖かいほど薄い青、冷たいほど濃い紫"></div>
-      <p class="gesture-note">−33・−39・−45・−51℃の数字を結ぶ補助線です。数字の間は滑らかにつなぎ、離れた並びは分けます。</p>
-    </section>
-    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="geography-heading">
-      <h2 id="geography-heading">陸と海 · 10種類を比較</h2>
-      <div id="geography-patterns" class="geography-patterns" role="group" aria-label="陸海の塗り方"></div>
-      <div class="geography-settings"><button type="button" id="geography-toggle" aria-pressed="false" disabled>陸海を外す</button><label for="geography-opacity">濃さ <output id="geography-opacity-value">40%</output></label></div>
+    <nav class="panel-modes" aria-label="解析の方法"><button type="button" id="analysis-mode" aria-pressed="true" aria-controls="analysis-panel">解析</button><button type="button" id="manual-mode" aria-pressed="false" aria-controls="manual">手描き</button></nav>
+    <div class="panel-content">
+    <section id="analysis-panel" aria-label="この図の解析">
+      <div data-requires="reviewed-aupq35" id="automatic-tools">
+      <div class="analysis-list-heading"><h2>この図の解析</h2><button type="button" id="active-only" aria-pressed="false">表示中 <span id="layer-count">0</span></button></div>
+      <p class="list-help">項目で表示切替 · 詳細で凡例・設定</p>
+      <div class="layer-group" data-layer-group><h3>300 hPa <span>上段</span></h3>
+      <article class="layer-tool" data-layer="temperature">
+        <div class="layer-row"><button type="button" id="temperature" class="layer-toggle" aria-pressed="false" disabled>気温線</button><button type="button" class="layer-detail-button" data-layer-detail="temperature" aria-label="気温線の詳細" aria-expanded="false" aria-controls="detail-temperature">詳細 <span aria-hidden="true">⌄</span></button></div>
+        <div id="detail-temperature" class="layer-details" hidden><div id="temperature-legend" class="temperature-legend" aria-label="300hPaの気温線。暖かいほど薄い青、冷たいほど濃い紫"></div><p class="gesture-note">−33・−39・−45・−51℃の数字を結ぶ補助線です。数字の間は滑らかにつなぎ、離れた並びは分けます。</p></div>
+      </article>
+      <article class="layer-tool" data-layer="wind">
+        <div class="layer-row"><button type="button" id="wind" class="layer-toggle" aria-pressed="false" disabled>風速の色塗り</button><button type="button" class="layer-detail-button" data-layer-detail="wind" aria-label="風速の色塗りの詳細" aria-expanded="false" aria-controls="detail-wind">詳細 <span aria-hidden="true">⌄</span></button></div>
+        <div id="detail-wind" class="layer-details" hidden><div id="wind-legend" class="wind-legend" aria-label="風速の色分け、単位はノット"></div><p class="gesture-note">等風速線に沿って20kt刻みで色分け。40kt未満は着色しません。</p></div>
+      </article>
+      <article class="layer-tool" data-layer="jet">
+        <div class="layer-row"><button type="button" id="jet" class="layer-toggle" aria-pressed="false" disabled>強風軸候補</button><button type="button" class="layer-detail-button" data-layer-detail="jet" aria-label="強風軸候補の詳細" aria-expanded="false" aria-controls="detail-jet">詳細 <span aria-hidden="true">⌄</span></button></div>
+        <div id="detail-jet" class="layer-details" hidden><span class="legend jet-key">赤い矢印 · 300hPa</span><p class="gesture-note">各強風帯の最も強い帯の中心をたどります。流れの経路はこの1枚で確認してください。</p></div>
+      </article>
+      </div><div class="layer-group" data-layer-group><h3>500 hPa <span>下段</span></h3>      <article class="layer-tool" data-layer="trough">
+        <div class="layer-row"><button type="button" id="trough" class="layer-toggle" aria-pressed="false" disabled>トラフ候補</button><button type="button" class="layer-detail-button" data-layer-detail="trough" aria-label="トラフ候補の詳細" aria-expanded="false" aria-controls="detail-trough">詳細 <span aria-hidden="true">⌄</span></button></div>
+        <div id="detail-trough" class="layer-details" hidden><span class="legend trough-key">茶色の二重線 · 500hPa</span><p class="gesture-note">等高度線の曲がりから推定した候補です。</p></div>
+      </article>
+      </div><div class="layer-group" data-layer-group><h3>共通 <span>上段・下段</span></h3>      <article class="layer-tool" data-layer="symbols">
+        <div class="layer-row"><button type="button" id="symbol-color" class="layer-toggle" aria-pressed="false" disabled>L・H・C・Wの文字</button><button type="button" class="layer-detail-button" data-layer-detail="symbols" aria-label="L・H・C・Wの文字の詳細" aria-expanded="false" aria-controls="detail-symbols">詳細 <span aria-hidden="true">⌄</span></button></div>
+        <div id="detail-symbols" class="layer-details" hidden><p class="symbol-legend"><span class="symbol-l">L：赤</span><span class="symbol-h">H：青</span><span class="symbol-c">C：水色</span><span class="symbol-w">W：オレンジ</span></p><p class="gesture-note">原図の文字部分だけを色分けします。</p></div>
+      </article>
+      <article class="layer-tool" data-layer="geography">
+        <div class="layer-row"><button type="button" id="geography-toggle" class="layer-toggle" aria-pressed="false" disabled>陸海・地形</button><button type="button" class="layer-detail-button" data-layer-detail="geography" aria-label="陸海・地形の詳細" aria-expanded="false" aria-controls="detail-geography">詳細 <span aria-hidden="true">⌄</span></button></div>
+        <div id="detail-geography" class="layer-details" hidden><p id="geography-current" class="selected-style"></p>      <div id="geography-patterns" class="geography-patterns" role="group" aria-label="陸海の塗り方"></div>
+      <div class="geography-settings"><label for="geography-opacity">濃さ <output id="geography-opacity-value">40%</output></label></div>
       <input id="geography-opacity" type="range" min="0" max="100" step="5" value="40" aria-label="陸海の濃さ" disabled>
       <p id="geography-note" class="gesture-note">上段・下段に同じ塗り方を重ねます。<br>濃さを変えて線の見やすさを調整できます。</p>
       <p id="satellite-note" class="gesture-note" hidden>地表の参考画像：NASA Blue Marble、2004年10月。現在の航空写真ではありません。<br><a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/" target="_blank" rel="noopener noreferrer">NASA Earth Observatory / Reto Stoeckli</a>（投影変換して使用）</p>
@@ -60,39 +79,14 @@
         <p id="relief-note" class="gesture-note" hidden>陰影の明暗は斜面の向き・傾きです。山の凹凸を強調しています。</p>
         <p class="gesture-note"><a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener noreferrer">NOAA ETOPO 2022</a> · 1分格子（南北約1.9km）<br>山脈や高原を見る広域表示です。</p>
       </div>
-    </section>
-    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="symbol-heading">
-      <h2 id="symbol-heading">原図の文字を色分け</h2>
-      <button type="button" id="symbol-color" aria-pressed="false" disabled>L・H・C・Wを色分け</button>
-      <p class="symbol-legend"><span class="symbol-l">L：赤</span><span class="symbol-h">H：青</span><span class="symbol-c">C：水色</span><span class="symbol-w">W：オレンジ</span></p>
-    </section>
-    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="wind-heading">
-      <h2 id="wind-heading">風速の色塗り · 上段300hPa</h2>
-      <button type="button" id="wind" class="wind-button" aria-pressed="false" disabled>風速を色塗り</button>
-      <div id="wind-legend" class="wind-legend" aria-label="風速の色分け、単位はノット"></div>
-      <p class="gesture-note">等風速線に沿って20kt刻みで色分け。<br>40kt未満は着色しません。</p>
-    </section>
-    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="analysis-heading">
-      <h2 id="analysis-heading">解析候補</h2>
-      <div class="group analysis-buttons">
-        <button type="button" id="analyze" class="save" disabled>標準の解析案を表示</button>
-        <button type="button" id="trough" aria-pressed="false" disabled>トラフ候補</button>
-        <button type="button" id="jet" aria-pressed="false" disabled>強風軸候補</button>
-        <button type="button" id="original" disabled>原図だけ</button>
+</div>
+      </article>
+      </div><p id="no-active-layers" class="gesture-note" hidden>表示中の解析はありません。「表示中」を解除すると追加できます。</p>
+      <button type="button" id="analyze" class="analysis-preset" disabled>トラフ・強風軸をまとめて表示</button>
       </div>
-      <div class="analysis-note"><span class="legend trough-key">500hPa トラフ候補</span><span class="legend jet-key">300hPa 強風軸候補 →</span><p>赤矢印：各強風帯の最も強い帯の中心。流れの経路はこの1枚で確認。<br>トラフ：等高度線の曲がりから推定。</p></div>
+      <div id="manual-only" class="empty-analysis" hidden><h2>この図は手描きで解析</h2><p>自動の色塗り・解析はまだありません。原図を確認しながら、色や太さを選んで書き込めます。</p><button type="button" id="start-manual">手描きを開く</button></div>
     </section>
-    <section class="panel-section" aria-labelledby="view-heading">
-      <h2 id="view-heading">表示</h2>
-      <div class="group view">
-        <button type="button" id="zoom-out" aria-label="天気図を縮小" disabled>−</button>
-        <select id="zoom" aria-label="天気図の表示倍率"><option value="fit">全体</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option><option value="3">300%</option><option value="4">400%</option><option value="custom" id="custom-zoom" hidden>倍率</option></select>
-        <button type="button" id="zoom-in" aria-label="天気図を拡大" disabled>＋</button>
-        <button type="button" id="fit">全体に戻す</button>
-      </div>
-      <p class="gesture-note">ホイールで拡大・縮小<br>ドラッグで移動</p>
-    </section>
-    <details id="manual" class="panel-section"><summary>手描きで補足する</summary>
+    <section id="manual" class="manual-panel" aria-label="手描きの道具" hidden>
     <div class="toolbar" aria-label="色塗りの道具">
       <div class="group tools" aria-label="操作">
         <button type="button" id="paint" aria-pressed="true">色を塗る</button>
@@ -117,10 +111,13 @@
         <button type="button" id="clear" disabled>手描きを消す</button>
       </div>
     </div>
-    </details>
-    <div class="panel-section export-section"><button type="button" id="save" class="save" disabled>PNG保存</button><a id="export-link" download="aupq35-colored.png" hidden>書き出したPNG</a></div>
-    <p id="hint" class="gesture-note">拡大した図をドラッグして移動します。</p>
-    <p class="privacy-note">描画内容は送信・自動保存しません。</p>
+    <p id="hint" class="gesture-note">拡大した図をドラッグして移動します。</p><p class="privacy-note">描画内容は送信・自動保存しません。図を切り替えても手描きは戻せますが、ページを再読込すると消えます。</p>
+    </section>
+    </div>
+    <div class="panel-actions" aria-label="表示と保存">
+      <div class="group view"><button type="button" id="zoom-out" aria-label="天気図を縮小" disabled>−</button><select id="zoom" aria-label="天気図の表示倍率"><option value="fit">全体</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option><option value="3">300%</option><option value="4">400%</option><option value="custom" id="custom-zoom" hidden>倍率</option></select><button type="button" id="zoom-in" aria-label="天気図を拡大" disabled>＋</button><button type="button" id="fit">全体</button></div>
+      <div class="group export-section"><button type="button" id="original" disabled>解析を外す</button><button type="button" id="save" class="save" disabled>PNG保存</button><a id="export-link" download="aupq35-colored.png" hidden>書き出したPNG</a></div>
+      <p class="gesture-note">ホイールで拡大 · ドラッグで移動</p>
     </div>
     </aside>
     <section class="viewer" aria-label="資料の表示">

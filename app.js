@@ -63,6 +63,59 @@ let loadRevision = 0;
 let loadController = null;
 const drawingStates = new Map();
 const zoomSteps = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
+const analysisTools = [
+  { id: "temperature", button: "temperature", label: "気温線", plane: "300hPa" },
+  { id: "wind", button: "wind", label: "風速の色塗り", plane: "300hPa" },
+  { id: "jet", button: "jet", label: "強風軸候補", plane: "300hPa" },
+  { id: "trough", button: "trough", label: "トラフ候補", plane: "500hPa" },
+  { id: "symbols", button: "symbol-color", label: "L・H・C・Wの文字", plane: "300/500hPa" },
+  { id: "geography", button: "geography-toggle", label: "陸海・地形", plane: "300/500hPa" }
+];
+let activeOnly = false;
+let selectedDetail = null;
+
+function updateAnalysisPanel() {
+  let count = 0;
+  for (const tool of analysisTools) {
+    const button = byId(tool.button);
+    const enabled = button.getAttribute("aria-pressed") === "true";
+    if (enabled) count++;
+    const row = document.querySelector(`[data-layer="${tool.id}"]`);
+    row.hidden = activeOnly && !enabled;
+    const detailButton = document.querySelector(`[data-layer-detail="${tool.id}"]`);
+    detailButton.disabled = button.disabled;
+    const open = selectedDetail === tool.id && !row.hidden;
+    detailButton.setAttribute("aria-expanded", String(open));
+    byId(`detail-${tool.id}`).hidden = !open;
+    button.title = `${tool.label} · ${tool.plane} · ${enabled ? "表示中。クリックで外す" : "クリックで表示"}`;
+  }
+  byId("layer-count").textContent = String(count);
+  byId("active-only").setAttribute("aria-pressed", String(activeOnly));
+  byId("no-active-layers").hidden = !activeOnly || count > 0;
+  for (const group of document.querySelectorAll("[data-layer-group]")) {
+    group.hidden = !Array.from(group.querySelectorAll("[data-layer]")).some(row => !row.hidden);
+  }
+  const style = ChartGeography.patterns.find(p => p.id === geographyStyle);
+  byId("geography-current").textContent = `選択中：${style.label} · 濃さ${Math.round(geographyOpacity * 100)}%`;
+  byId("geography-toggle").textContent = `陸海 · ${style.label}`;
+  return count;
+}
+byId("active-only").addEventListener("click", () => { activeOnly = !activeOnly; updateAnalysisPanel(); });
+for (const button of document.querySelectorAll("[data-layer-detail]")) button.addEventListener("click", () => {
+  selectedDetail = selectedDetail === button.dataset.layerDetail ? null : button.dataset.layerDetail;
+  updateAnalysisPanel();
+  if (selectedDetail) byId(`detail-${selectedDetail}`).scrollIntoView({ block: "nearest" });
+});
+function selectPanelMode(manual) {
+  byId("manual").hidden = !manual;
+  byId("analysis-panel").hidden = manual;
+  byId("manual-mode").setAttribute("aria-pressed", String(manual));
+  byId("analysis-mode").setAttribute("aria-pressed", String(!manual));
+  selectMode(manual ? "paint" : "move");
+}
+byId("analysis-mode").addEventListener("click", () => selectPanelMode(false));
+byId("manual-mode").addEventListener("click", () => selectPanelMode(true));
+byId("start-manual").addEventListener("click", () => { selectPanelMode(true); byId("paint").focus(); });
 
 function controls() {
   const afterClear = history.slice(history.map((s) => s.kind).lastIndexOf("clear") + 1);
@@ -73,18 +126,17 @@ function controls() {
   byId("save").disabled = !ready || featuresLoading;
   for (const id of ["analyze", "trough", "jet"]) byId(id).disabled = !ready || !candidates;
   byId("wind").disabled = !ready || !windBands;
-  byId("wind").setAttribute("aria-pressed", String(showWind));
-  byId("wind").textContent = showWind ? "色塗りを外す" : "風速を色塗り";
+  byId("wind").setAttribute("aria-pressed", String(Boolean(showWind && windBands)));
+  byId("wind").textContent = "風速の色塗り";
   byId("symbol-color").disabled = !ready || !symbols;
   byId("symbol-color").setAttribute("aria-pressed", String(Boolean(showSymbols && symbols)));
-  byId("symbol-color").textContent = showSymbols && symbols ? "文字の色分けを外す" : "L・H・C・Wを色分け";
+  byId("symbol-color").textContent = "L・H・C・Wの文字";
   byId("temperature").disabled = !ready || !isotherms;
   byId("temperature").setAttribute("aria-pressed", String(Boolean(showTemperature && isotherms)));
-  byId("temperature").textContent = showTemperature && isotherms ? "気温線を外す" : "気温線を表示";
+  byId("temperature").textContent = "気温線";
   byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols) && !(showGeography && geography) && !(showTemperature && isotherms);
   byId("geography-toggle").disabled = byId("geography-opacity").disabled = !ready || !geography;
   byId("geography-toggle").setAttribute("aria-pressed", String(Boolean(showGeography && geography)));
-  byId("geography-toggle").textContent = showGeography && geography ? "陸海を外す" : "陸海を表示";
   byId("geography-opacity-value").textContent = `${Math.round(geographyOpacity * 100)}%`;
   for (const button of byId("geography-patterns").querySelectorAll("button")) {
     const style = ChartGeography.patterns.find(p => p.id === button.dataset.pattern);
@@ -98,8 +150,8 @@ function controls() {
   byId("elevation-legend").hidden = geographyStyle === "relief";
   byId("relief-note").hidden = !isTerrain || geographyStyle === "elevation";
   for (const swatch of byId("elevation-legend").querySelectorAll("i")) swatch.style.opacity = String(geographyOpacity);
-  byId("trough").setAttribute("aria-pressed", String(showTrough));
-  byId("jet").setAttribute("aria-pressed", String(showJet));
+  byId("trough").setAttribute("aria-pressed", String(Boolean(showTrough && candidates)));
+  byId("jet").setAttribute("aria-pressed", String(Boolean(showJet && candidates)));
   byId("zoom-in").disabled = !ready || (!fitView && zoomFactor >= 4);
   byId("zoom-out").disabled = !ready || (!fitView && zoomFactor <= 0.25);
   paper.dataset.strokes = String(history.length);
@@ -109,7 +161,8 @@ function controls() {
   paper.dataset.symbols = String(Boolean(showSymbols && symbols));
   paper.dataset.temperature = String(Boolean(showTemperature && isotherms));
   paper.dataset.geography = showGeography && geography ? geographyStyle : "off";
-  const layers = [showGeography && geography ? `陸海：${ChartGeography.patterns.find(p => p.id === geographyStyle).label} ${Math.round(geographyOpacity * 100)}%` : "", showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showTemperature && isotherms ? "300hPa 気温線を表示中" : "", showWind && windBands ? "300hPa 風速を色分け中" : "", showTrough && candidates ? `トラフ候補${candidates.troughs.length}本` : "", showJet && candidates ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
+  const layerCount = updateAnalysisPanel();
+  const layers = [layerCount ? `解析${layerCount}項目` : "原図", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
   byId("status").textContent = loadingError || (!ready ? "図を読み込み中" : [geographyError, terrainError, symbolError, temperatureError, analysisError].filter(Boolean).join("・") || [currentSelection?.product.code, ...(layers.length ? layers : ["原図を表示中"])].filter(Boolean).join("・"));
 }
 
@@ -322,7 +375,6 @@ narrowView.addEventListener("change", (event) => setPanel(!event.matches));
 const compactLinks = matchMedia("(max-width: 1100px)");
 byId("links").open = !compactLinks.matches;
 compactLinks.addEventListener("change", (event) => { byId("links").open = !event.matches; });
-byId("manual").addEventListener("toggle", () => selectMode(byId("manual").open ? "paint" : "move"));
 
 function point(event) {
   const rect = ink.getBoundingClientRect();
@@ -551,12 +603,14 @@ async function loadSelection(retry = false) {
   byId("chart-retry").hidden = true;
   const reviewed = selected.variant.features === "reviewed-aupq35";
   featuresLoading = reviewed;
+  selectedDetail = null; activeOnly = false;
+  byId("manual-only").hidden = reviewed;
   for (const section of document.querySelectorAll("[data-requires]")) section.hidden = !reviewed;
   const retrieved = new Date(selected.variant.retrieved_at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
   chartLabel = selected.variant.observation_label || `${selected.variant.label} · ${retrieved} JST取得`;
   byId("chart-name").textContent = `${selected.product.name}${selected.product.period ? " · " + selected.product.period : ""}`;
-  byId("chart-info").textContent = `${selected.product.code} · ${chartLabel} · 自動更新なし`;
-  byId("chart-note").textContent = reviewed ? "上段300hPa・下段500hPa。自動の着色・解析候補も使えます。" : "この図の自動着色・解析は未対応です。手描きで色を塗れます。解析・予想の日時は原図内を確認してください。";
+  byId("chart-info").textContent = chartLabel;
+  byId("chart-note").textContent = reviewed ? "自動更新なし。上段300hPa・下段500hPa。自動の着色・解析候補も使えます。" : "自動更新なし。この図の自動着色・解析は未対応です。手描きで色を塗れます。解析・予想の日時は原図内を確認してください。";
   byId("source-link").href = selected.variant.source_url;
   byId("source-link").textContent = `気象庁 ${selected.product.code} 原図${selected.variant.source_url.endsWith(".pdf") ? "PDF" : "PNG"}`;
   controls();
