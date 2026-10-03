@@ -27,6 +27,19 @@ analysis.drawIsotherms(temperatureCtx, temperatures);
 assert.deepEqual(temperatureStrokes, [analysis.isothermPalette[0],analysis.isothermPalette[1],analysis.isothermPalette[2],...Array(3).fill(analysis.isothermPalette[3])]);
 assert.deepEqual(temperatureClip,["evenodd"],"original temperature stamps must have holes around them");
 assert.ok(temperaturePoints.flat().every(Number.isFinite));
+const roundedBend = analysis.isothermSegments([[100,100],[200,100],[200,200]]);
+const incoming = roundedBend[0].end.map((v,k)=>v-roundedBend[0].c2[k]);
+const outgoing = roundedBend[1].c1.map((v,k)=>v-roundedBend[1].start[k]);
+assert.ok(incoming.every(v=>v>0) && outgoing.every(v=>v>0),"a right-angle stamp sequence needs a soft shared tangent");
+assert.ok(Math.abs(incoming[0]*outgoing[1]-incoming[1]*outgoing[0])<1e-8,"curve direction must be continuous through a stamp");
+for (const level of temperatures.levels) for (const points of level.lines) {
+  const segments=analysis.isothermSegments(points);
+  for (let i=1;i<segments.length;i++) {
+    const u=segments[i-1].end.map((v,k)=>v-segments[i-1].c2[k]),v=segments[i].c1.map((n,k)=>n-segments[i].start[k]);
+    assert.ok(Math.abs(u[0]*v[1]-u[1]*v[0])<1e-6,"all printed stamp connections must preserve tangent direction");
+    assert.ok(u[0]*v[0]+u[1]*v[1]>=0,"no tangent reversal at a stamp");
+  }
+}
 assert.ok(temperaturePoints.every(coords => coords.filter((_,i)=>i%2).every(y=>y<chart.height/2)),"500hPa remains untouched");
 const temperatureBrightness = analysis.isothermPalette.map(color => {
   const rgb=color.slice(1).match(/../g).map(v=>parseInt(v,16));return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;

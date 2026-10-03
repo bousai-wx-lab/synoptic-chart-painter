@@ -205,13 +205,33 @@ const ChartAnalysis = (() => {
       const points = level.lines.flat();
       for (const [j, line] of level.lines.entries()) {
         if (!Array.isArray(line) || line.length !== sizes[index][j] || !line.every(p => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && p[0] >= left && p[0] <= right && p[1] >= top && p[1] <= bottom)) throw Error("気温線の位置を確認できません");
-        for (let k = 1; k < line.length; k++) if (Math.hypot(line[k][0]-line[k-1][0], line[k][1]-line[k-1][1]) >= 110) throw Error("離れた気温線を結べません");
+        for (let k = 1; k < line.length; k++) {
+          const distance = Math.hypot(line[k][0]-line[k-1][0], line[k][1]-line[k-1][1]);
+          if (distance < .1 || distance >= 110) throw Error("気温線の接続を確認できません");
+        }
       }
       for (const [j, box] of level.labels.entries()) {
         if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || !(left <= box[0] && box[0] < box[2] && box[2] <= right && top <= box[1] && box[1] < box[3] && box[3] <= bottom && box[2]-box[0] < 30 && box[3]-box[1] < 15) || Math.hypot(points[j][0]-(box[0]+box[2])/2, points[j][1]-(box[1]+box[3])/2) > .02) throw Error("原図の気温表示との対応を確認できません");
       }
     }
     return data;
+  }
+  function isothermSegments(points) {
+    const segments = [];
+    for (let i = 1; i < points.length; i++) {
+      const p = points[i-1], q = points[i];
+      const before = points[i-2] || p.map((v,k) => 2*v-q[k]);
+      const after = points[i+1] || q.map((v,k) => 2*v-p[k]);
+      const a = Math.sqrt(Math.hypot(p[0]-before[0],p[1]-before[1]));
+      const b = Math.sqrt(Math.hypot(q[0]-p[0],q[1]-p[1]));
+      const c = Math.sqrt(Math.hypot(after[0]-q[0],after[1]-q[1]));
+      // Centripetal Catmull-Rom. Shared stamp tangents remain continuous;
+      // clipping individual handles would introduce corners at those stamps.
+      const c1 = p.map((v,k) => v+b*((v-before[k])/a-(q[k]-before[k])/(a+b)+(q[k]-v)/b)/3);
+      const c2 = q.map((v,k) => v-b*((v-p[k])/b-(after[k]-p[k])/(b+c)+(after[k]-v)/c)/3);
+      segments.push({start:p,c1,c2,end:q});
+    }
+    return segments;
   }
   function drawIsotherms(ctx, data) {
     ctx.save();
@@ -224,18 +244,11 @@ const ChartAnalysis = (() => {
     ctx.lineWidth = 4.5; ctx.lineCap = ctx.lineJoin = "round";
     for (const [index, level] of data.levels.entries()) for (const points of level.lines) {
       ctx.strokeStyle = isothermPalette[index]; ctx.beginPath(); ctx.moveTo(...points[0]);
-      for (let i = 1; i < points.length; i++) {
-        const p = points[i-1], q = points[i], before = points[Math.max(0,i-2)], after = points[Math.min(points.length-1,i+1)];
-        // Clamp handles to each stamp pair's box: smooth joins without overshoot.
-        const clamp = (v,k) => Math.max(Math.min(p[k],q[k]),Math.min(Math.max(p[k],q[k]),v));
-        const c1 = p.map((v,k) => clamp(v+(q[k]-before[k])/6,k));
-        const c2 = q.map((v,k) => clamp(v-(after[k]-p[k])/6,k));
-        ctx.bezierCurveTo(...c1,...c2,...q);
-      }
+      for (const segment of isothermSegments(points)) ctx.bezierCurveTo(...segment.c1,...segment.c2,...segment.end);
       ctx.stroke();
     }
     ctx.restore();
   }
-  return { validate, analyze, troughs, jets, validateWindBands, drawWindBands, windPalette, validateJetGuides, strongestCenter, drawJetAxes, symbolPalette, validateSymbols, drawSymbols, isothermPalette, validateIsotherms, drawIsotherms };
+  return { validate, analyze, troughs, jets, validateWindBands, drawWindBands, windPalette, validateJetGuides, strongestCenter, drawJetAxes, symbolPalette, validateSymbols, drawSymbols, isothermPalette, validateIsotherms, drawIsotherms, isothermSegments };
 })();
 if (typeof module !== "undefined") module.exports = ChartAnalysis;
