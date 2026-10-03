@@ -50,6 +50,13 @@ let chartLabel = "AUPQ35";
 let exportUrl = null;
 let zoomFactor = 1;
 let fitView = true;
+let catalog = null;
+let currentSelection = null;
+let loadingError = "";
+let featuresLoading = false;
+let loadRevision = 0;
+let loadController = null;
+const drawingStates = new Map();
 const zoomSteps = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
 
 function controls() {
@@ -58,7 +65,7 @@ function controls() {
   byId("undo").disabled = !history.length;
   byId("redo").disabled = !future.length;
   byId("clear").disabled = !paintCount;
-  byId("save").disabled = !ready;
+  byId("save").disabled = !ready || featuresLoading;
   for (const id of ["analyze", "trough", "jet"]) byId(id).disabled = !ready || !candidates;
   byId("wind").disabled = !ready || !windBands;
   byId("wind").setAttribute("aria-pressed", String(showWind));
@@ -88,13 +95,13 @@ function controls() {
   byId("zoom-in").disabled = !ready || (!fitView && zoomFactor >= 4);
   byId("zoom-out").disabled = !ready || (!fitView && zoomFactor <= 0.25);
   paper.dataset.strokes = String(history.length);
-  paper.dataset.trough = String(showTrough);
-  paper.dataset.jet = String(showJet);
-  paper.dataset.wind = String(showWind);
+  paper.dataset.trough = String(Boolean(showTrough && candidates));
+  paper.dataset.jet = String(Boolean(showJet && candidates));
+  paper.dataset.wind = String(Boolean(showWind && windBands));
   paper.dataset.symbols = String(Boolean(showSymbols && symbols));
   paper.dataset.geography = showGeography && geography ? geographyStyle : "off";
-  const layers = [showGeography && geography ? `陸海：${ChartGeography.patterns.find(p => p.id === geographyStyle).label} ${Math.round(geographyOpacity * 100)}%` : "", showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showWind ? "300hPa 風速を色分け中" : "", showTrough ? `トラフ候補${candidates.troughs.length}本` : "", showJet ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
-  byId("status").textContent = [geographyError, terrainError, symbolError, analysisError].filter(Boolean).join("・") || (layers.length ? layers.join("・") : "原図を表示中");
+  const layers = [showGeography && geography ? `陸海：${ChartGeography.patterns.find(p => p.id === geographyStyle).label} ${Math.round(geographyOpacity * 100)}%` : "", showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showWind && windBands ? "300hPa 風速を色分け中" : "", showTrough && candidates ? `トラフ候補${candidates.troughs.length}本` : "", showJet && candidates ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
+  byId("status").textContent = loadingError || (!ready ? "図を読み込み中" : [geographyError, terrainError, symbolError, analysisError].filter(Boolean).join("・") || [currentSelection?.product.code, ...(layers.length ? layers : ["原図を表示中"])].filter(Boolean).join("・"));
 }
 
 function drawGeography() {
@@ -286,6 +293,7 @@ function setPanel(open, focus = false) {
 }
 byId("panel-close").addEventListener("click", () => setPanel(false, true));
 byId("panel-open").addEventListener("click", () => setPanel(true, true));
+byId("choose-chart").addEventListener("click", () => { setPanel(true); byId("chart-select").scrollIntoView({ block: "nearest" }); byId("chart-select").focus(); });
 const narrowView = matchMedia("(max-width: 720px)");
 setPanel(!narrowView.matches);
 narrowView.addEventListener("change", (event) => setPanel(!event.matches));
@@ -359,6 +367,9 @@ byId("zoom").addEventListener("change", (event) => {
 new ResizeObserver(() => fit()).observe(viewport);
 
 byId("save").addEventListener("click", () => {
+  if (!ready || featuresLoading || !currentSelection) return;
+  const selected = currentSelection;
+  const exportRevision = loadRevision;
   const output = document.createElement("canvas");
   const selectedGeography = ChartGeography.patterns.find(p => p.id === geographyStyle);
   const exportTerrain = Boolean(showGeography && geography && terrainImage && selectedGeography.terrain !== undefined);
@@ -371,7 +382,7 @@ byId("save").addEventListener("click", () => {
   ctx.drawImage(symbolLayer, 0, 0);
   ctx.globalCompositeOperation = "multiply"; ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = "#243247"; ctx.font = "24px sans-serif";
-  ctx.fillText(`出典：気象庁 AUPQ35（画像化） / ${chartLabel}`, 26, ink.height + 38);
+  ctx.fillText(`出典：気象庁 ${selected.product.code}（画像化） / ${chartLabel}`, 26, ink.height + 38, output.width - 52);
   ctx.fillText(`解析案：${showTrough ? "500hPaトラフ候補 " : ""}${showJet ? "300hPa強風軸候補" : ""}${!showTrough && !showJet ? "表示なし" : ""} / 手描き：利用者`, 26, ink.height + 76);
   if (showSymbols && symbols) for (const [index, letter] of ["L", "H", "C", "W"].entries()) {
     ctx.fillStyle = ChartAnalysis.symbolPalette[letter]; ctx.fillText(letter, 1610 + index * 90, ink.height + 76);
@@ -383,10 +394,10 @@ byId("save").addEventListener("click", () => {
     ctx.fillStyle = color; ctx.fillRect(x, ink.height + 95, 32, 24);
     ctx.fillStyle = "#243247"; ctx.fillText(windLabels[index], x + 42, ink.height + 116);
   }
-  ctx.fillText("赤矢印：等風速線の強い帯の中心（流れの経路はこの1枚で確認）。トラフ：等高度線の曲がりから推定。", 26, ink.height + 155);
-  ctx.fillText("気象庁の公式の着色・解析ではありません。天気図解析マスター · Weather Chart Analysis Master · Bousai Wx Lab", 26, ink.height + 193);
+  ctx.fillText(selected.variant.features === "reviewed-aupq35" ? "赤矢印：等風速線の強い帯の中心（流れの経路はこの1枚で確認）。トラフ：等高度線の曲がりから推定。" : `${selected.product.name}${selected.product.period ? " · " + selected.product.period : ""}`, 26, ink.height + 155, output.width - 52);
+  ctx.fillText("利用者の着色・解析は気象庁の公式の解析ではありません。天気図解析マスター · Weather Chart Analysis Master · Bousai Wx Lab", 26, ink.height + 193, output.width - 52);
   const geoLabel = showGeography && geography ? `${ChartGeography.patterns.find(p => p.id === geographyStyle).label}（濃さ${Math.round(geographyOpacity * 100)}%）` : "表示なし";
-  ctx.fillText(`陸海：${geoLabel}${showGeography && geographyStyle === "satellite" ? " / NASA Earth Observatory・Reto Stoeckli / 2004年10月の地表画像（投影変換）" : ""}`, 26, ink.height + 231);
+  ctx.fillText(selected.variant.features === "reviewed-aupq35" ? `陸海：${geoLabel}${showGeography && geographyStyle === "satellite" ? " / NASA Earth Observatory・Reto Stoeckli / 2004年10月の地表画像（投影変換）" : ""}` : "自動更新なし。解析・予想の日時は原図内を確認してください。", 26, ink.height + 231, output.width - 52);
   if (exportTerrain) {
     ctx.fillText("地表標高：NOAA ETOPO 2022 / EGM2008基準 / 1分格子（南北約1.9km）/ 投影変換した広域表示", 26, ink.height + 268);
     if (geographyStyle === "relief") ctx.fillText("陰影の明暗は斜面の向き・傾き。北西からの照明で山の凹凸を強調しています。", 26, ink.height + 307);
@@ -397,10 +408,12 @@ byId("save").addEventListener("click", () => {
     }
   }
   output.toBlob((blob) => {
+    if (loadRevision !== exportRevision || currentSelection?.key !== selected.key || !ready) return;
     if (!blob) { byId("status").textContent = "保存できませんでした"; return; }
     if (exportUrl) URL.revokeObjectURL(exportUrl);
     exportUrl = URL.createObjectURL(blob);
     const link = byId("export-link");
+    link.download = `${selected.variant.id}-p${selected.page.number}-colored.png`;
     link.href = exportUrl; link.hidden = false; link.click();
     byId("status").textContent = "PNGを書き出しました";
   }, "image/png");
@@ -412,85 +425,193 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-function initialize() {
-  if (ready || !chart.naturalWidth) return;
-  ink.width = strokeLayer.width = chart.naturalWidth;
-  ink.height = strokeLayer.height = chart.naturalHeight;
-  analysisLayer.width = chart.naturalWidth; analysisLayer.height = chart.naturalHeight;
-  jetLayer.width = chart.naturalWidth; jetLayer.height = chart.naturalHeight;
-  windLayer.width = chart.naturalWidth; windLayer.height = chart.naturalHeight;
-  geographyLayer.width = chart.naturalWidth; geographyLayer.height = chart.naturalHeight;
-  symbolLayer.width = chart.naturalWidth; symbolLayer.height = chart.naturalHeight;
-  symbolMask.width = chart.naturalWidth; symbolMask.height = chart.naturalHeight;
-  symbolMaskContext.drawImage(chart, 0, 0);
-  originalPixels = symbolMaskContext.getImageData(0, 0, chart.naturalWidth, chart.naturalHeight);
-  symbolMaskContext.clearRect(0, 0, symbolMask.width, symbolMask.height);
-  ready = true; paper.dataset.ready = "true"; selectMode("move"); drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); fit(); controls();
-}
-chart.addEventListener("load", initialize);
-chart.addEventListener("error", () => { byId("status").textContent = "図を読み込めませんでした。再読み込みしてください。"; });
-if (chart.complete) initialize();
-async function loadAnalysis() {
-  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("contours.json", { cache: "no-store" }), fetch("wind-bands.json", { cache: "no-store" }), fetch("jet-guides.json", { cache: "no-store" })]);
-  if (responses.some((r) => !r.ok)) throw new Error("解析資料を読み込めませんでした");
-  const [data, contours, wind, guides] = await Promise.all(responses.map((r) => r.json()));
-  chartLabel = data.observation_label;
-  byId("chart-info").textContent = `AUPQ35 · 上段300hPa / 下段500hPa · ${chartLabel} · 自動更新なし`;
-  const checkedContours = ChartAnalysis.validate(contours, data);
-  const checkedWind = ChartAnalysis.validateWindBands(wind, data);
-  const checkedGuides = ChartAnalysis.validateJetGuides(guides, data, checkedWind);
-  candidates = ChartAnalysis.analyze(checkedContours, checkedWind, checkedGuides);
-  windBands = checkedWind;
-  drawAnalysis(); drawWind(); controls();
-}
-loadAnalysis().catch(() => { analysisError = "解析資料を確認できません。原図の閲覧・手描きは使えます。"; byId("chart-info").textContent = "AUPQ35 · 2026年10月2日 09:00 JST（00UTC）· 自動更新なし"; controls(); });
-async function loadSymbols() {
-  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("center-symbols.json", { cache: "no-store" })]);
-  if (responses.some((r) => !r.ok)) throw new Error("文字の資料を読み込めませんでした");
-  const [data, marks] = await Promise.all(responses.map((r) => r.json()));
-  symbols = ChartAnalysis.validateSymbols(marks, data);
-  drawSymbols(); controls();
-}
-loadSymbols().catch(() => { symbols = null; symbolError = "文字の資料を確認できません。原図の文字を表示します。"; drawSymbols(); controls(); });
-async function loadGeography() {
-  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("land-sea.json", { cache: "no-store" })]);
-  if (responses.some(r => !r.ok)) throw Error("Geography unavailable");
-  const [data, coast] = await Promise.all(responses.map(r => r.json()));
-  geography = ChartGeography.validate(coast, data); drawGeography(); controls();
-  try {
-    const response = await fetch(geography.satellite.path, { cache: "no-store" });
-    if (!response.ok) throw Error("Satellite unavailable");
-    const bytes = await response.arrayBuffer();
-    const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)), b => b.toString(16).padStart(2, "0")).join("");
-    if (hash !== geography.satellite.image_sha256) throw Error("Satellite source mismatch");
-    const url = URL.createObjectURL(new Blob([bytes], { type: "image/png" })), image = new Image();
-    try { image.src = url; await image.decode(); } finally { URL.revokeObjectURL(url); }
-    if (image.naturalWidth !== geography.satellite.width || image.naturalHeight !== geography.satellite.height) throw Error("Satellite size mismatch");
-    satelliteImage = image;
-    ChartGeography.preview(byId("geography-patterns").querySelector('[data-pattern="satellite"] canvas'), "satellite", image);
-    controls();
-  } catch (_) { byId("geography-note").textContent = "衛星画像を確認できません。ほかの塗り方は使えます。"; controls(); }
-}
-loadGeography().catch(() => { geography = null; geographyError = "陸海の資料を確認できません。原図やほかの色分けは使えます。"; drawGeography(); controls(); });
-async function loadElevation() {
-  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("elevation.json", { cache: "no-store" })]);
-  if (responses.some(r => !r.ok)) throw Error("Elevation unavailable");
-  const [data, terrain] = await Promise.all(responses.map(r => r.json()));
-  const checked = ChartGeography.validateElevation(terrain, data);
-  const response = await fetch(checked.image.path, { cache: "no-store" });
-  if (!response.ok) throw Error("Elevation image unavailable");
-  const bytes = await response.arrayBuffer();
-  const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)), b => b.toString(16).padStart(2, "0")).join("");
-  if (hash !== checked.image.sha256) throw Error("Elevation image mismatch");
-  const url = URL.createObjectURL(new Blob([bytes], { type: "image/png" })), image = new Image();
-  try { image.src = url; await image.decode(); } finally { URL.revokeObjectURL(url); }
-  if (image.naturalWidth !== checked.image.width || image.naturalHeight !== checked.image.height) throw Error("Elevation image dimensions mismatch");
-  elevationData = checked; terrainImage = image;
-  for (const style of ChartGeography.patterns.filter(p => p.terrain !== undefined)) ChartGeography.preview(byId("geography-patterns").querySelector(`[data-pattern="${style.id}"] canvas`), style.id, null, image);
-  for (const [index, label] of checked.legend.labels.entries()) {
-    const entry = document.createElement("span"), swatch = document.createElement("i");
-    swatch.style.backgroundColor = checked.legend.colors[index]; swatch.setAttribute("aria-hidden", "true"); entry.append(swatch, label); byId("elevation-legend").append(entry);
+function initialize(selected) {
+  if (chart.naturalWidth !== selected.page.width || chart.naturalHeight !== selected.page.height) throw Error("Chart dimensions mismatch");
+  for (const canvas of [ink, strokeLayer]) {
+    canvas.width = chart.naturalWidth; canvas.height = chart.naturalHeight;
   }
-  controls();
+  const reviewed = selected.variant.features === "reviewed-aupq35";
+  for (const canvas of [analysisLayer, jetLayer, windLayer, geographyLayer, symbolLayer, symbolMask]) {
+    canvas.width = reviewed ? chart.naturalWidth : 1;
+    canvas.height = reviewed ? chart.naturalHeight : 1;
+    canvas.hidden = !reviewed;
+  }
+  if (selected.variant.features === "reviewed-aupq35") {
+    symbolMaskContext.drawImage(chart, 0, 0);
+    originalPixels = symbolMaskContext.getImageData(0, 0, chart.naturalWidth, chart.naturalHeight);
+    symbolMaskContext.clearRect(0, 0, symbolMask.width, symbolMask.height);
+  }
+  paper.style.aspectRatio = `${ink.width} / ${ink.height}`;
+  ready = true; paper.hidden = false; paper.dataset.ready = "true"; paper.dataset.chart = selected.product.id; paper.dataset.source = selected.variant.id;
+  selectMode(byId("manual").open ? "paint" : "move"); render(); drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); fit(); controls();
 }
-loadElevation().catch(() => { terrainError = "標高の資料を確認できません。ほかの塗り方は使えます。"; controls(); });
+async function fetchJSON(path, signal) {
+  const response = await fetch(path, { cache: "no-store", signal });
+  if (!response.ok) throw Error("Chart data unavailable");
+  return response.json();
+}
+async function checkedImage(path, expectedHash, width, height, signal, retry = false, applyImage = null) {
+  const response = await fetch(path, { signal, cache: retry ? "reload" : "default" });
+  if (!response.ok) throw Error("Chart image unavailable");
+  const bytes = await response.arrayBuffer();
+  const actualHash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)), b => b.toString(16).padStart(2, "0")).join("");
+  if (actualHash !== expectedHash) throw Error("Chart image hash mismatch");
+  const url = URL.createObjectURL(new Blob([bytes], { type: "image/png" })), image = new Image();
+  try {
+    image.src = url; await image.decode();
+    if (image.naturalWidth !== width || image.naturalHeight !== height) throw Error("Chart image size mismatch");
+    if (applyImage) await applyImage(image);
+    return image;
+  } finally { URL.revokeObjectURL(url); }
+}
+function keepDrawing() {
+  if (!ready || !currentSelection) return;
+  if (pointer !== null) finish({ pointerId: pointer });
+  drawingStates.set(currentSelection.key, { history: [...history], future: [...future], showWind, showTrough, showJet, showSymbols, showGeography, geographyStyle, geographyOpacity });
+}
+function setOptions(select, records, value) {
+  select.replaceChildren();
+  for (const record of records) {
+    const option = document.createElement("option"); option.value = record.id; option.textContent = record.label; select.append(option);
+  }
+  select.value = value || records[0].id; select.disabled = records.length < 2;
+}
+function selectProduct() {
+  const product = catalog.products.find(p => p.id === byId("chart-select").value);
+  setOptions(byId("source-select"), product.variants, product.variants[0].id);
+  selectSource();
+}
+function selectSource() {
+  const product = catalog.products.find(p => p.id === byId("chart-select").value);
+  const variant = product.variants.find(v => v.id === byId("source-select").value);
+  setOptions(byId("page-select"), variant.pages.map(page => ({ id: String(page.number), label: `${page.number} / ${variant.pages.length} ページ` })));
+  byId("page-selection").hidden = variant.pages.length === 1;
+  loadSelection();
+}
+byId("chart-select").addEventListener("change", selectProduct);
+byId("source-select").addEventListener("change", selectSource);
+byId("page-select").addEventListener("change", () => loadSelection());
+byId("chart-retry").addEventListener("click", () => catalog ? loadSelection(true) : loadCatalog());
+async function loadSelection(retry = false) {
+  keepDrawing();
+  const revision = ++loadRevision;
+  loadController?.abort(); loadController = new AbortController();
+  const signal = loadController.signal;
+  const selected = ChartCatalog.selection(catalog, byId("chart-select").value, byId("source-select").value, Number(byId("page-select").value));
+  currentSelection = selected; ready = false; paper.hidden = true; paper.dataset.ready = "false";
+  active = pointer = pan = originalPixels = null;
+  geography = satelliteImage = elevationData = terrainImage = symbols = windBands = candidates = null;
+  loadingError = geographyError = terrainError = symbolError = analysisError = "";
+  history.length = future.length = 0;
+  const state = drawingStates.get(selected.key);
+  if (state) { history.push(...state.history); future.push(...state.future); }
+  showWind = state?.showWind || false; showTrough = state?.showTrough || false; showJet = state?.showJet || false;
+  showSymbols = state?.showSymbols ?? true; showGeography = state?.showGeography ?? true;
+  geographyStyle = state?.geographyStyle || "dots"; geographyOpacity = state?.geographyOpacity ?? 0.4;
+  byId("geography-opacity").value = String(Math.round(geographyOpacity * 100));
+  fitView = true;
+  if (exportUrl) { URL.revokeObjectURL(exportUrl); exportUrl = null; }
+  byId("export-link").hidden = true; byId("export-link").removeAttribute("href");
+  byId("chart-retry").hidden = true;
+  const reviewed = selected.variant.features === "reviewed-aupq35";
+  featuresLoading = reviewed;
+  for (const section of document.querySelectorAll("[data-requires]")) section.hidden = !reviewed;
+  const retrieved = new Date(selected.variant.retrieved_at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+  chartLabel = selected.variant.observation_label || `${selected.variant.label} · ${retrieved} JST取得`;
+  byId("chart-name").textContent = `${selected.product.name}${selected.product.period ? " · " + selected.product.period : ""}`;
+  byId("chart-info").textContent = `${selected.product.code} · ${chartLabel} · 自動更新なし`;
+  byId("chart-note").textContent = reviewed ? "上段300hPa・下段500hPa。自動の着色・解析候補も使えます。" : "この図の自動着色・解析は未対応です。手描きで色を塗れます。解析・予想の日時は原図内を確認してください。";
+  byId("source-link").href = selected.variant.source_url;
+  byId("source-link").textContent = `気象庁 ${selected.product.code} 原図${selected.variant.source_url.endsWith(".pdf") ? "PDF" : "PNG"}`;
+  controls();
+  try {
+    await checkedImage(selected.page.image_path, selected.page.image_sha256, selected.page.width, selected.page.height, signal, retry, async image => {
+      if (revision !== loadRevision) return;
+      chart.src = image.src; await chart.decode();
+    });
+    if (revision !== loadRevision) return;
+    chart.alt = `気象庁 ${selected.product.code} · ${selected.product.name} · ${chartLabel}`;
+    initialize(selected);
+    if (reviewed) await loadFeatures(selected, revision, signal);
+    if (revision === loadRevision) { featuresLoading = false; controls(); }
+  } catch (error) {
+    if (revision !== loadRevision || error.name === "AbortError") return;
+    loadingError = "図を読み込めませんでした。「図を再読み込み」か別の天気図を選んでください。";
+    byId("chart-retry").hidden = false; controls();
+  }
+}
+async function loadFeatures(selected, revision, signal) {
+  const current = () => revision === loadRevision;
+  let data;
+  try {
+    data = await fetchJSON("chart.json", signal);
+    if (data.image_path !== selected.page.image_path || data.image_sha256 !== selected.page.image_sha256 || data.source_sha256 !== selected.variant.source_sha256 || data.width !== selected.page.width || data.height !== selected.page.height) throw Error("Analysis source mismatch");
+  } catch (error) {
+    if (current() && error.name !== "AbortError") { analysisError = "自動着色・解析の資料を確認できません。原図の閲覧・手描きは使えます。"; controls(); }
+    return;
+  }
+  await Promise.allSettled([
+    (async () => {
+      try {
+        const [contours, wind, guides] = await Promise.all(["contours.json", "wind-bands.json", "jet-guides.json"].map(path => fetchJSON(path, signal)));
+        const checkedContours = ChartAnalysis.validate(contours, data), checkedWind = ChartAnalysis.validateWindBands(wind, data);
+        const checkedGuides = ChartAnalysis.validateJetGuides(guides, data, checkedWind);
+        const checkedCandidates = ChartAnalysis.analyze(checkedContours, checkedWind, checkedGuides);
+        if (current()) { windBands = checkedWind; candidates = checkedCandidates; drawAnalysis(); drawWind(); controls(); }
+      } catch (error) { if (current() && error.name !== "AbortError") { analysisError = "解析資料を確認できません。原図の閲覧・手描きは使えます。"; controls(); } }
+    })(),
+    (async () => {
+      try {
+        const checked = ChartAnalysis.validateSymbols(await fetchJSON("center-symbols.json", signal), data);
+        if (current()) { symbols = checked; drawSymbols(); controls(); }
+      } catch (error) { if (current() && error.name !== "AbortError") { symbolError = "文字の資料を確認できません。原図の文字を表示します。"; controls(); } }
+    })(),
+    (async () => {
+      try {
+        const checked = ChartGeography.validate(await fetchJSON("land-sea.json", signal), data);
+        if (!current()) return;
+        geography = checked; drawGeography(); controls();
+        try {
+          const image = await checkedImage(checked.satellite.path, checked.satellite.image_sha256, checked.satellite.width, checked.satellite.height, signal);
+          if (current()) { satelliteImage = image; ChartGeography.preview(byId("geography-patterns").querySelector('[data-pattern="satellite"] canvas'), "satellite", image); controls(); }
+        } catch (error) { if (current() && error.name !== "AbortError") { geographyError = "衛星画像を確認できません。ほかの塗り方は使えます。"; controls(); } }
+      } catch (error) { if (current() && error.name !== "AbortError") { geographyError = "陸海の資料を確認できません。ほかの色分けは使えます。"; controls(); } }
+    })(),
+    (async () => {
+      try {
+        const checked = ChartGeography.validateElevation(await fetchJSON("elevation.json", signal), data);
+        const image = await checkedImage(checked.image.path, checked.image.sha256, checked.image.width, checked.image.height, signal);
+        if (!current()) return;
+        elevationData = checked; terrainImage = image;
+        for (const style of ChartGeography.patterns.filter(p => p.terrain !== undefined)) ChartGeography.preview(byId("geography-patterns").querySelector(`[data-pattern="${style.id}"] canvas`), style.id, null, image);
+        byId("elevation-legend").replaceChildren();
+        for (const [index, label] of checked.legend.labels.entries()) {
+          const entry = document.createElement("span"), swatch = document.createElement("i");
+          swatch.style.backgroundColor = checked.legend.colors[index]; swatch.setAttribute("aria-hidden", "true"); entry.append(swatch, label); byId("elevation-legend").append(entry);
+        }
+        drawGeography(); controls();
+      } catch (error) { if (current() && error.name !== "AbortError") { terrainError = "標高の資料を確認できません。ほかの塗り方は使えます。"; controls(); } }
+    })()
+  ]);
+}
+async function loadCatalog() {
+  loadingError = ""; byId("chart-retry").hidden = true;
+  try {
+    catalog = ChartCatalog.validate(await fetchJSON("chart-catalog.json"));
+    const picker = byId("chart-select"); picker.replaceChildren();
+    for (const [id, label] of [["observation", "実況天気図"], ["forecast", "予想天気図"]]) {
+      const group = document.createElement("optgroup"); group.label = label;
+      for (const product of catalog.products.filter(p => p.group === id)) {
+        const option = document.createElement("option"); option.value = product.id; option.textContent = `${product.code} · ${product.name}${product.period ? "（" + product.period + "）" : ""}`; group.append(option);
+      }
+      picker.append(group);
+    }
+    picker.disabled = false; picker.value = "aupq35";
+    byId("chart-count").textContent = `実況${catalog.products.filter(p => p.group === "observation").length}・予想${catalog.products.filter(p => p.group === "forecast").length}`;
+    selectProduct();
+  } catch (_) {
+    catalog = null; loadingError = "天気図の一覧を読み込めませんでした。「図を再読み込み」を押してください。";
+    byId("chart-select").disabled = true; byId("chart-retry").hidden = false; controls();
+  }
+}
+loadCatalog();

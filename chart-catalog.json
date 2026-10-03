@@ -1,0 +1,1479 @@
+{
+  "schema_version": 1,
+  "compiled_at": "2026-10-03T01:57:50.917482+00:00",
+  "refresh": "none",
+  "catalog_urls": [
+    "https://www.jma.go.jp/bosai/numericmap/#type=upper",
+    "https://www.jma.go.jp/bosai/numericmap/"
+  ],
+  "products": [
+    {
+      "id": "aupa20",
+      "code": "AUPA20",
+      "name": "アジア太平洋200hPa高度・気温・風・圏界面天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "aupa20-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupa20_00.pdf",
+          "source_sha256": "b6c7610654ada34a03cee83ca98ca9c689cc0f017afc3380da6011f0bf59d52e",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupa20-00-b6c7610654ad-p1.png",
+              "image_sha256": "57ee0835786421c0176de0d5b4d5c7d1eb5425e04f34cc79f373635aa2cdd2ae",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "aupa20-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupa20_12.pdf",
+          "source_sha256": "a4ffbcd2aca76c24e066386e398f6ed2eb85b5e70b02ad8d8907422c7f59d8b7",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupa20-12-a4ffbcd2aca7-p1.png",
+              "image_sha256": "db4b04b4c501d7c262ebceb87e17f56c797a88882ea6d6daa7dd0b477db7af53",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "aupa25",
+      "code": "AUPA25",
+      "name": "アジア太平洋250hPa高度・気温・風天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "aupa25-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupa25_00.pdf",
+          "source_sha256": "7ccde4acfedea9383e48dc22b000ab7e0bebd5f1c1f3108aa126305817c0fe63",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupa25-00-7ccde4acfede-p1.png",
+              "image_sha256": "aa3df83676d09db4e139f21f10b9a626382fd43fcf9abd78d88f1e4aa7985f4d",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "aupa25-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupa25_12.pdf",
+          "source_sha256": "0a3f3acb7fc96fe9b8e78e04ac63e82e438b67fc58b7b27003821a98e4838035",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupa25-12-0a3f3acb7fc9-p1.png",
+              "image_sha256": "5921e7ab3431761b2f547ae401b9c680b532c790fee6abdd135865dde34bb509",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "aupn30",
+      "code": "AUPN30",
+      "name": "北太平洋300hPa高度・気温・風天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "aupn30-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupn30_00.pdf",
+          "source_sha256": "af75a28706d2bf8c59203bb55701727e993fd2b38fd8f3231396975f9c6e0588",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupn30-00-af75a28706d2-p1.png",
+              "image_sha256": "5a31c617b03794f669db8632f32b82bf64c30f2b69ea18a59f69b396c8ca5798",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "aupn30-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupn30_12.pdf",
+          "source_sha256": "eec4f87e75d00a210e49639a73722c9b1da9edfb1fa3d91f01e18f152d986dc8",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupn30-12-eec4f87e75d0-p1.png",
+              "image_sha256": "17732437a0e2f35caf783698317e367a27458297038e067224421453436ba527",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "aupq35",
+      "code": "AUPQ35",
+      "name": "アジア500hPa・300hPa高度・気温・風・等風速線天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "aupq35-reviewed",
+          "label": "00UTC · 10月2日09時（解析付き）",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq35_00.pdf",
+          "source_sha256": "39db0356cd868469fe5f79dd4494cd2dae67a3f093572175aeb8dbbc1fbd40d4",
+          "retrieved_at": "2026-10-02T10:22:46.171286+00:00",
+          "observation_label": "2026年10月2日 09:00 JST（00UTC）",
+          "features": "reviewed-aupq35",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/aupq35.png",
+              "image_sha256": "d7c3a4f934d3d9c20e53d472db420b743542714b10c68e985b3ccda4944db6d9",
+              "width": 2048,
+              "height": 2993
+            }
+          ]
+        },
+        {
+          "id": "aupq35-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq35_12.pdf",
+          "source_sha256": "a06cc29b22dd8fcbc69411d59ee99c9faad81926419b529f371a17f8f77795e7",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupq35-12-a06cc29b22dd-p1.png",
+              "image_sha256": "db803c78478c68188b8611f4b8f7e83306bc113f0b106f10278448823678a8b9",
+              "width": 2048,
+              "height": 2993
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "aupq78",
+      "code": "AUPQ78",
+      "name": "アジア850hPa・700hPa高度・気温・風・湿数天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "aupq78-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq78_00.pdf",
+          "source_sha256": "58be2c8fd8bcc5b27c87a8fa748869a2145ca7d8403a9ecdc3ce586cfc95f249",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupq78-00-58be2c8fd8bc-p1.png",
+              "image_sha256": "a45b011b2c5329b4f3c2dabd035ef7daac90669fb08d848974cf95852321382c",
+              "width": 2048,
+              "height": 2993
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "aupq78-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq78_12.pdf",
+          "source_sha256": "62018337d6637e7e7fbe5c9d6bcf32f0f34bbe8edcea64b819eb49088b4e3524",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/aupq78-12-62018337d663-p1.png",
+              "image_sha256": "3633fd0e6ef02e5030c20166edb04cd8e2bcbd9dfc777e7b8aff144d609dcbe3",
+              "width": 2048,
+              "height": 2993
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "auxn50",
+      "code": "AUXN50",
+      "name": "北半球500hPa高度・気温天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "auxn50-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/auxn50_12.pdf",
+          "source_sha256": "a385c5c543970d3d3de08eb534c45637917f446a2d05ddbb3d854071bc029bcb",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/auxn50-12-a385c5c54397-p1.png",
+              "image_sha256": "fa53cfcd4ee8ec62f80e079eb4791650a18a21525119e8eee1aedc3d8767c4a0",
+              "width": 2048,
+              "height": 1763
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "axfe578",
+      "code": "AXFE578",
+      "name": "極東850hPa気温・風、700hPa上昇流／500hPa高度・渦度天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "axfe578-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/axfe578_00.pdf",
+          "source_sha256": "edf5a4b0abb162616c308700160e3715fae1433271a79141e3e86787cc3a7372",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/axfe578-00-edf5a4b0abb1-p1.png",
+              "image_sha256": "716824b7789fbeebcf47ee750531c91644c7698f2e634f6e58e54b2176e2506f",
+              "width": 2048,
+              "height": 3101
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "axfe578-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/axfe578_12.pdf",
+          "source_sha256": "8034b9525f24817c75264fc1c97e483feba90d453301b176450b75aca65b0527",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/axfe578-12-8034b9525f24-p1.png",
+              "image_sha256": "611eb9723a8af480b3d3e18dfef8009033c523092a1a8481b3440192988d140b",
+              "width": 2048,
+              "height": 3101
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas-feas50",
+      "code": "FEAS/FEAS50",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度天気図",
+      "group": "observation",
+      "period": "",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas50-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas50_12.pdf",
+          "source_sha256": "dfd41a8166153acb51060740a879f0bc3643e61d0b887aad48f087eaa064f8b9",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas50-12-dfd41a816615-p1.png",
+              "image_sha256": "870cf0872dabb09e4bccad522f4be247125bb875bd0675cdbe372049f4ee6b09",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "axjp130-axjp140",
+      "code": "AXJP130/AXJP140",
+      "name": "高層断面図（風・気温・露点等）東経130度／140度解析",
+      "group": "observation",
+      "period": "",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "axjp140-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/axjp140_00.pdf",
+          "source_sha256": "32de775b2c3c035ba3839c54b7ba200ec441235012e48d2e29d722c0dcf02651",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/axjp140-00-32de775b2c3c-p1.png",
+              "image_sha256": "548f03965c968256996178824321a125326f318adb539f555b19af25a4750119",
+              "width": 2048,
+              "height": 2789
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "axjp140-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/axjp140_12.pdf",
+          "source_sha256": "2cdbac570867eb1474d9bb53aba018b589b568f9dcbdce0141a789286d72570a",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/axjp140-12-2cdbac570867-p1.png",
+              "image_sha256": "52c3e6e427eb770104ca94586c6099b42d1b28f30dcbe7f77927a94fd39b9bd3",
+              "width": 2048,
+              "height": 2789
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fupa252",
+      "code": "FUPA252",
+      "name": "アジア太平洋250hPa高度・気温・風予想図",
+      "group": "forecast",
+      "period": "24時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fupa252-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa252_00.pdf",
+          "source_sha256": "965ecaf2e12f7d11fe2e08d6fbe996ab1387ca200b2b127ad78f335dc0fec15b",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa252-00-965ecaf2e12f-p1.png",
+              "image_sha256": "374e1b060b0050f9b0beb31f7017770f6e31eca8f78879555eeb279c4c7abee6",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fupa252-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa252_12.pdf",
+          "source_sha256": "7cb341c0e376153bfaec7bf848a1ea18efe8754a7ad503c921eee8f982bdce26",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa252-12-7cb341c0e376-p1.png",
+              "image_sha256": "b2b73422a1c82fdec7f66f7da272c55a8cdd7945dd93c450261dd2394c26b89c",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fupa302",
+      "code": "FUPA302",
+      "name": "アジア太平洋300hPa高度・気温・風予想図",
+      "group": "forecast",
+      "period": "24時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fupa302-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa302_00.pdf",
+          "source_sha256": "252aa8be4946d624865617cd73878fc362db3862036da51494a214ea4147e61b",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa302-00-252aa8be4946-p1.png",
+              "image_sha256": "0fc2a7254153dcd9e97e5e93a0e851c1ead73634cc1f63fafb745b0fac1011bf",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fupa302-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa302_12.pdf",
+          "source_sha256": "c87a82bcffda5fa5242e4bf518e3ac014adfa78450e7ac15ad8ff449afe98ae2",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa302-12-c87a82bcffda-p1.png",
+              "image_sha256": "1bec0a740e6bd7773f0f28693c620a177c61e91f8e60fb8ee9eaa1d7c9073b83",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fupa402",
+      "code": "FUPA402",
+      "name": "アジア太平洋400hPa高度・気温・風予想図",
+      "group": "forecast",
+      "period": "24時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fupa402-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa402_00.pdf",
+          "source_sha256": "e48dfc623a5bb53d6761ef80c3d6a5fd41b3ed292ebc076685020fe4eb22b0eb",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa402-00-e48dfc623a5b-p1.png",
+              "image_sha256": "3b8ed11cd2297510a9690f5efe0bd651d01a300116acdc822b8736e7c651a38f",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fupa402-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa402_12.pdf",
+          "source_sha256": "238a552f8a5a5b37ca367f4daed81522adca19a7c1b6d1eff28392e64c0b9bfb",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa402-12-238a552f8a5a-p1.png",
+              "image_sha256": "df6e010881998a4a140b4f8ef27536b27f76572f07a7ac678cc6c0ee3467e539",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fupa502",
+      "code": "FUPA502",
+      "name": "アジア太平洋500hPa高度・気温・風予想図",
+      "group": "forecast",
+      "period": "24時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fupa502-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa502_00.pdf",
+          "source_sha256": "9aaeebaffc171b557f63d101eb5cd497186b982235e1884fb46777d4ccdae343",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa502-00-9aaeebaffc17-p1.png",
+              "image_sha256": "10a7e4bcb4e42e200411799f9d54f195dab922fad40ce770d763bd3a70b4a035",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fupa502-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fupa502_12.pdf",
+          "source_sha256": "80929f7dd875be2f6a8e367797b1eba0043067295520d383afffdeb0f794f856",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fupa502-12-80929f7dd875-p1.png",
+              "image_sha256": "18937315384a55c8afefa32152b4a3b4bbdcbded058f857983f922f6f71f26d1",
+              "width": 2048,
+              "height": 1760
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxfe5782",
+      "code": "FXFE5782",
+      "name": "極東850hPa気温・風、700hPa上昇流／700hPa湿数、500hPa気温予想図",
+      "group": "forecast",
+      "period": "12・24時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fxfe5782-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe5782_00.pdf",
+          "source_sha256": "c5b6fe7dd1c98251673ccd4a875d7ec829f2c8c8ceb05e7b2e4a77c835c3d654",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe5782-00-c5b6fe7dd1c9-p1.png",
+              "image_sha256": "ed353d640a7e992fa1b3a7bcfb752e5394d51e832a1f11150884018cb7ba08c3",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fxfe5782-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe5782_12.pdf",
+          "source_sha256": "8d389cc4400ad02d55742b56732403c84ad1992be1be66b1d960f19bf127ae16",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe5782-12-8d389cc4400a-p1.png",
+              "image_sha256": "e256e522f4a61639cf60d76af2313aa435698bb8279b5d08c5234f6cc0de5661",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxfe5784",
+      "code": "FXFE5784",
+      "name": "極東850hPa気温・風、700hPa上昇流／700hPa湿数、500hPa気温予想図",
+      "group": "forecast",
+      "period": "36・48時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fxfe5784-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe5784_00.pdf",
+          "source_sha256": "07e7e35a7d4472dd1d78b472bf86f512b964a7595f6ba49e47c6ab02088531a6",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe5784-00-07e7e35a7d44-p1.png",
+              "image_sha256": "37a2c45f2e76dfd33fbd98cbcd4c48672283ed06354d2029308e375a21be2357",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fxfe5784-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe5784_12.pdf",
+          "source_sha256": "7210a5b272944f64b9b032d4e198c2173d0d4904f1310ed7d5f752e630487b39",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe5784-12-7210a5b27294-p1.png",
+              "image_sha256": "d3f979ac094f954c97c27197724aaf62c57ed2183faad23b1ab980852c469027",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxfe577",
+      "code": "FXFE577",
+      "name": "極東850hPa気温・風、700hPa上昇流／700hPa湿数、500hPa気温予想図",
+      "group": "forecast",
+      "period": "72時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fxfe577-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe577_00.pdf",
+          "source_sha256": "fc916a8db7b566f57989558d8d8d3bf644184c29d9b344aaee09852b76e4d27c",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe577-00-fc916a8db7b5-p1.png",
+              "image_sha256": "08eba7c10ec52f65e6e4acfaff307c7e58a756536f79d5915e6cd4fddbcdaecf",
+              "width": 2048,
+              "height": 3101
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fxfe577-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe577_12.pdf",
+          "source_sha256": "81607007dfb7a5111aaa83e2b0f527b2a0c7fa18d6af0e10663dea404dffc17c",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe577-12-81607007dfb7-p1.png",
+              "image_sha256": "2c99f42db78fcbac68ffaa69924a001918c79b7d0d6b1a5a5e2f6d206bd3314b",
+              "width": 2048,
+              "height": 3101
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxfe502",
+      "code": "FXFE502",
+      "name": "極東地上気圧・風・降水量／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "12・24時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fxfe502-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe502_00.pdf",
+          "source_sha256": "1b809e7cd0569faa137a592667c7e39fa3eb59c49e0943f281704078695640e7",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe502-00-1b809e7cd056-p1.png",
+              "image_sha256": "802a93958369c28b8f0ffa43651339637329fda29edf65b753f23a4a11b1de11",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fxfe502-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe502_12.pdf",
+          "source_sha256": "d43efe561ea0795938261b39d31db36c23f1338030d318c15c110ff9713238ee",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe502-12-d43efe561ea0-p1.png",
+              "image_sha256": "fd19d2e2cc18334223ae7b2cd067070f52bb95e3cc087475ffe6b8de1da952b4",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxfe504",
+      "code": "FXFE504",
+      "name": "極東地上気圧・風・降水量／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "36・48時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fxfe504-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe504_00.pdf",
+          "source_sha256": "8e0cc9f21bcd33215ccd93f68269762ffb6f85f20a29fe490b23295382761da3",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe504-00-8e0cc9f21bcd-p1.png",
+              "image_sha256": "d6a70b66ca33af2a8c39b2f4f4352611f9c5ba73b8b8146e03343ce177151ec1",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fxfe504-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe504_12.pdf",
+          "source_sha256": "bd511e03702afdfa811ed59c14e88b5791a50dfc53c5ff718062ec65892bfa11",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe504-12-bd511e03702a-p1.png",
+              "image_sha256": "64bd8e458a1aa1d13cf0323c400a24124eb75c38c2e1219b8b4da79672fc4518",
+              "width": 2048,
+              "height": 1624
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxfe507",
+      "code": "FXFE507",
+      "name": "極東地上気圧・風・降水量／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "72時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fxfe507-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe507_00.pdf",
+          "source_sha256": "6d11e174ac9ec633c6022e5732dce8497b430f89b19072c157fdc8990c7cf7fe",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe507-00-6d11e174ac9e-p1.png",
+              "image_sha256": "2a2965b3350d823cfaf72460c08d32e639ddc1bbbe2087a936ed3c7f3c2eb580",
+              "width": 2048,
+              "height": 3101
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fxfe507-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxfe507_12.pdf",
+          "source_sha256": "bf3544c58c413b4c15457be6ffc22b1135ff8881689868b0cd288c094b50b661",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxfe507-12-bf3544c58c41-p1.png",
+              "image_sha256": "bf6a9d981011264cb0831bc716a34e007404a9c3d00a234efd0f113cfd8eabba",
+              "width": 2048,
+              "height": 3101
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas02-feas502",
+      "code": "FEAS02/FEAS502",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "24時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas502-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas502_12.pdf",
+          "source_sha256": "5a0026a372d8dbb443e375771a6345839a3699b94cac52bf27dfc79407631368",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas502-12-5a0026a372d8-p1.png",
+              "image_sha256": "74a3a556d6842d6052e4e37c75161275d742b2d097aec83f02cb6bb0501918b4",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas04-feas504",
+      "code": "FEAS04/FEAS504",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "48時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas504-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas504_12.pdf",
+          "source_sha256": "32095a1e9c0dc943a320952b490b30b8357589d5fc0f40329785562c895a327d",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas504-12-32095a1e9c0d-p1.png",
+              "image_sha256": "6cb0b97a47498c5dc20687b4dcd71fb97361656d6e6eee7c9f3d43bb7699446e",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas07-feas507",
+      "code": "FEAS07/FEAS507",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "72時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas507-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas507_12.pdf",
+          "source_sha256": "b5fc96e2ee9c37e88fa5f6626a730966d3b60c7a3e84d1fac9bacc82456972e2",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas507-12-b5fc96e2ee9c-p1.png",
+              "image_sha256": "f327ccf387c00f225fc8d0f10e2018c03530b48ba923b024c2998cd1c1191d2c",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas09-feas509",
+      "code": "FEAS09/FEAS509",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "96時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas509-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas509_12.pdf",
+          "source_sha256": "9abfa269d6ad26cd69b1db8e8f6814e8217413c01a439f0aa79cf9a536732497",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas509-12-9abfa269d6ad-p1.png",
+              "image_sha256": "18d2fb973d2c1380c689bd3b9373c3d04ef5d86a6e169764ca1de938d6490d55",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas12-feas512",
+      "code": "FEAS12/FEAS512",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "120時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas512-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas512_12.pdf",
+          "source_sha256": "aa8314823d4c170e06575589c484cba694ee5bff18b2910764504e073406698c",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas512-12-aa8314823d4c-p1.png",
+              "image_sha256": "0ca0b97dc335fd402bd2b0041dde8b59a914fcc36ba0611475c170cee24f5bcf",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas14-feas514",
+      "code": "FEAS14/FEAS514",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "144時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas514-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas514_12.pdf",
+          "source_sha256": "b4ffa5728d602c0fa3424b1f992447c4bccee7158c7edae34eae97d1af83ad3b",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas514-12-b4ffa5728d60-p1.png",
+              "image_sha256": "44871eb43e7930498940f90de75fd2ab06523684bc4c2db079529533b31121fe",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas16-feas516",
+      "code": "FEAS16/FEAS516",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "168時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas516-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas516_12.pdf",
+          "source_sha256": "1dfdd36424d0c59922d0d2f3596e2f6b6c8a079b1ed5558134adabdbb6f089cb",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas516-12-1dfdd36424d0-p1.png",
+              "image_sha256": "9599ca6fae4734935400d8ea22a23e910da946328c183f86c5738da8b0863c3b",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas19-feas519",
+      "code": "FEAS19/FEAS519",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "192時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas519-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas519_12.pdf",
+          "source_sha256": "7cbb50a2df10da96f34e329548eaa29c4ef1b601f05675d0117f93f036a1a525",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas519-12-7cbb50a2df10-p1.png",
+              "image_sha256": "8ddc192a225a30e5af2d2191c957253ca78d8a4d3098c93eba2a831ad5f117b6",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas21-feas521",
+      "code": "FEAS21/FEAS521",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "216時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas521-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas521_12.pdf",
+          "source_sha256": "319577312b277df38e27012018ea67e95c9b28133816c4a3f807e6cc6f696f0b",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas521-12-319577312b27-p1.png",
+              "image_sha256": "b6ca2570147b85ffa72ba0c071d2616de2c97b86e31ffd1ef75eeb3a01c57450",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas24-feas524",
+      "code": "FEAS24/FEAS524",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "240時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas524-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas524_12.pdf",
+          "source_sha256": "87305018ed0a448d53ed7f38c29171c4e187de023b5a0fa69426132e87c1de81",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas524-12-87305018ed0a-p1.png",
+              "image_sha256": "32f69ae453fe034042ae4200b837c4d35c5a908e6c45909121aa67d99cb8b6b4",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "feas26-feas526",
+      "code": "FEAS26/FEAS526",
+      "name": "アジア地上気圧、850hPa気温／500hPa高度・渦度予想図",
+      "group": "forecast",
+      "period": "264時間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "feas526-12",
+          "label": "PDF",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/feas526_12.pdf",
+          "source_sha256": "58c0d784bc239712853296ca7ff975b8948cfb0441eb6d2bdedb9cd7d247cd3c",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/feas526-12-58c0d784bc23-p1.png",
+              "image_sha256": "fb04c0c79ad5778bc72c6b9faa27125348bd742861584ed16649945c88f97dfa",
+              "width": 2048,
+              "height": 2605
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxjp854",
+      "code": "FXJP854",
+      "name": "日本850hPa相当温位・風予想図",
+      "group": "forecast",
+      "period": "12・24・36・48時間",
+      "interval": "12時間毎",
+      "variants": [
+        {
+          "id": "fxjp854-00",
+          "label": "00UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxjp854_00.pdf",
+          "source_sha256": "7178f7d0f25a35ad9e869307c0c58f17a0ba8c7b6255803ade547174d3dcfefb",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxjp854-00-7178f7d0f25a-p1.png",
+              "image_sha256": "b2a4785d573c3f2f66a417bd7006e17d9c4c5a11a6ba2f94301d45008e072cb8",
+              "width": 2048,
+              "height": 2353
+            }
+          ],
+          "features": "manual"
+        },
+        {
+          "id": "fxjp854-12",
+          "label": "12UTC",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxjp854_12.pdf",
+          "source_sha256": "601171e126fe9dff623a7d79bff0236151e616644214a4b221ceb05a7fed32b0",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxjp854-12-601171e126fe-p1.png",
+              "image_sha256": "532adc0a6ffede01865907d07765df58f52028b2516968c6d30c96929d24a91a",
+              "width": 2048,
+              "height": 2353
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fefe19",
+      "code": "FEFE19",
+      "name": "週間地上気圧・降水量予想図（アンサンブル）",
+      "group": "forecast",
+      "period": "1週間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "fefe19",
+          "label": "PNG",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fefe19.png",
+          "source_sha256": "e50a0014127d68aee7574fc987010d203e351ce8cbc71e94330ebab60ea913d9",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fefe19-e50a0014127d-p1.png",
+              "image_sha256": "7e0ced310186df4f21aa248f3005d9ac142222d77fa9bae5bf9a03f315abaaa9",
+              "width": 2068,
+              "height": 2048
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fzcx50",
+      "code": "FZCX50",
+      "name": "週間予報支援図（アンサンブル）",
+      "group": "forecast",
+      "period": "1週間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "fzcx50",
+          "label": "PNG",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fzcx50.png",
+          "source_sha256": "1e6cecda26e292cdbe83bfbfcb7b099c70acf20825502c1e7872c110ba8758d6",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fzcx50-1e6cecda26e2-p1.png",
+              "image_sha256": "b073a838eef4c9ef35ac13308738927d38e63d6ff091d62126f1f6d875f00d84",
+              "width": 2048,
+              "height": 2803
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fxxn519",
+      "code": "FXXN519",
+      "name": "週間予報支援図（GSM）",
+      "group": "forecast",
+      "period": "1週間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "fxxn519",
+          "label": "PNG",
+          "source_url": "https://www.jma.go.jp/bosai/numericmap/data/nwpmap/fxxn519.png",
+          "source_sha256": "4a4f5f2ba50293a0802147ad0adbf3af9fdcb24e78247981ba560bbbfca79fe1",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fxxn519-4a4f5f2ba502-p1.png",
+              "image_sha256": "c808bc8ea061b576960084d1438a4eb7eb44bcc1892e535b337571f2f97307a0",
+              "width": 2048,
+              "height": 2803
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx21",
+      "code": "FCVX21",
+      "name": "2週間気温予報資料1 · 実況解析図（一部予想図）",
+      "group": "forecast",
+      "period": "2週間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "fcvx21-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx21_12.png",
+          "source_sha256": "affdf7d40f452af5cfc6d1ae9a35520980af91b7bfe7384f347e7a3410155432",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx21-12-affdf7d40f45-p1.png",
+              "image_sha256": "62ba667bf1d13a4e651b705b77c5b7a72c080423b38c1d71282277ae6354855e",
+              "width": 2048,
+              "height": 2803
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx22",
+      "code": "FCVX22",
+      "name": "2週間気温予報資料2 · 北半球予想図・高偏差確率",
+      "group": "forecast",
+      "period": "2週間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "fcvx22-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx22_12.png",
+          "source_sha256": "ed86bc62f3d486e255e35eccdf908f316ef978bf0195551ba3520bece5790516",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx22-12-ed86bc62f3d4-p1.png",
+              "image_sha256": "89851c88c8d58a92cb37659fbc65342c343d33f564a6b3ae13a31375ba2aee32",
+              "width": 2048,
+              "height": 2803
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx23",
+      "code": "FCVX23",
+      "name": "2週間気温予報資料3 · 熱帯・中緯度予想図",
+      "group": "forecast",
+      "period": "2週間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "fcvx23-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx23_12.png",
+          "source_sha256": "fdfd274a30bdccdec8cd54651247990807fc24eb3b3dbd3b5f086e2a04e10135",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx23-12-fdfd274a30bd-p1.png",
+              "image_sha256": "f2acf7c3e25e9439e66b07780cde122d5a855d15ccfe084700a9f8e82864d518",
+              "width": 2048,
+              "height": 2803
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx24",
+      "code": "FCVX24",
+      "name": "2週間気温予報資料4 · 各種時系列",
+      "group": "forecast",
+      "period": "2週間",
+      "interval": "24時間毎",
+      "variants": [
+        {
+          "id": "fcvx24-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx24_12.png",
+          "source_sha256": "1d9020ae365b89a30df7ceaf6306f2e385bf176d24cc9e0511d9e6c92414762b",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx24-12-1d9020ae365b-p1.png",
+              "image_sha256": "2ade8856150bdc56968bb0ea0feadd03871cce144ec463166e027a71f583031e",
+              "width": 2048,
+              "height": 2803
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx11",
+      "code": "FCVX11",
+      "name": "1か月予報資料1 · 実況解析図",
+      "group": "forecast",
+      "period": "1か月",
+      "interval": "1週間毎",
+      "variants": [
+        {
+          "id": "fcvx11-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx11_12.png",
+          "source_sha256": "ccbc45bf9a60fd33b8addfb82128c7d58631900f4b0fd5690035b02d3d6da439",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx11-12-ccbc45bf9a60-p1.png",
+              "image_sha256": "85a5bfa7a6802e02ffd00821c1beba9a38f721a761fd21b0548c0083c011ce16",
+              "width": 2803,
+              "height": 2048
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx12",
+      "code": "FCVX12",
+      "name": "1か月予報資料2 · 北半球予想図",
+      "group": "forecast",
+      "period": "1か月",
+      "interval": "1週間毎",
+      "variants": [
+        {
+          "id": "fcvx12-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx12_12.png",
+          "source_sha256": "824e5c932684c0bf58f9e7001e15c2aef396885537e8aeaa30d08feb073e2315",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx12-12-824e5c932684-p1.png",
+              "image_sha256": "7120ba54dd0e622357ab4fd4d9e236255539e3e6df0b54d4f90c0db1f9ac97ce",
+              "width": 2803,
+              "height": 2048
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx13",
+      "code": "FCVX13",
+      "name": "1か月予報資料3 · スプレッド・高偏差確率",
+      "group": "forecast",
+      "period": "1か月",
+      "interval": "1週間毎",
+      "variants": [
+        {
+          "id": "fcvx13-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx13_12.png",
+          "source_sha256": "e71a3755e89ede25965084a3e49da2dcc85ee435bcffffb86bcbce22b77bdaf8",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx13-12-e71a3755e89e-p1.png",
+              "image_sha256": "b6f075195bdcff52e9af2e152d4e0eaf18e5e568590b1ba397859222536efc32",
+              "width": 2803,
+              "height": 2048
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx14",
+      "code": "FCVX14",
+      "name": "1か月予報資料4 · 各種時系列",
+      "group": "forecast",
+      "period": "1か月",
+      "interval": "1週間毎",
+      "variants": [
+        {
+          "id": "fcvx14-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx14_12.png",
+          "source_sha256": "9f550800ab2601b09f85228df1c32804a98d5a05dc2d6028f5fb01bd37067325",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx14-12-9f550800ab26-p1.png",
+              "image_sha256": "836f2e83639a087d38247ac71359a7a761b1b0695a42d7352584e97e00d15618",
+              "width": 2048,
+              "height": 2803
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fcvx15",
+      "code": "FCVX15",
+      "name": "1か月予報資料5 · 熱帯・中緯度予想図",
+      "group": "forecast",
+      "period": "1か月",
+      "interval": "1週間毎",
+      "variants": [
+        {
+          "id": "fcvx15-12",
+          "label": "PNG",
+          "source_url": "https://www.data.jma.go.jp/cpd/data/longfcst/fax/fcvx15_12.png",
+          "source_sha256": "c5a4537ee78afcf39cbc65e3677a65a5eac6d448b747e3f42639f6f33e8bc4b8",
+          "retrieved_at": "2026-10-03T01:57:50.917482+00:00",
+          "pages": [
+            {
+              "number": 1,
+              "image_path": "assets/charts/fcvx15-12-c5a4537ee78a-p1.png",
+              "image_sha256": "3ed2dbd4afb7c4a35997d4821a2089a8debfc139dc5a90a73fd209deeba46564",
+              "width": 2803,
+              "height": 2048
+            }
+          ],
+          "features": "manual"
+        }
+      ]
+    }
+  ]
+}

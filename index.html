@@ -8,14 +8,16 @@
   <meta name="description" content="天気図解析マスター（Weather Chart Analysis Master）。気象庁の専門天気図に風速帯の色塗りとトラフ・強風軸の候補を重ねる解析補助ツール。">
   <meta name="application-name" content="Weather Chart Analysis Master">
   <title>天気図解析マスター | Weather Chart Analysis Master | Bousai Wx Lab</title>
-  <link rel="stylesheet" href="styles.css?v=da93a9d43289d805">
+  <link rel="stylesheet" href="styles.css?v=f019db1eccec4d91">
   <script src="analysis.js?v=1c3ff2624fcf775a" defer></script>
   <script src="geography.js?v=f05742dc0ce1b78a" defer></script>
-  <script src="app.js?v=0d937573c18e04fd" defer></script>
+  <script src="catalog.js?v=9d1519ba693ab9cf" defer></script>
+  <script src="app.js?v=97ac21afcfcc42a5" defer></script>
 </head>
 <body>
   <header class="topbar">
     <h1 title="Weather Chart Analysis Master">天気図解析マスター</h1><span class="edition">解析試作版</span>
+    <button type="button" id="choose-chart" aria-label="天気図を選ぶ" aria-controls="control-panel">天気図 ▾</button>
     <details id="links" class="header-links"><summary>リンク</summary><nav aria-label="関連リンク">
       <a href="https://bousai-wx-lab.com/" target="_blank" rel="noopener noreferrer">Bousai Wx Lab ブログ</a>
       <a href="https://x.com/bousai_wx_lab" target="_blank" rel="noopener noreferrer" aria-label="Bousai Wx LabのX">X</a>
@@ -28,8 +30,19 @@
     <aside id="control-panel" aria-label="天気図の操作パネル">
     <div class="panel-heading"><strong>操作</strong><button type="button" id="panel-close" aria-label="操作パネルを左に折りたたむ" aria-controls="control-panel" aria-expanded="true">‹</button></div>
     <div class="panel-content">
-    <p id="chart-info">AUPQ35 · 300 / 500hPa · 図を読み込み中</p>
-    <section class="panel-section" aria-labelledby="geography-heading">
+    <section class="chart-selection" aria-labelledby="chart-selection-heading">
+      <h2 id="chart-selection-heading">天気図を選ぶ</h2>
+      <label for="chart-select">図の種類 <span id="chart-count"></span></label>
+      <select id="chart-select" disabled><option>一覧を読み込み中</option></select>
+      <label for="source-select">基準時刻・資料</label>
+      <select id="source-select" disabled><option>読み込み中</option></select>
+      <div id="page-selection" hidden><label for="page-select">ページ</label><select id="page-select"></select></div>
+      <p id="chart-name"></p>
+      <p id="chart-info">AUPQ35 · 300 / 500hPa · 図を読み込み中</p>
+      <p id="chart-note" class="gesture-note"></p>
+      <button type="button" id="chart-retry" hidden>図を再読み込み</button>
+    </section>
+    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="geography-heading">
       <h2 id="geography-heading">陸と海 · 10種類を比較</h2>
       <div id="geography-patterns" class="geography-patterns" role="group" aria-label="陸海の塗り方"></div>
       <div class="geography-settings"><button type="button" id="geography-toggle" aria-pressed="false" disabled>陸海を外す</button><label for="geography-opacity">濃さ <output id="geography-opacity-value">40%</output></label></div>
@@ -42,18 +55,18 @@
         <p class="gesture-note"><a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener noreferrer">NOAA ETOPO 2022</a> · 1分格子（南北約1.9km）<br>山脈や高原を見る広域表示です。</p>
       </div>
     </section>
-    <section class="panel-section" aria-labelledby="symbol-heading">
+    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="symbol-heading">
       <h2 id="symbol-heading">原図の文字を色分け</h2>
       <button type="button" id="symbol-color" aria-pressed="false" disabled>L・H・C・Wを色分け</button>
       <p class="symbol-legend"><span class="symbol-l">L：赤</span><span class="symbol-h">H：青</span><span class="symbol-c">C：水色</span><span class="symbol-w">W：オレンジ</span></p>
     </section>
-    <section class="panel-section" aria-labelledby="wind-heading">
+    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="wind-heading">
       <h2 id="wind-heading">風速の色塗り · 上段300hPa</h2>
       <button type="button" id="wind" class="wind-button" aria-pressed="false" disabled>風速を色塗り</button>
       <div id="wind-legend" class="wind-legend" aria-label="風速の色分け、単位はノット"></div>
       <p class="gesture-note">等風速線に沿って20kt刻みで色分け。<br>40kt未満は着色しません。</p>
     </section>
-    <section class="panel-section" aria-labelledby="analysis-heading">
+    <section class="panel-section" data-requires="reviewed-aupq35" aria-labelledby="analysis-heading">
       <h2 id="analysis-heading">解析候補</h2>
       <div class="group analysis-buttons">
         <button type="button" id="analyze" class="save" disabled>標準の解析案を表示</button>
@@ -108,7 +121,7 @@
     <button type="button" id="panel-open" class="panel-open" aria-label="操作パネルを開く" aria-controls="control-panel" aria-expanded="false" hidden>› 操作</button>
     <span id="status" role="status" aria-live="polite">読み込み中</span>
     <div id="viewport" tabindex="0" aria-label="天気図。ホイールで拡大・縮小、移動モードでドラッグして移動できます。">
-      <div id="paper" data-ready="false" data-strokes="0">
+      <div id="paper" data-ready="false" data-strokes="0" hidden>
         <img id="chart" src="assets/aupq35.png" alt="気象庁AUPQ35。2026年10月2日00UTCの300hPaと500hPaの高度・気温・風の実況図。上段は300hPa、下段は500hPa。" draggable="false">
         <canvas id="geography-layer" aria-label="陸海の模様・標高・地形の陰影・参考衛星画像"></canvas>
         <canvas id="wind-layer" aria-label="300hPa等風速線に沿った緑色の塗り分け"></canvas>
@@ -122,7 +135,7 @@
   </main>
   <footer>
     <span lang="en">Weather Chart Analysis Master</span>
-    <span>出典：<a href="https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq35_00.pdf" target="_blank" rel="noopener noreferrer">気象庁 AUPQ35 原図PDF</a>（画像化）</span>
+    <span>出典：<a id="source-link" href="https://www.jma.go.jp/bosai/numericmap/data/nwpmap/aupq35_00.pdf" target="_blank" rel="noopener noreferrer">気象庁 AUPQ35 原図PDF</a>（画像化）</span>
     <span>解析案は本ツールの推定で、気象庁の解析ではありません。</span>
   </footer>
   <dialog id="clear-dialog"><form method="dialog"><p>手描きの色塗りをすべて消しますか？</p><p class="dialog-note">原図と解析案は残ります。取り消しで戻せます。</p><div><button value="cancel">戻る</button><button value="clear" class="danger">手描きを消す</button></div></form></dialog>

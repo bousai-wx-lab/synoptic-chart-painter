@@ -45,7 +45,9 @@ jobs:
         run: |
           node --check app.js
           node --check analysis.js
+          node --check catalog.js
           node scripts/test_analysis.js
+          node scripts/test_catalog.js
 
   build-pages-artifact:
     needs: verify-public-surface

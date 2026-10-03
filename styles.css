@@ -5,6 +5,8 @@ body { margin: 0; height: 100dvh; display: flex; flex-direction: column; overflo
 .topbar { height: 44px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px; color: #fff; background: #164b68; border-bottom: 2px solid #5cb2bf; position: relative; z-index: 5; }
 h1 { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; letter-spacing: .02em; }
 .edition { font-size: 10px; padding: 2px 5px; border: 1px solid #83a8bb; border-radius: 3px; white-space: nowrap; }
+#choose-chart { font-size: 12px; min-height: 30px; white-space: nowrap; padding: 3px 8px; color: #fff; background: transparent; border-color: #83a8bb; }
+#choose-chart:hover { background: #ffffff18; }
 .header-links { margin-left: auto; }
 .header-links > summary { display: none; }
 .header-links nav { display: flex; align-items: center; gap: 14px; }
@@ -18,6 +20,13 @@ h1 { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; letter-s
 #panel-close { width: 32px; padding: 0; font-size: 24px; }
 .panel-content { overflow-y: auto; min-height: 0; padding: 10px 12px; }
 #chart-info { margin: 0 0 12px; font-size: 11px; line-height: 1.6; color: #58677a; }
+.chart-selection { padding: 2px 0 12px; }
+.chart-selection label { display: block; font-size: 11px; margin: 8px 0 4px; }
+.chart-selection select { display: block; width: 100%; min-width: 0; margin: 0; font-size: 11px; }
+#chart-count { color: #68778b; }
+#chart-name { font-size: 12px; font-weight: 600; line-height: 1.6; margin: 10px 0 5px; overflow-wrap: anywhere; }
+.chart-selection #chart-info { margin: 0; }
+#chart-retry { margin-top: 8px; }
 .panel-section { border-top: 1px solid #dce3eb; padding: 12px 0; }
 .geography-patterns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
 .geography-patterns button { display: flex; flex-direction: column; align-items: stretch; gap: 3px; padding: 4px; font-size: 10px; text-align: left; }
