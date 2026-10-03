@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "source_sha256": "39db0356cd868469fe5f79dd4494cd2dae67a3f093572175aeb8dbbc1fbd40d4",
+  "image_sha256": "d7c3a4f934d3d9c20e53d472db420b743542714b10c68e985b3ccda4944db6d9",
+  "observation_time": "2026-10-02T00:00:00Z",
+  "width": 2048,
+  "height": 2993,
+  "source": {
+    "dataset": "NOAA ETOPO 2022 v1 60 arc-second bed elevation",
+    "page": "https://www.ncei.noaa.gov/products/etopo-global-relief-model",
+    "guide": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO2022/docs/1.2%20ETOPO%202022%20User%20Guide.pdf",
+    "credit": "NOAA National Centers for Environmental Information",
+    "native_resolution_arc_seconds": 60,
+    "vertical_datum": "EGM2008 geoid",
+    "units": "metres",
+    "subsets": [
+      {
+        "url": "https://www.ngdc.noaa.gov/thredds/dodsC/global/ETOPO2022/60s/60s_bed_elev_netcdf/ETOPO_2022_v1_60s_N90W180_bed.nc.dods?z%5B5278:1:9422%5D%5B14938:1:21599%5D",
+        "sha256": "bf1fa48e0a666c41939095ae998eb07c64f1a4a7a9f8c902d88c596542185236",
+        "rows": 4145,
+        "columns": 6662
+      },
+      {
+        "url": "https://www.ngdc.noaa.gov/thredds/dodsC/global/ETOPO2022/60s/60s_bed_elev_netcdf/ETOPO_2022_v1_60s_N90W180_bed.nc.dods?z%5B5278:1:9422%5D%5B0:1:782%5D",
+        "sha256": "6acc713d68fa3c0532d2102148f86b24ea7f9a67302a07c990ec156eceb5c387",
+        "rows": 4145,
+        "columns": 783
+      }
+    ],
+    "retrieved_on": "2026-10-03"
+  },
+  "image": {
+    "path": "assets/elevation-chart.png",
+    "width": 2048,
+    "height": 3966,
+    "tile_height": 1322,
+    "top_y": 121.3,
+    "sha256": "79a79ecbb26c67ee11bbd65f51ed245b7b683a6327ffd59470353f64ef07575c",
+    "bytes": 2831879
+  },
+  "styles": [
+    {
+      "id": "elevation",
+      "row": 0
+    },
+    {
+      "id": "relief",
+      "row": 1
+    },
+    {
+      "id": "elevation-relief",
+      "row": 2
+    }
+  ],
+  "legend": {
+    "boundaries_m": [
+      200,
+      500,
+      1000,
+      2000,
+      4000,
+      6000
+    ],
+    "colors": [
+      "#f5eee0",
+      "#ead9bb",
+      "#dbc097",
+      "#c7a679",
+      "#ab855e",
+      "#8f684d",
+      "#76523c"
+    ],
+    "labels": [
+      "200m\u672a\u6e80",
+      "200\u2013500m",
+      "500\u20131,000m",
+      "1,000\u20132,000m",
+      "2,000\u20134,000m",
+      "4,000\u20136,000m",
+      "6,000m\u4ee5\u4e0a"
+    ]
+  },
+  "processing": {
+    "height": "Bilinear interpolation of native 60 arc-second heights to the independently calibrated source-chart polar projection",
+    "relief": "Physical east/north slopes, northwest 45-degree lighting, threefold vertical exaggeration for broad terrain context",
+    "water": "Original PDF even-odd land rings clip all three modes; ocean and inland-water bathymetry is not shown",
+    "nodata": "Reject missing/nonfinite native data; negative land elevations retain the lowest class",
+    "scope": "Broad terrain context, not point elevation measurements or fine valley topography"
+  },
+  "projection": {
+    "type": "north-polar-stereographic",
+    "central_longitude": 140,
+    "pole": [
+      1376.57,
+      -363.04
+    ],
+    "radius_scale_px": 2212.366423,
+    "maximum_graticule_fit_error_px": 0.4586
+  },
+  "reviewed_points": [
+    {
+      "place": "Shanghai",
+      "longitude": 121.47,
+      "latitude": 31.23,
+      "elevation_m": 2.41,
+      "expected_range_m": [
+        -20,
+        150
+      ]
+    },
+    {
+      "place": "Tokyo",
+      "longitude": 139.76,
+      "latitude": 35.68,
+      "elevation_m": 15.31,
+      "expected_range_m": [
+        -20,
+        200
+      ]
+    },
+    {
+      "place": "Tibet",
+      "longitude": 90,
+      "latitude": 33,
+      "elevation_m": 5055.55,
+      "expected_range_m": [
+        3500,
+        6000
+      ]
+    },
+    {
+      "place": "Himalaya",
+      "longitude": 86.925,
+      "latitude": 27.988,
+      "elevation_m": 8051.97,
+      "expected_range_m": [
+        5000,
+        9000
+      ]
+    },
+    {
+      "place": "Pacific",
+      "longitude": 160,
+      "latitude": 30,
+      "elevation_m": -5728.48,
+      "expected_range_m": [
+        -10000,
+        -1000
+      ]
+    }
+  ]
+}

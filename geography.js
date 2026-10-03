@@ -2,11 +2,11 @@
 const ChartGeography = (() => {
   const patterns = Object.freeze([
     { id: "dots", label: "細かなドット", land: "dots" },
-    { id: "large-dots", label: "大きなドット", land: "large-dots" },
+    { id: "elevation", label: "標高で色分け", terrain: 0 },
     { id: "diagonal", label: "斜線", land: "diagonal" },
-    { id: "reverse", label: "逆向きの斜線", land: "reverse" },
+    { id: "relief", label: "地形の陰影", terrain: 1 },
     { id: "cross", label: "クロスハッチ", land: "cross" },
-    { id: "horizontal", label: "横線", land: "horizontal" },
+    { id: "elevation-relief", label: "標高＋陰影", terrain: 2 },
     { id: "waves", label: "陸は点・海は波", land: "dots", sea: "waves" },
     { id: "paper", label: "紙の質感", land: "paper", sea: "sea-paper" },
     { id: "sand", label: "砂と水面", land: "sand", sea: "ripples" },
@@ -36,17 +36,16 @@ const ChartGeography = (() => {
     if (tiles.has(kind)) return tiles.get(kind);
     const canvas = document.createElement("canvas");
     const texture = ["paper", "sea-paper", "sand", "ripples"].includes(kind);
-    const size = texture ? 192 : kind === "large-dots" ? 24 : 16;
+    const size = texture ? 192 : 16;
     canvas.width = canvas.height = size;
     const c = canvas.getContext("2d");
     c.strokeStyle = c.fillStyle = "#8b6f52"; c.lineWidth = 2;
-    if (kind === "dots" || kind === "large-dots") {
-      c.beginPath(); c.arc(size / 2, size / 2, kind === "dots" ? 2.5 : 4.5, 0, Math.PI * 2); c.fill();
-    } else if (["diagonal", "reverse", "cross", "horizontal"].includes(kind)) {
+    if (kind === "dots") {
+      c.beginPath(); c.arc(size / 2, size / 2, 2.5, 0, Math.PI * 2); c.fill();
+    } else if (["diagonal", "cross"].includes(kind)) {
       c.beginPath();
-      if (kind === "horizontal") { c.moveTo(0, 8); c.lineTo(16, 8); }
       if (kind === "diagonal" || kind === "cross") for (const x of [-16, 0, 16]) { c.moveTo(x, 16); c.lineTo(x + 16, 0); }
-      if (kind === "reverse" || kind === "cross") for (const x of [-16, 0, 16]) { c.moveTo(x, 0); c.lineTo(x + 16, 16); }
+      if (kind === "cross") for (const x of [-16, 0, 16]) { c.moveTo(x, 0); c.lineTo(x + 16, 16); }
       c.stroke();
     } else if (kind === "waves") {
       c.strokeStyle = "#6190ad"; c.beginPath(); c.moveTo(0, 8); c.bezierCurveTo(4, 2, 4, 2, 8, 8); c.bezierCurveTo(12, 14, 12, 14, 16, 8); c.stroke();
@@ -79,16 +78,21 @@ const ChartGeography = (() => {
       ctx.closePath();
     }
   }
-  function draw(ctx, data, id, opacity, satellite) {
+  function draw(ctx, data, id, opacity, satellite, terrainImage) {
     const style = patterns.find(p => p.id === id);
     if (!style || !Number.isFinite(opacity) || opacity < 0 || opacity > 1) throw Error("Invalid geography style");
     if (!opacity) return;
     if (style.satellite && (!satellite || satellite.naturalWidth !== 2048 || satellite.naturalHeight !== 1322)) throw Error("Satellite image unavailable");
+    if (style.terrain !== undefined && (!terrainImage || terrainImage.naturalWidth !== 2048 || terrainImage.naturalHeight !== 3966)) throw Error("Elevation image unavailable");
     ctx.save(); ctx.globalAlpha = opacity;
     for (const panel of data.panels) {
       const [left, top, right, bottom] = panel.bounds;
       ctx.save(); ctx.beginPath(); ctx.rect(left, top, right - left, bottom - top); ctx.clip();
       if (style.satellite) ctx.drawImage(satellite, 0, data.satellite.top_y + panel.offset_y);
+      else if (style.terrain !== undefined) {
+        ctx.beginPath(); ringPath(ctx, data.rings, panel.offset_y); ctx.clip("evenodd");
+        ctx.drawImage(terrainImage, 0, style.terrain * 1322, 2048, 1322, 0, data.satellite.top_y + panel.offset_y, 2048, 1322);
+      }
       else for (const region of ["sea", "land"]) {
         if (!style[region]) continue;
         ctx.save(); ctx.beginPath();
@@ -100,11 +104,12 @@ const ChartGeography = (() => {
     }
     ctx.restore();
   }
-  function preview(canvas, id, satellite) {
+  function preview(canvas, id, satellite, terrainImage) {
     const c = canvas.getContext("2d"), style = patterns.find(p => p.id === id);
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = "white"; c.fillRect(0, 0, canvas.width, canvas.height);
     if (style.satellite) { if (satellite) c.drawImage(satellite, 480, 230, 1000, 700, 0, 0, canvas.width, canvas.height); return; }
+    if (style.terrain !== undefined) { if (terrainImage) c.drawImage(terrainImage, 120, style.terrain * 1322 + 220, 1050, 700, 0, 0, canvas.width, canvas.height); return; }
     c.scale(0.6, 0.6);
     const w = canvas.width / 0.6, h = canvas.height / 0.6;
     if (style.sea) { c.fillStyle = c.createPattern(tile(style.sea), "repeat"); c.fillRect(0, 0, w, h); }
@@ -112,6 +117,19 @@ const ChartGeography = (() => {
     c.fillStyle = "white"; c.fill(); c.fillStyle = c.createPattern(tile(style.land), "repeat"); c.fill(); c.strokeStyle = "#64748b"; c.lineWidth = 1; c.stroke();
     c.resetTransform();
   }
-  return { patterns, validate, draw, preview };
+  function validateElevation(data, chart) {
+    if (!data || data.schema_version !== 1) throw Error("Invalid elevation schema");
+    for (const key of ["source_sha256", "image_sha256", "observation_time", "width", "height"])
+      if (data[key] !== chart[key]) throw Error("Elevation source mismatch");
+    const image = data.image;
+    if (!image || image.path !== "assets/elevation-chart.png" || image.width !== 2048 || image.height !== 3966 || image.tile_height !== 1322 || image.top_y !== 121.3 || !/^[a-f0-9]{64}$/.test(image.sha256)) throw Error("Invalid elevation image");
+    if (data.source?.units !== "metres" || data.source?.vertical_datum !== "EGM2008 geoid" || data.source?.native_resolution_arc_seconds !== 60) throw Error("Invalid elevation units");
+    const boundaries = [200, 500, 1000, 2000, 4000, 6000];
+    const colors = ["#f5eee0", "#ead9bb", "#dbc097", "#c7a679", "#ab855e", "#8f684d", "#76523c"];
+    if (!data.legend || JSON.stringify(data.legend.boundaries_m) !== JSON.stringify(boundaries) || JSON.stringify(data.legend.colors) !== JSON.stringify(colors) || !Array.isArray(data.legend.labels) || data.legend.labels.length !== 7 || !data.legend.labels.every(s => typeof s === "string" && s.length <= 20)) throw Error("Invalid elevation legend");
+    if (JSON.stringify(data.styles) !== JSON.stringify([{id:"elevation",row:0},{id:"relief",row:1},{id:"elevation-relief",row:2}])) throw Error("Invalid elevation bands");
+    return data;
+  }
+  return { patterns, validate, validateElevation, draw, preview };
 })();
 if (typeof module !== "undefined") module.exports = ChartGeography;

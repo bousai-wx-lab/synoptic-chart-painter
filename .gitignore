@@ -7,6 +7,8 @@
 !analysis.js
 !geography.js
 !land-sea.json
+!elevation.json
+!assets/elevation-chart.png
 !assets/blue-marble-chart.png
 !contours.json
 !wind-bands.json

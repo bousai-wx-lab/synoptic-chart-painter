@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool_slug": "weather-chart-analysis-master",
-  "generated_at": "2026-10-03T00:30:54.032115+00:00",
+  "generated_at": "2026-10-03T01:05:56.714465+00:00",
   "files": [
     {
       "path": ".github/workflows/privacy-gate.yml",
@@ -11,8 +11,8 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 524,
-      "sha256": "a17f997811e5ececcee10a7e33de82220ffb8acd4bdfc2f846ae37254ea70e25",
+      "bytes": 568,
+      "sha256": "abf94e62eabe21c43021966a51b792172f76c537d9e184bc5f395010cbe2e931",
       "mime_type": "application/octet-stream"
     },
     {
@@ -29,8 +29,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 12725,
-      "sha256": "c6bc684f761c5846453b95f9cc549f21ff5795812abd8a158058da7c25d6cecc",
+      "bytes": 13831,
+      "sha256": "4a657f9b87c5471788a2571f8c94831b4fb338ee36d3fe422baf66980c52f502",
       "mime_type": "text/markdown"
     },
     {
@@ -47,8 +47,8 @@
     },
     {
       "path": "app.js",
-      "bytes": 26218,
-      "sha256": "ab78df83669adc2b5ed10a6a10b12892d51581039cedbc5bb9507063a87ce01f",
+      "bytes": 29749,
+      "sha256": "0d937573c18e04fddc283063c678048af37b82aaa6e36bee8d73078ae9e000c9",
       "mime_type": "text/javascript"
     },
     {
@@ -61,6 +61,12 @@
       "path": "assets/blue-marble-chart.png",
       "bytes": 1880574,
       "sha256": "e460215a3634f3468aa6326f273c5cd4e34e3c0312a831b9e8b8be9ee9177fb7",
+      "mime_type": "image/png"
+    },
+    {
+      "path": "assets/elevation-chart.png",
+      "bytes": 2831879,
+      "sha256": "79a79ecbb26c67ee11bbd65f51ed245b7b683a6327ffd59470353f64ef07575c",
       "mime_type": "image/png"
     },
     {
@@ -82,15 +88,21 @@
       "mime_type": "application/json"
     },
     {
+      "path": "elevation.json",
+      "bytes": 4074,
+      "sha256": "0d291e6b6fdc094ec093e863c8daeb0ad87ae362cc444fb3936458fa72d7e826",
+      "mime_type": "application/json"
+    },
+    {
       "path": "geography.js",
-      "bytes": 7098,
-      "sha256": "1782503e58c76dc0c9f25609867ec6bd1c49d6f085830b48d1fbe8cdc2252e4d",
+      "bytes": 9026,
+      "sha256": "f05742dc0ce1b78aae89a2140cb140676d0c6797bee036be16967681cfa7c8fd",
       "mime_type": "text/javascript"
     },
     {
       "path": "index.html",
-      "bytes": 10788,
-      "sha256": "2d1bf6f322747919ff8cf6c4d9f6fcb756921ab4f5c8196cf6c6342b790f66dd",
+      "bytes": 11455,
+      "sha256": "fb6bebfe1abadd498eff1d90d92dd22603be0e8245e7c5b8491df4ba482a77db",
       "mime_type": "text/html"
     },
     {
@@ -107,8 +119,8 @@
     },
     {
       "path": "release-allowlist.json",
-      "bytes": 2068,
-      "sha256": "62058f69e632d6145fb5389b9a59d29a9a96536faef327df385677b6cd0d5ad2",
+      "bytes": 2458,
+      "sha256": "cdedcbdfdc250e44c07b8b93d7a09c03cf3d891b449a8c0f05d8aa17eaac7e92",
       "mime_type": "application/json"
     },
     {
@@ -125,8 +137,8 @@
     },
     {
       "path": "scripts/test_analysis.js",
-      "bytes": 12613,
-      "sha256": "9eaff8e168a41bfcf10275d6377fabcf7ca8faf6f6234abcdf90787e3ee7f62a",
+      "bytes": 14023,
+      "sha256": "0e0221349f199965f60d0b4e34891b620867040460d90bd9302cba9187606db7",
       "mime_type": "text/javascript"
     },
     {
@@ -149,8 +161,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 9428,
-      "sha256": "7191fe97c9a8ccc6ef3ad7fcb9c97994e7acb0c61875413ad6b32cd5f29535dc",
+      "bytes": 9808,
+      "sha256": "da93a9d43289d805790883a35267246b0c48fbf3a9d15dcfe96b3c89f8da09ee",
       "mime_type": "text/css"
     },
     {

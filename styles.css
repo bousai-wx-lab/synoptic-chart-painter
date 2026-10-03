@@ -25,6 +25,10 @@ h1 { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; letter-s
 .geography-settings { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 6px; }
 .geography-settings label { font-size: 11px; white-space: nowrap; }
 #geography-opacity { width: 100%; margin: 6px 0 0; accent-color: #164b68; }
+.elevation-heading { margin: 10px 0 6px; font-size: 11px; color: #164b68; }
+.elevation-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 7px; font-size: 10px; }
+.elevation-legend span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.elevation-legend i { display: inline-block; width: 16px; height: 11px; border: 1px solid #76625255; }
 .symbol-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; margin: 8px 0 0; }
 .symbol-l { color: #dc2626; } .symbol-h { color: #2563eb; } .symbol-c { color: #38bdf8; } .symbol-w { color: #f97316; }
 #symbol-color { width: 100%; }

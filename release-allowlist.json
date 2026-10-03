@@ -12,9 +12,11 @@
     "app.js",
     "assets/aupq35.png",
     "assets/blue-marble-chart.png",
+    "assets/elevation-chart.png",
     "center-symbols.json",
     "chart.json",
     "contours.json",
+    "elevation.json",
     "geography.js",
     "index.html",
     "jet-guides.json",
@@ -37,7 +39,9 @@
     "bousai-wx-lab.com",
     "x.com",
     "science.nasa.gov",
-    "assets.science.nasa.gov"
+    "assets.science.nasa.gov",
+    "www.ncei.noaa.gov",
+    "www.ngdc.noaa.gov"
   ],
   "allowed_browser_api_fragments": {},
   "allowed_binary_assets": [
@@ -58,6 +62,16 @@
       "mime_type": "image/png",
       "width": 2048,
       "height": 1322,
+      "bit_depth": 8,
+      "color_type": 2
+    },
+    {
+      "path": "assets/elevation-chart.png",
+      "bytes": 2831879,
+      "sha256": "79a79ecbb26c67ee11bbd65f51ed245b7b683a6327ffd59470353f64ef07575c",
+      "mime_type": "image/png",
+      "width": 2048,
+      "height": 3966,
       "bit_depth": 8,
       "color_type": 2
     }

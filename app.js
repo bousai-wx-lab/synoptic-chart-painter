@@ -17,6 +17,9 @@ const geographyLayer = byId("geography-layer");
 const geographyContext = geographyLayer.getContext("2d");
 let geography = null;
 let satelliteImage = null;
+let elevationData = null;
+let terrainImage = null;
+let terrainError = "";
 let geographyStyle = "dots";
 let geographyOpacity = 0.4;
 let showGeography = true;
@@ -69,10 +72,17 @@ function controls() {
   byId("geography-toggle").textContent = showGeography && geography ? "陸海を外す" : "陸海を表示";
   byId("geography-opacity-value").textContent = `${Math.round(geographyOpacity * 100)}%`;
   for (const button of byId("geography-patterns").querySelectorAll("button")) {
-    button.disabled = !ready || !geography || (button.dataset.pattern === "satellite" && !satelliteImage);
+    const style = ChartGeography.patterns.find(p => p.id === button.dataset.pattern);
+    button.disabled = !ready || !geography || (style.satellite && !satelliteImage) || (style.terrain !== undefined && !terrainImage);
     button.setAttribute("aria-pressed", String(Boolean(showGeography && geography && button.dataset.pattern === geographyStyle)));
   }
   byId("satellite-note").hidden = !showGeography || geographyStyle !== "satellite";
+  const selectedStyle = ChartGeography.patterns.find(p => p.id === geographyStyle);
+  const isTerrain = showGeography && selectedStyle.terrain !== undefined && terrainImage;
+  byId("elevation-note").hidden = !isTerrain;
+  byId("elevation-legend").hidden = geographyStyle === "relief";
+  byId("relief-note").hidden = !isTerrain || geographyStyle === "elevation";
+  for (const swatch of byId("elevation-legend").querySelectorAll("i")) swatch.style.opacity = String(geographyOpacity);
   byId("trough").setAttribute("aria-pressed", String(showTrough));
   byId("jet").setAttribute("aria-pressed", String(showJet));
   byId("zoom-in").disabled = !ready || (!fitView && zoomFactor >= 4);
@@ -84,12 +94,12 @@ function controls() {
   paper.dataset.symbols = String(Boolean(showSymbols && symbols));
   paper.dataset.geography = showGeography && geography ? geographyStyle : "off";
   const layers = [showGeography && geography ? `陸海：${ChartGeography.patterns.find(p => p.id === geographyStyle).label} ${Math.round(geographyOpacity * 100)}%` : "", showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showWind ? "300hPa 風速を色分け中" : "", showTrough ? `トラフ候補${candidates.troughs.length}本` : "", showJet ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
-  byId("status").textContent = [geographyError, symbolError, analysisError].filter(Boolean).join("・") || (layers.length ? layers.join("・") : "原図を表示中");
+  byId("status").textContent = [geographyError, terrainError, symbolError, analysisError].filter(Boolean).join("・") || (layers.length ? layers.join("・") : "原図を表示中");
 }
 
 function drawGeography() {
   geographyContext.clearRect(0, 0, geographyLayer.width, geographyLayer.height);
-  if (ready && showGeography && geography) ChartGeography.draw(geographyContext, geography, geographyStyle, geographyOpacity, satelliteImage);
+  if (ready && showGeography && geography) ChartGeography.draw(geographyContext, geography, geographyStyle, geographyOpacity, satelliteImage, terrainImage);
 }
 for (const [index, style] of ChartGeography.patterns.entries()) {
   const button = document.createElement("button"), preview = document.createElement("canvas"), label = document.createElement("span");
@@ -350,7 +360,9 @@ new ResizeObserver(() => fit()).observe(viewport);
 
 byId("save").addEventListener("click", () => {
   const output = document.createElement("canvas");
-  output.width = ink.width; output.height = ink.height + 260;
+  const selectedGeography = ChartGeography.patterns.find(p => p.id === geographyStyle);
+  const exportTerrain = Boolean(showGeography && geography && terrainImage && selectedGeography.terrain !== undefined);
+  output.width = ink.width; output.height = ink.height + (exportTerrain ? 340 : 260);
   const ctx = output.getContext("2d");
   ctx.fillStyle = "white"; ctx.fillRect(0, 0, output.width, output.height);
   ctx.drawImage(chart, 0, 0);
@@ -375,6 +387,15 @@ byId("save").addEventListener("click", () => {
   ctx.fillText("気象庁の公式の着色・解析ではありません。天気図解析マスター · Weather Chart Analysis Master · Bousai Wx Lab", 26, ink.height + 193);
   const geoLabel = showGeography && geography ? `${ChartGeography.patterns.find(p => p.id === geographyStyle).label}（濃さ${Math.round(geographyOpacity * 100)}%）` : "表示なし";
   ctx.fillText(`陸海：${geoLabel}${showGeography && geographyStyle === "satellite" ? " / NASA Earth Observatory・Reto Stoeckli / 2004年10月の地表画像（投影変換）" : ""}`, 26, ink.height + 231);
+  if (exportTerrain) {
+    ctx.fillText("地表標高：NOAA ETOPO 2022 / EGM2008基準 / 1分格子（南北約1.9km）/ 投影変換した広域表示", 26, ink.height + 268);
+    if (geographyStyle === "relief") ctx.fillText("陰影の明暗は斜面の向き・傾き。北西からの照明で山の凹凸を強調しています。", 26, ink.height + 307);
+    else for (const [index, label] of elevationData.legend.labels.entries()) {
+      const x = 26 + index * 275;
+      ctx.save(); ctx.globalAlpha = geographyOpacity; ctx.fillStyle = elevationData.legend.colors[index]; ctx.fillRect(x, ink.height + 287, 30, 24); ctx.restore();
+      ctx.fillStyle = "#243247"; ctx.fillText(label, x + 39, ink.height + 307);
+    }
+  }
   output.toBlob((blob) => {
     if (!blob) { byId("status").textContent = "保存できませんでした"; return; }
     if (exportUrl) URL.revokeObjectURL(exportUrl);
@@ -448,6 +469,28 @@ async function loadGeography() {
     satelliteImage = image;
     ChartGeography.preview(byId("geography-patterns").querySelector('[data-pattern="satellite"] canvas'), "satellite", image);
     controls();
-  } catch (_) { byId("geography-note").textContent = "衛星画像を確認できません。ほかの9種類は使えます。"; controls(); }
+  } catch (_) { byId("geography-note").textContent = "衛星画像を確認できません。ほかの塗り方は使えます。"; controls(); }
 }
 loadGeography().catch(() => { geography = null; geographyError = "陸海の資料を確認できません。原図やほかの色分けは使えます。"; drawGeography(); controls(); });
+async function loadElevation() {
+  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("elevation.json", { cache: "no-store" })]);
+  if (responses.some(r => !r.ok)) throw Error("Elevation unavailable");
+  const [data, terrain] = await Promise.all(responses.map(r => r.json()));
+  const checked = ChartGeography.validateElevation(terrain, data);
+  const response = await fetch(checked.image.path, { cache: "no-store" });
+  if (!response.ok) throw Error("Elevation image unavailable");
+  const bytes = await response.arrayBuffer();
+  const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)), b => b.toString(16).padStart(2, "0")).join("");
+  if (hash !== checked.image.sha256) throw Error("Elevation image mismatch");
+  const url = URL.createObjectURL(new Blob([bytes], { type: "image/png" })), image = new Image();
+  try { image.src = url; await image.decode(); } finally { URL.revokeObjectURL(url); }
+  if (image.naturalWidth !== checked.image.width || image.naturalHeight !== checked.image.height) throw Error("Elevation image dimensions mismatch");
+  elevationData = checked; terrainImage = image;
+  for (const style of ChartGeography.patterns.filter(p => p.terrain !== undefined)) ChartGeography.preview(byId("geography-patterns").querySelector(`[data-pattern="${style.id}"] canvas`), style.id, null, image);
+  for (const [index, label] of checked.legend.labels.entries()) {
+    const entry = document.createElement("span"), swatch = document.createElement("i");
+    swatch.style.backgroundColor = checked.legend.colors[index]; swatch.setAttribute("aria-hidden", "true"); entry.append(swatch, label); byId("elevation-legend").append(entry);
+  }
+  controls();
+}
+loadElevation().catch(() => { terrainError = "標高の資料を確認できません。ほかの塗り方は使えます。"; controls(); });

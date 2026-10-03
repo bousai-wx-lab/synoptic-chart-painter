@@ -144,6 +144,7 @@ const coast = JSON.parse(fs.readFileSync(path.join(root, "land-sea.json")));
 geography.validate(coast, chart);
 assert.equal(geography.patterns.length, 10);
 assert.equal(new Set(geography.patterns.map(p => p.id)).size, 10);
+assert.deepEqual(geography.patterns.map(p => p.id), ['dots', 'elevation', 'diagonal', 'relief', 'cross', 'elevation-relief', 'waves', 'paper', 'sand', 'satellite']);
 for (const key of ["source_sha256", "image_sha256", "observation_time", "width", "height"]) assert.throws(() => geography.validate({ ...coast, [key]: "mismatch" }, chart));
 for (const change of [
   g => { g.rings.pop(); },
@@ -167,3 +168,19 @@ for (const [longitude, latitude, land, name] of [
 assert.equal(require("node:crypto").createHash("sha256").update(fs.readFileSync(path.join(root, coast.satellite.path))).digest("hex"), coast.satellite.image_sha256);
 assert.ok(coast.projection.maximum_graticule_fit_error_px < 0.5);
 console.log("LAND_SEA_OK patterns=10 source_binding=checked malformed_data=blocked geographic_land_and_water=10 satellite_hash=checked projection_fit=checked");
+
+const terrain = JSON.parse(fs.readFileSync(path.join(root, "elevation.json")));
+geography.validateElevation(terrain, chart);
+for (const key of ["source_sha256", "image_sha256", "observation_time", "width", "height"]) assert.throws(() => geography.validateElevation({ ...terrain, [key]: "mismatch" }, chart));
+for (const change of [
+  t => { t.source.units = "feet"; },
+  t => { t.source.native_resolution_arc_seconds = 1; },
+  t => { t.image.height = 1322; },
+  t => { t.image.sha256 = "unverified"; },
+  t => { t.legend.boundaries_m.reverse(); },
+  t => { t.styles[1].row = 0; }
+]) { const bad = structuredClone(terrain); change(bad); assert.throws(() => geography.validateElevation(bad, chart)); }
+assert.equal(require("node:crypto").createHash("sha256").update(fs.readFileSync(path.join(root, terrain.image.path))).digest("hex"), terrain.image.sha256);
+assert.deepEqual(terrain.legend.boundaries_m, [200, 500, 1000, 2000, 4000, 6000]);
+for (const p of terrain.reviewed_points) assert.ok(p.elevation_m >= p.expected_range_m[0] && p.elevation_m <= p.expected_range_m[1], p.place);
+console.log("ELEVATION_OK native_units=metres source_binding=checked atlas_hash=checked legend=checked source_points=5 removed_options=3 invalid_data=blocked");

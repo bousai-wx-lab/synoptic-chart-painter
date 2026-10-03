@@ -34,8 +34,13 @@
       <div id="geography-patterns" class="geography-patterns" role="group" aria-label="陸海の塗り方"></div>
       <div class="geography-settings"><button type="button" id="geography-toggle" aria-pressed="false" disabled>陸海を外す</button><label for="geography-opacity">濃さ <output id="geography-opacity-value">40%</output></label></div>
       <input id="geography-opacity" type="range" min="0" max="100" step="5" value="40" aria-label="陸海の濃さ" disabled>
-      <p id="geography-note" class="gesture-note">上段・下段に同じ塗り方を重ねます。<br>見本は左が陸、右が海です。</p>
+      <p id="geography-note" class="gesture-note">上段・下段に同じ塗り方を重ねます。<br>濃さを変えて線の見やすさを調整できます。</p>
       <p id="satellite-note" class="gesture-note" hidden>地表の参考画像：NASA Blue Marble、2004年10月。現在の航空写真ではありません。<br><a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/" target="_blank" rel="noopener noreferrer">NASA Earth Observatory / Reto Stoeckli</a>（投影変換して使用）</p>
+      <div id="elevation-note" hidden>
+        <h3 class="elevation-heading">地表の標高</h3><div id="elevation-legend" class="elevation-legend" aria-label="地表標高の色分け、単位はメートル"></div>
+        <p id="relief-note" class="gesture-note" hidden>陰影の明暗は斜面の向き・傾きです。山の凹凸を強調しています。</p>
+        <p class="gesture-note"><a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener noreferrer">NOAA ETOPO 2022</a> · 1分格子（南北約1.9km）<br>山脈や高原を見る広域表示です。</p>
+      </div>
     </section>
     <section class="panel-section" aria-labelledby="symbol-heading">
       <h2 id="symbol-heading">原図の文字を色分け</h2>
@@ -105,7 +110,7 @@
     <div id="viewport" tabindex="0" aria-label="天気図。ホイールで拡大・縮小、移動モードでドラッグして移動できます。">
       <div id="paper" data-ready="false" data-strokes="0">
         <img id="chart" src="assets/aupq35.png" alt="気象庁AUPQ35。2026年10月2日00UTCの300hPaと500hPaの高度・気温・風の実況図。上段は300hPa、下段は500hPa。" draggable="false">
-        <canvas id="geography-layer" aria-label="陸海の模様または地表の参考衛星画像"></canvas>
+        <canvas id="geography-layer" aria-label="陸海の模様・標高・地形の陰影・参考衛星画像"></canvas>
         <canvas id="wind-layer" aria-label="300hPa等風速線に沿った緑色の塗り分け"></canvas>
         <canvas id="analysis-layer" aria-label="500hPaのトラフの推定候補"></canvas>
         <canvas id="jet-layer" aria-label="300hPaの強風帯の中心を流れに沿ってたどる赤い矢印"></canvas>
