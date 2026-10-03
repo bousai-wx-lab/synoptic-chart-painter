@@ -26,11 +26,12 @@ for (const change of [
  d=>{d.panels[1].bounds[1]=100;}
 ]) {const bad=structuredClone(temperatures);change(bad);assert.throws(()=>analysis.validateIsotherms(bad,chart));}
 for (const pressure of [300,500]) {
- const strokes=[],coords=[],clips=[],rects=[];
- const ctx={save(){},restore(){},beginPath(){},rect(...r){rects.push(r);},clip(rule){clips.push(rule);},moveTo(){},bezierCurveTo(...c){coords.push(c);},stroke(){strokes.push(this.strokeStyle);},fill(){throw Error("temperature area fill forbidden");}};
+ const strokes=[],coords=[],clips=[],rects=[],dashes=[];
+ const ctx={save(){},restore(){},setLineDash(dash){this.dash=[...dash];},beginPath(){},rect(...r){rects.push(r);},clip(rule){clips.push(rule);},moveTo(){},bezierCurveTo(...c){coords.push(c);},stroke(){strokes.push(this.strokeStyle);dashes.push([...this.dash]);},fill(){throw Error("temperature area fill forbidden");}};
  analysis.drawIsotherms(ctx,temperatures,[pressure]);
  const panel=temperatures.panels.find(p=>p.pressure_hpa===pressure),scale=analysis.isothermScales.find(s=>s.pressure_hpa===pressure);
  assert.deepEqual(strokes,panel.levels.flatMap((l,i)=>Array(l.lines.length).fill(scale.colors[i])));
+ assert.ok(dashes.every(d=>JSON.stringify(d)===JSON.stringify(pressure===500?[24,12]:[])),"500hPa is dashed; 300hPa stays solid");
  assert.deepEqual(clips,["evenodd"],"protect printed stamps in each independently clipped panel");
  assert.deepEqual(rects[0],[panel.bounds[0],panel.bounds[1],panel.bounds[2]-panel.bounds[0],panel.bounds[3]-panel.bounds[1]]);
  assert.ok(coords.flat().every(Number.isFinite));

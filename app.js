@@ -501,11 +501,14 @@ byId("save").addEventListener("click", () => {
     for (const [row,scale] of exportTemperatures.entries()) {
     const y = ink.height + footerHeight + 30 + row*40;
     ctx.fillStyle = "#243247"; ctx.font = "22px sans-serif"; ctx.fillText(`${scale.pressure_hpa}hPa 気温線`, 26, y);
+    ctx.save(); ctx.setLineDash(scale.dash); ctx.lineDashOffset = 0;
     for (const [index, value] of scale.values.entries()) {
       const x = 230 + index * 170;
-      ctx.strokeStyle = scale.colors[index]; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+38,y-8); ctx.stroke();
-      ctx.fillStyle = "#243247"; ctx.fillText(`${value}℃`,x+48,y);
+      const length = scale.pressure_hpa===500 ? 56 : 38;
+      ctx.strokeStyle = scale.colors[index]; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+length,y-8); ctx.stroke();
+      ctx.fillStyle = "#243247"; ctx.fillText(`${value}℃`,x+length+10,y);
     }
+    ctx.restore();
     }
     ctx.fillText("原図の気温表示・破線をもとに滑らかにつなぐ補助線。気温の格子データから算出した線ではありません。", 26, ink.height+footerHeight+exportTemperatures.length*40+28, output.width-52);
   }
