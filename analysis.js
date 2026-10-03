@@ -195,8 +195,8 @@ const ChartAnalysis = (() => {
     ctx.restore();
   }
   const isothermScales = [
-    { pressure_hpa:300, values:[-27,-33,-39,-45,-51], colors:["#a0d8fa","#74b9ef","#558ee0","#7460cb","#4c1d95"], dash:[] },
-    { pressure_hpa:500, values:[-3,-6,-9,-12,-15,-18,-21,-24,-27,-30], colors:["#a0d8fa","#85c5f1","#6aafe8","#5799df","#5485d7","#6071ce","#6d5dc4","#6847b3","#5932a4","#4c1d95"], dash:[24,12] }
+    { pressure_hpa:300, values:[-27,-33,-39,-45,-51], colors:["#a0d8fa","#74b9ef","#558ee0","#7460cb","#4c1d95"], dash:[], opacity:1 },
+    { pressure_hpa:500, values:[-3,-6,-9,-12,-15,-18,-21,-24,-27,-30], colors:["#a0d8fa","#85c5f1","#6aafe8","#5799df","#5485d7","#6071ce","#6d5dc4","#6847b3","#5932a4","#4c1d95"], dash:[], opacity:0.5 }
   ];
   const isothermPalette = isothermScales[0].colors;
   function validateIsotherms(data, chart) {
@@ -257,7 +257,7 @@ const ChartAnalysis = (() => {
     ctx.lineWidth = 3.5; ctx.lineCap = ctx.lineJoin = "round";
     const scale = isothermScales.find(s=>s.pressure_hpa===panel.pressure_hpa);
     ctx.setLineDash(scale.dash); ctx.lineDashOffset = 0;
-    if (panel.pressure_hpa===500) ctx.lineCap = "butt";
+    ctx.globalAlpha = scale.opacity;
     for (const [index, level] of panel.levels.entries()) for (const line of level.lines) {
       ctx.strokeStyle = scale.colors[index]; ctx.beginPath(); ctx.moveTo(...line.points[0]);
       for (const segment of isothermSegments(line.points,line.closed)) ctx.bezierCurveTo(...segment.c1,...segment.c2,...segment.end);

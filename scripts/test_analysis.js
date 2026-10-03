@@ -26,12 +26,13 @@ for (const change of [
  d=>{d.panels[1].bounds[1]=100;}
 ]) {const bad=structuredClone(temperatures);change(bad);assert.throws(()=>analysis.validateIsotherms(bad,chart));}
 for (const pressure of [300,500]) {
- const strokes=[],coords=[],clips=[],rects=[],dashes=[],widths=[];
- const ctx={save(){},restore(){},setLineDash(dash){this.dash=[...dash];},beginPath(){},rect(...r){rects.push(r);},clip(rule){clips.push(rule);},moveTo(){},bezierCurveTo(...c){coords.push(c);},stroke(){strokes.push(this.strokeStyle);dashes.push([...this.dash]);widths.push(this.lineWidth);},fill(){throw Error("temperature area fill forbidden");}};
+ const strokes=[],coords=[],clips=[],rects=[],dashes=[],widths=[],alphas=[];
+ const ctx={save(){},restore(){},setLineDash(dash){this.dash=[...dash];},beginPath(){},rect(...r){rects.push(r);},clip(rule){clips.push(rule);},moveTo(){},bezierCurveTo(...c){coords.push(c);},stroke(){strokes.push(this.strokeStyle);dashes.push([...this.dash]);widths.push(this.lineWidth);alphas.push(this.globalAlpha);},fill(){throw Error("temperature area fill forbidden");}};
  analysis.drawIsotherms(ctx,temperatures,[pressure]);
  const panel=temperatures.panels.find(p=>p.pressure_hpa===pressure),scale=analysis.isothermScales.find(s=>s.pressure_hpa===pressure);
  assert.deepEqual(strokes,panel.levels.flatMap((l,i)=>Array(l.lines.length).fill(scale.colors[i])));
- assert.ok(dashes.every(d=>JSON.stringify(d)===JSON.stringify(pressure===500?[24,12]:[])),"500hPa is dashed; 300hPa stays solid");
+ assert.ok(dashes.every(d=>d.length===0),"do not introduce a second dash pattern over the original chart");
+ assert.ok(alphas.every(a=>a===(pressure===500?0.5:1)),"500hPa reveals original black dashes; 300hPa stays opaque");
  assert.ok(widths.every(w=>w===3.5),"both temperature guides use the requested thinner stroke");
  assert.deepEqual(clips,["evenodd"],"protect printed stamps in each independently clipped panel");
  assert.deepEqual(rects[0],[panel.bounds[0],panel.bounds[1],panel.bounds[2]-panel.bounds[0],panel.bounds[3]-panel.bounds[1]]);

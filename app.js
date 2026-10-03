@@ -258,6 +258,7 @@ byId("symbol-color").addEventListener("click", () => {
 for (const scale of ChartAnalysis.isothermScales) for (const [index, value] of scale.values.entries()) {
   const entry = document.createElement("span"), swatch = document.createElement("i");
   swatch.style.borderColor = scale.colors[index]; swatch.setAttribute("aria-hidden", "true");
+  swatch.style.setProperty("--temperature-color", scale.colors[index]); swatch.style.setProperty("--temperature-opacity", scale.opacity);
   entry.append(swatch, `${value}℃`); byId(scale.pressure_hpa===300 ? "temperature-legend" : "temperature500-legend").append(entry);
 }
 function drawTemperature() {
@@ -501,11 +502,17 @@ byId("save").addEventListener("click", () => {
     for (const [row,scale] of exportTemperatures.entries()) {
     const y = ink.height + footerHeight + 30 + row*40;
     ctx.fillStyle = "#243247"; ctx.font = "22px sans-serif"; ctx.fillText(`${scale.pressure_hpa}hPa 気温線`, 26, y);
-    ctx.save(); ctx.setLineDash(scale.dash); ctx.lineDashOffset = 0;
+    ctx.save(); ctx.lineDashOffset = 0;
     for (const [index, value] of scale.values.entries()) {
       const x = 230 + index * 170;
       const length = scale.pressure_hpa===500 ? 56 : 38;
+      if (scale.opacity<1) {
+        ctx.globalAlpha = 1; ctx.setLineDash([14,7]); ctx.strokeStyle = "#243247"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+length,y-8); ctx.stroke();
+      }
+      ctx.setLineDash(scale.dash); ctx.globalAlpha = scale.opacity;
       ctx.strokeStyle = scale.colors[index]; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+length,y-8); ctx.stroke();
+      ctx.globalAlpha = 1;
       ctx.fillStyle = "#243247"; ctx.fillText(`${value}℃`,x+length+10,y);
     }
     ctx.restore();

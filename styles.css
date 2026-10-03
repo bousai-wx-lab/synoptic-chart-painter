@@ -43,7 +43,8 @@ h1 { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; letter-s
 .temperature-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; margin-top: 10px; font-size: 11px; }
 .temperature-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .temperature-legend i { display: inline-block; width: 22px; border-top: 2px solid; }
-#temperature500-legend i { width: 32px; border-top-style: dashed; }
+#temperature500-legend i { position: relative; width: 32px; height: 2px; border: 0; background: repeating-linear-gradient(90deg, #243247 0 6px, transparent 6px 9px); }
+#temperature500-legend i::after { content: ""; position: absolute; inset: -0.5px 0; background: var(--temperature-color); opacity: var(--temperature-opacity); }
 h2 { margin: 0 0 9px; font-size: 12px; color: #164b68; }
 .analysis-buttons { flex-wrap: wrap; }
 #analyze { width: 100%; margin-bottom: 2px; }

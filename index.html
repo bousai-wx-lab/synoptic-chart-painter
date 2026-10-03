@@ -8,11 +8,11 @@
   <meta name="description" content="天気図解析マスター（Weather Chart Analysis Master）。気象庁の専門天気図に風速帯の色塗りとトラフ・強風軸の候補を重ねる解析補助ツール。">
   <meta name="application-name" content="Weather Chart Analysis Master">
   <title>天気図解析マスター | Weather Chart Analysis Master | Bousai Wx Lab</title>
-  <link rel="stylesheet" href="styles.css?v=b6c0da512ed529ff">
-  <script src="analysis.js?v=1cceda28c712f739" defer></script>
+  <link rel="stylesheet" href="styles.css?v=e1f19e908577c8dc">
+  <script src="analysis.js?v=ddea2f07fb300167" defer></script>
   <script src="geography.js?v=f05742dc0ce1b78a" defer></script>
   <script src="catalog.js?v=9d1519ba693ab9cf" defer></script>
-  <script src="app.js?v=d9ed20589218bed1" defer></script>
+  <script src="app.js?v=6e030c0643be7c19" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -62,7 +62,7 @@
       </div><div class="layer-group" data-layer-group><h3>500 hPa <span>下段</span></h3>
       <article class="layer-tool" data-layer="temperature500">
         <div class="layer-row"><button type="button" id="temperature500" class="layer-toggle" aria-pressed="false" disabled>気温線</button><button type="button" class="layer-detail-button" data-layer-detail="temperature500" aria-label="500hPaの気温線の詳細" aria-expanded="false" aria-controls="detail-temperature500">詳細 <span aria-hidden="true">⌄</span></button></div>
-        <div id="detail-temperature500" class="layer-details" hidden><div id="temperature500-legend" class="temperature-legend" aria-label="500hPaの気温線は破線。暖かいほど薄い青、冷たいほど濃い紫"></div><p class="gesture-note">−3〜−30℃の全10段階。原図の気温の破線に沿って、色の破線を滑らかに重ねます。</p></div>
+        <div id="detail-temperature500" class="layer-details" hidden><div id="temperature500-legend" class="temperature-legend" aria-label="500hPaの元の黒い破線に半透明の色を重ねます。暖かいほど薄い青、冷たいほど濃い紫"></div><p class="gesture-note">−3〜−30℃の全10段階。元の黒い破線が透けるように、細い半透明の色を重ねます。</p></div>
       </article>
       <article class="layer-tool" data-layer="trough">
         <div class="layer-row"><button type="button" id="trough" class="layer-toggle" aria-pressed="false" disabled>トラフ候補</button><button type="button" class="layer-detail-button" data-layer-detail="trough" aria-label="トラフ候補の詳細" aria-expanded="false" aria-controls="detail-trough">詳細 <span aria-hidden="true">⌄</span></button></div>
