@@ -138,3 +138,32 @@ analysis.drawJetAxes(jetCtx,strongAxes,wind.bounds);
 assert.equal(drawCalls.filter(c=>c[0]==='stroke').length,6,"one smooth shaft and one arrowhead per branch");
 assert.ok(drawCalls.filter(c=>c[0]==='stroke').every(c=>c[1]==='#f02020'),"all axes and arrowheads use the same red");
 console.log(`WIND_AXES_OK strongest_strip=checked shifted_maximum=checked no_height_only_axis=checked source_binding=checked branches=3 smooth_samples=${curveSamples} directions=checked arrows=checked`);
+
+const geography = require("../geography.js");
+const coast = JSON.parse(fs.readFileSync(path.join(root, "land-sea.json")));
+geography.validate(coast, chart);
+assert.equal(geography.patterns.length, 10);
+assert.equal(new Set(geography.patterns.map(p => p.id)).size, 10);
+for (const key of ["source_sha256", "image_sha256", "observation_time", "width", "height"]) assert.throws(() => geography.validate({ ...coast, [key]: "mismatch" }, chart));
+for (const change of [
+  g => { g.rings.pop(); },
+  g => { g.rings[0].pop(); },
+  g => { g.rings[0][1][0] = NaN; },
+  g => { g.panels[1].offset_y = 1400; },
+  g => { g.satellite.path = "unexpected.png"; }
+]) { const bad = structuredClone(coast); change(bad); assert.throws(() => geography.validate(bad, chart)); }
+const geoPoint = (longitude, latitude) => {
+  const radius = coast.projection.radius_scale_px * Math.tan((90 - latitude) * Math.PI / 360);
+  const angle = (longitude - 140) * Math.PI / 180;
+  return [coast.projection.pole[0] + radius * Math.sin(angle), coast.projection.pole[1] + radius * Math.cos(angle)];
+};
+for (const [longitude, latitude, land, name] of [
+  [116.4, 39.9, true, "Beijing"], [139.76, 35.68, true, "Tokyo"],
+  [137, 36, true, "central Honshu"], [143, 43, true, "Hokkaido"],
+  [126.5, 38.2, true, "Korea"], [103, 45, true, "Mongolia"],
+  [160, 30, false, "Pacific"], [135, 40, false, "Sea of Japan"],
+  [108, 53.5, false, "Lake Baikal"], [130, 30, false, "East China Sea"]
+]) assert.equal(inRegion(geoPoint(longitude, latitude), coast.rings), land, name);
+assert.equal(require("node:crypto").createHash("sha256").update(fs.readFileSync(path.join(root, coast.satellite.path))).digest("hex"), coast.satellite.image_sha256);
+assert.ok(coast.projection.maximum_graticule_fit_error_px < 0.5);
+console.log("LAND_SEA_OK patterns=10 source_binding=checked malformed_data=blocked geographic_land_and_water=10 satellite_hash=checked projection_fit=checked");

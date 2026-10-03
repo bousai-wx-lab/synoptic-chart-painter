@@ -19,6 +19,12 @@ h1 { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; letter-s
 .panel-content { overflow-y: auto; min-height: 0; padding: 10px 12px; }
 #chart-info { margin: 0 0 12px; font-size: 11px; line-height: 1.6; color: #58677a; }
 .panel-section { border-top: 1px solid #dce3eb; padding: 12px 0; }
+.geography-patterns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.geography-patterns button { display: flex; flex-direction: column; align-items: stretch; gap: 3px; padding: 4px; font-size: 10px; text-align: left; }
+.geography-patterns canvas { display: block; width: 100%; height: 22px; border-radius: 2px; }
+.geography-settings { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 6px; }
+.geography-settings label { font-size: 11px; white-space: nowrap; }
+#geography-opacity { width: 100%; margin: 6px 0 0; accent-color: #164b68; }
 .symbol-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; margin: 8px 0 0; }
 .symbol-l { color: #dc2626; } .symbol-h { color: #2563eb; } .symbol-c { color: #38bdf8; } .symbol-w { color: #f97316; }
 #symbol-color { width: 100%; }
@@ -70,12 +76,13 @@ input[type='color'] { display: block; border: 0; padding: 0; width: 30px; height
 #viewport { flex: 1; min-width: 0; min-height: 0; overflow: auto; padding: 10px; overscroll-behavior: contain; scrollbar-gutter: stable; }
 #paper { position: relative; isolation: isolate; margin: auto; box-shadow: 0 1px 9px #2a3c5124; background: #fff; width: min(100%, 650px); aspect-ratio: 2048 / 2993; }
 #chart { display: block; width: 100%; height: 100%; user-select: none; }
-#wind-layer, #analysis-layer { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; pointer-events: none; }
-#wind-layer { z-index: 1; }
-#analysis-layer { z-index: 2; }
-#jet-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
-#symbol-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
-#ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; z-index: 5; }
+#geography-layer, #wind-layer, #analysis-layer { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; pointer-events: none; }
+#geography-layer { z-index: 1; }
+#wind-layer { z-index: 2; }
+#analysis-layer { z-index: 3; }
+#jet-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+#symbol-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+#ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; z-index: 6; }
 #ink[data-mode='move'] { cursor: grab; } #ink[data-dragging='true'][data-mode='move'] { cursor: grabbing; }
 footer { display: flex; justify-content: space-between; flex-wrap: wrap; flex-shrink: 0; gap: 2px 14px; font-size: 10px; color: #68778b; background: #fff; border-top: 1px solid #d4dce6; padding: 4px 12px; }
 a { color: #315f8a; text-underline-offset: 2px; }

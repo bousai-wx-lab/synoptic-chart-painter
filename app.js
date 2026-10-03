@@ -13,6 +13,14 @@ const jetLayer = byId("jet-layer");
 const jetContext = jetLayer.getContext("2d");
 const windLayer = byId("wind-layer");
 const windContext = windLayer.getContext("2d");
+const geographyLayer = byId("geography-layer");
+const geographyContext = geographyLayer.getContext("2d");
+let geography = null;
+let satelliteImage = null;
+let geographyStyle = "dots";
+let geographyOpacity = 0.4;
+let showGeography = true;
+let geographyError = "";
 const symbolLayer = byId("symbol-layer");
 const symbolContext = symbolLayer.getContext("2d");
 const symbolMask = document.createElement("canvas");
@@ -55,7 +63,16 @@ function controls() {
   byId("symbol-color").disabled = !ready || !symbols;
   byId("symbol-color").setAttribute("aria-pressed", String(Boolean(showSymbols && symbols)));
   byId("symbol-color").textContent = showSymbols && symbols ? "文字の色分けを外す" : "L・H・C・Wを色分け";
-  byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols);
+  byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols) && !(showGeography && geography);
+  byId("geography-toggle").disabled = byId("geography-opacity").disabled = !ready || !geography;
+  byId("geography-toggle").setAttribute("aria-pressed", String(Boolean(showGeography && geography)));
+  byId("geography-toggle").textContent = showGeography && geography ? "陸海を外す" : "陸海を表示";
+  byId("geography-opacity-value").textContent = `${Math.round(geographyOpacity * 100)}%`;
+  for (const button of byId("geography-patterns").querySelectorAll("button")) {
+    button.disabled = !ready || !geography || (button.dataset.pattern === "satellite" && !satelliteImage);
+    button.setAttribute("aria-pressed", String(Boolean(showGeography && geography && button.dataset.pattern === geographyStyle)));
+  }
+  byId("satellite-note").hidden = !showGeography || geographyStyle !== "satellite";
   byId("trough").setAttribute("aria-pressed", String(showTrough));
   byId("jet").setAttribute("aria-pressed", String(showJet));
   byId("zoom-in").disabled = !ready || (!fitView && zoomFactor >= 4);
@@ -65,9 +82,26 @@ function controls() {
   paper.dataset.jet = String(showJet);
   paper.dataset.wind = String(showWind);
   paper.dataset.symbols = String(Boolean(showSymbols && symbols));
-  const layers = [showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showWind ? "300hPa 風速を色分け中" : "", showTrough ? `トラフ候補${candidates.troughs.length}本` : "", showJet ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
-  byId("status").textContent = [symbolError, analysisError].filter(Boolean).join("・") || (layers.length ? layers.join("・") : "原図を表示中");
+  paper.dataset.geography = showGeography && geography ? geographyStyle : "off";
+  const layers = [showGeography && geography ? `陸海：${ChartGeography.patterns.find(p => p.id === geographyStyle).label} ${Math.round(geographyOpacity * 100)}%` : "", showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showWind ? "300hPa 風速を色分け中" : "", showTrough ? `トラフ候補${candidates.troughs.length}本` : "", showJet ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
+  byId("status").textContent = [geographyError, symbolError, analysisError].filter(Boolean).join("・") || (layers.length ? layers.join("・") : "原図を表示中");
 }
+
+function drawGeography() {
+  geographyContext.clearRect(0, 0, geographyLayer.width, geographyLayer.height);
+  if (ready && showGeography && geography) ChartGeography.draw(geographyContext, geography, geographyStyle, geographyOpacity, satelliteImage);
+}
+for (const [index, style] of ChartGeography.patterns.entries()) {
+  const button = document.createElement("button"), preview = document.createElement("canvas"), label = document.createElement("span");
+  button.type = "button"; button.dataset.pattern = style.id; button.disabled = true; button.setAttribute("aria-pressed", "false");
+  preview.width = 132; preview.height = 30; preview.setAttribute("aria-hidden", "true");
+  ChartGeography.preview(preview, style.id, satelliteImage);
+  label.textContent = `${index + 1}. ${style.label}`; button.append(preview, label);
+  button.addEventListener("click", () => { geographyStyle = style.id; showGeography = true; drawGeography(); controls(); });
+  byId("geography-patterns").append(button);
+}
+byId("geography-toggle").addEventListener("click", () => { showGeography = !showGeography; drawGeography(); controls(); });
+byId("geography-opacity").addEventListener("input", (event) => { geographyOpacity = Number(event.target.value) / 100; drawGeography(); controls(); });
 
 function line(ctx, points, width, color) {
   ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = "round"; ctx.lineJoin = "round";
@@ -138,8 +172,8 @@ for (const id of ["analyze", "trough", "jet", "original"]) byId(id).addEventList
   if (id === "analyze") showTrough = showJet = true;
   if (id === "trough") showTrough = !showTrough;
   if (id === "jet") showJet = !showJet;
-  if (id === "original") showWind = showTrough = showJet = showSymbols = false;
-  drawAnalysis(); drawWind(); drawSymbols(); controls();
+  if (id === "original") showWind = showTrough = showJet = showSymbols = showGeography = false;
+  drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); controls();
 });
 
 function path(stroke) {
@@ -316,11 +350,11 @@ new ResizeObserver(() => fit()).observe(viewport);
 
 byId("save").addEventListener("click", () => {
   const output = document.createElement("canvas");
-  output.width = ink.width; output.height = ink.height + 220;
+  output.width = ink.width; output.height = ink.height + 260;
   const ctx = output.getContext("2d");
   ctx.fillStyle = "white"; ctx.fillRect(0, 0, output.width, output.height);
   ctx.drawImage(chart, 0, 0);
-  ctx.globalCompositeOperation = "multiply"; ctx.drawImage(windLayer, 0, 0); ctx.drawImage(analysisLayer, 0, 0);
+  ctx.globalCompositeOperation = "multiply"; ctx.drawImage(geographyLayer, 0, 0); ctx.drawImage(windLayer, 0, 0); ctx.drawImage(analysisLayer, 0, 0);
   ctx.globalCompositeOperation = "source-over"; ctx.drawImage(jetLayer, 0, 0);
   ctx.drawImage(symbolLayer, 0, 0);
   ctx.globalCompositeOperation = "multiply"; ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
@@ -339,6 +373,8 @@ byId("save").addEventListener("click", () => {
   }
   ctx.fillText("赤矢印：等風速線の強い帯の中心（流れの経路はこの1枚で確認）。トラフ：等高度線の曲がりから推定。", 26, ink.height + 155);
   ctx.fillText("気象庁の公式の着色・解析ではありません。天気図解析マスター · Weather Chart Analysis Master · Bousai Wx Lab", 26, ink.height + 193);
+  const geoLabel = showGeography && geography ? `${ChartGeography.patterns.find(p => p.id === geographyStyle).label}（濃さ${Math.round(geographyOpacity * 100)}%）` : "表示なし";
+  ctx.fillText(`陸海：${geoLabel}${showGeography && geographyStyle === "satellite" ? " / NASA Earth Observatory・Reto Stoeckli / 2004年10月の地表画像（投影変換）" : ""}`, 26, ink.height + 231);
   output.toBlob((blob) => {
     if (!blob) { byId("status").textContent = "保存できませんでした"; return; }
     if (exportUrl) URL.revokeObjectURL(exportUrl);
@@ -362,12 +398,13 @@ function initialize() {
   analysisLayer.width = chart.naturalWidth; analysisLayer.height = chart.naturalHeight;
   jetLayer.width = chart.naturalWidth; jetLayer.height = chart.naturalHeight;
   windLayer.width = chart.naturalWidth; windLayer.height = chart.naturalHeight;
+  geographyLayer.width = chart.naturalWidth; geographyLayer.height = chart.naturalHeight;
   symbolLayer.width = chart.naturalWidth; symbolLayer.height = chart.naturalHeight;
   symbolMask.width = chart.naturalWidth; symbolMask.height = chart.naturalHeight;
   symbolMaskContext.drawImage(chart, 0, 0);
   originalPixels = symbolMaskContext.getImageData(0, 0, chart.naturalWidth, chart.naturalHeight);
   symbolMaskContext.clearRect(0, 0, symbolMask.width, symbolMask.height);
-  ready = true; paper.dataset.ready = "true"; selectMode("move"); drawAnalysis(); drawWind(); drawSymbols(); fit(); controls();
+  ready = true; paper.dataset.ready = "true"; selectMode("move"); drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); fit(); controls();
 }
 chart.addEventListener("load", initialize);
 chart.addEventListener("error", () => { byId("status").textContent = "図を読み込めませんでした。再読み込みしてください。"; });
@@ -394,3 +431,23 @@ async function loadSymbols() {
   drawSymbols(); controls();
 }
 loadSymbols().catch(() => { symbols = null; symbolError = "文字の資料を確認できません。原図の文字を表示します。"; drawSymbols(); controls(); });
+async function loadGeography() {
+  const responses = await Promise.all([fetch("chart.json", { cache: "no-store" }), fetch("land-sea.json", { cache: "no-store" })]);
+  if (responses.some(r => !r.ok)) throw Error("Geography unavailable");
+  const [data, coast] = await Promise.all(responses.map(r => r.json()));
+  geography = ChartGeography.validate(coast, data); drawGeography(); controls();
+  try {
+    const response = await fetch(geography.satellite.path, { cache: "no-store" });
+    if (!response.ok) throw Error("Satellite unavailable");
+    const bytes = await response.arrayBuffer();
+    const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)), b => b.toString(16).padStart(2, "0")).join("");
+    if (hash !== geography.satellite.image_sha256) throw Error("Satellite source mismatch");
+    const url = URL.createObjectURL(new Blob([bytes], { type: "image/png" })), image = new Image();
+    try { image.src = url; await image.decode(); } finally { URL.revokeObjectURL(url); }
+    if (image.naturalWidth !== geography.satellite.width || image.naturalHeight !== geography.satellite.height) throw Error("Satellite size mismatch");
+    satelliteImage = image;
+    ChartGeography.preview(byId("geography-patterns").querySelector('[data-pattern="satellite"] canvas'), "satellite", image);
+    controls();
+  } catch (_) { byId("geography-note").textContent = "衛星画像を確認できません。ほかの9種類は使えます。"; controls(); }
+}
+loadGeography().catch(() => { geography = null; geographyError = "陸海の資料を確認できません。原図やほかの色分けは使えます。"; drawGeography(); controls(); });

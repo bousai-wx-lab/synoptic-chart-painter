@@ -5,6 +5,9 @@
 !styles.css
 !app.js
 !analysis.js
+!geography.js
+!land-sea.json
+!assets/blue-marble-chart.png
 !contours.json
 !wind-bands.json
 !jet-guides.json
