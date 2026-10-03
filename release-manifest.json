@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool_slug": "weather-chart-analysis-master",
-  "generated_at": "2026-10-03T01:05:56.714465+00:00",
+  "generated_at": "2026-10-03T01:18:15.830075+00:00",
   "files": [
     {
       "path": ".github/workflows/privacy-gate.yml",
@@ -101,8 +101,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 11455,
-      "sha256": "fb6bebfe1abadd498eff1d90d92dd22603be0e8245e7c5b8491df4ba482a77db",
+      "bytes": 11531,
+      "sha256": "a7a23de1b2979a6c637cb3295fba87f7b96091aed4ec8f19a41e665ff5d8e6d2",
       "mime_type": "text/html"
     },
     {
@@ -155,8 +155,8 @@
     },
     {
       "path": "scripts/update_manifest.py",
-      "bytes": 920,
-      "sha256": "84965a03081d0f1fc2401c0077d05ba8c9e2995119bc6d49b91d79add070c3a6",
+      "bytes": 1518,
+      "sha256": "9acfdb60a48c608bb69bfc3820380f8eeb69da39f3fb566bcea7f4686e36b493",
       "mime_type": "text/x-python"
     },
     {
