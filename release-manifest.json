@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool_slug": "weather-chart-analysis-master",
-  "generated_at": "2026-10-03T02:25:32.471674+00:00",
+  "generated_at": "2026-10-03T09:33:45.001137+00:00",
   "files": [
     {
       "path": ".github/workflows/privacy-gate.yml",
@@ -11,8 +11,8 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 3358,
-      "sha256": "03a7f43610035d6ab045399547b4325a053702a7e86b93a77d172c5388355150",
+      "bytes": 3374,
+      "sha256": "cd24730043625f2ac026bf0a4755ed83dbda6586f4844116f05965f22dfc22a8",
       "mime_type": "application/octet-stream"
     },
     {
@@ -29,8 +29,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 15973,
-      "sha256": "1f94e8ae8580a2a742f2b7fcd461696b164435017f5d6b7aace24ea3aebce7cf",
+      "bytes": 17069,
+      "sha256": "2124ca0f2c036e0896401610aa6cde13f2651c0e20ea67c992aac925d9b26144",
       "mime_type": "text/markdown"
     },
     {
@@ -41,14 +41,14 @@
     },
     {
       "path": "analysis.js",
-      "bytes": 13802,
-      "sha256": "1c3ff2624fcf775a6e4634431cd425c5f1f61fe1e1757cc1f07070210c4a25ec",
+      "bytes": 17440,
+      "sha256": "8c87cda59aa957b85e6244b976d0faa15a78febbe55004459d2b16367a495ae8",
       "mime_type": "text/javascript"
     },
     {
       "path": "app.js",
-      "bytes": 37296,
-      "sha256": "97ac21afcfcc42a514316cf728bc774084e0e655f2b1e09bb1a160d651dcc636",
+      "bytes": 40163,
+      "sha256": "168e62d53a9ed03c0987384ec764e18ada2127c60603d88d39e24c9a9885d2ed",
       "mime_type": "text/javascript"
     },
     {
@@ -473,9 +473,15 @@
     },
     {
       "path": "index.html",
-      "bytes": 12642,
-      "sha256": "9e078aaac93111270546830cab23e36f6de3485bd4e827200736fec885042606",
+      "bytes": 13401,
+      "sha256": "0776381e1c530af5540348e62546704fae2979d81cf9c41981c177ac9ebc3c7f",
       "mime_type": "text/html"
+    },
+    {
+      "path": "isotherms.json",
+      "bytes": 5909,
+      "sha256": "2e77be218ab11d2997422e7e757cdfeb98bf51c4c3c41ed484c9df8b78038efa",
+      "mime_type": "application/json"
     },
     {
       "path": "jet-guides.json",
@@ -491,8 +497,8 @@
     },
     {
       "path": "release-allowlist.json",
-      "bytes": 23700,
-      "sha256": "5ecf37e909f21b4d08eb673d901b726bcb9375f08564fdb5c591b557228d8407",
+      "bytes": 23722,
+      "sha256": "6fc97300fa6de67c4ad0479f131c9afd78f6851e5682229f93b2eb6bb5705523",
       "mime_type": "application/json"
     },
     {
@@ -509,8 +515,8 @@
     },
     {
       "path": "scripts/test_analysis.js",
-      "bytes": 14023,
-      "sha256": "0e0221349f199965f60d0b4e34891b620867040460d90bd9302cba9187606db7",
+      "bytes": 16448,
+      "sha256": "73282eb2b3145c56702df8e95584bc4aa98178adde29f2aa68eec38b2ffa23a8",
       "mime_type": "text/javascript"
     },
     {
@@ -539,8 +545,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 10453,
-      "sha256": "f019db1eccec4d914728d7a51ecd616bdb15067404c5a64c86ab580cb65466fd",
+      "bytes": 10884,
+      "sha256": "c596bcf6027dfc01948964b8b25b94c9bddcc25712b3253513812f34b86b2c22",
       "mime_type": "text/css"
     },
     {

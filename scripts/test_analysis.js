@@ -7,6 +7,32 @@ const root = path.resolve(__dirname, "..");
 const marks = JSON.parse(fs.readFileSync(path.join(root, "center-symbols.json")));
 const actual = JSON.parse(fs.readFileSync(path.join(root, "contours.json")));
 const chart = JSON.parse(fs.readFileSync(path.join(root, "chart.json")));
+const temperatures = JSON.parse(fs.readFileSync(path.join(root, "isotherms.json")));
+analysis.validateIsotherms(temperatures, chart);
+assert.deepEqual(temperatures.levels.map(l => l.temperature_c), [-33,-39,-45,-51]);
+assert.deepEqual(temperatures.levels.map(l => l.labels.length), [29,27,23,31]);
+assert.deepEqual(temperatures.levels.at(-1).lines.map(l => l.length), [27,2,2], "separate northern runs must not be bridged");
+for (const key of ["source_sha256","image_sha256","observation_time","width","height","unit","pressure_hpa"]) assert.throws(() => analysis.validateIsotherms({...temperatures,[key]:"wrong"},chart));
+for (const change of [
+  d => { d.levels[0].temperature_c = -36; },
+  d => { d.levels[0].lines[0][1][1] = 2000; },
+  d => { d.levels[0].lines[0][1][0] = NaN; },
+  d => { d.levels[0].labels[0][0] += 3; },
+  d => { d.levels.at(-1).lines = [d.levels.at(-1).lines.flat()]; },
+  d => { d.bounds[3] = chart.height; }
+]) { const bad = structuredClone(temperatures); change(bad); assert.throws(() => analysis.validateIsotherms(bad,chart)); }
+const temperatureStrokes = [], temperaturePoints = [], temperatureClip = [];
+const temperatureCtx = { save(){},restore(){},beginPath(){},rect(){},clip(rule){temperatureClip.push(rule);},moveTo(){},bezierCurveTo(...coords){temperaturePoints.push(coords);},stroke(){temperatureStrokes.push(this.strokeStyle);},fill(){throw Error("temperature area fill forbidden");} };
+analysis.drawIsotherms(temperatureCtx, temperatures);
+assert.deepEqual(temperatureStrokes, [analysis.isothermPalette[0],analysis.isothermPalette[1],analysis.isothermPalette[2],...Array(3).fill(analysis.isothermPalette[3])]);
+assert.deepEqual(temperatureClip,["evenodd"],"original temperature stamps must have holes around them");
+assert.ok(temperaturePoints.flat().every(Number.isFinite));
+assert.ok(temperaturePoints.every(coords => coords.filter((_,i)=>i%2).every(y=>y<chart.height/2)),"500hPa remains untouched");
+const temperatureBrightness = analysis.isothermPalette.map(color => {
+  const rgb=color.slice(1).match(/../g).map(v=>parseInt(v,16));return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+});
+assert.ok(temperatureBrightness.every((v,i)=>i===0 || v<temperatureBrightness[i-1]),"colder lines must become darker");
+console.log("TEMPERATURE_LINES_OK values=4 stamps=110 separate_runs=6 binding=checked malformed_data=blocked text_protected=checked cold_darkening=checked lower_panel=untouched");
 analysis.validateSymbols(marks, chart);
 for (const [hpa, expected] of [[300, {L:5,H:5,C:9,W:6}], [500, {L:2,H:3,C:9,W:11}]]) {
   const counts = Object.fromEntries(Object.keys(expected).map(letter => [letter, marks.symbols.filter(s => s.letter === letter && s.pressure_hpa === hpa).length]));

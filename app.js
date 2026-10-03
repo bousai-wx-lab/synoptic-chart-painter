@@ -32,6 +32,11 @@ let originalPixels = null;
 let symbols = null;
 let showSymbols = true;
 let symbolError = "";
+const temperatureLayer = byId("temperature-layer");
+const temperatureContext = temperatureLayer.getContext("2d");
+let isotherms = null;
+let showTemperature = true;
+let temperatureError = "";
 let windBands = null;
 let showWind = false;
 let candidates = null;
@@ -73,7 +78,10 @@ function controls() {
   byId("symbol-color").disabled = !ready || !symbols;
   byId("symbol-color").setAttribute("aria-pressed", String(Boolean(showSymbols && symbols)));
   byId("symbol-color").textContent = showSymbols && symbols ? "文字の色分けを外す" : "L・H・C・Wを色分け";
-  byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols) && !(showGeography && geography);
+  byId("temperature").disabled = !ready || !isotherms;
+  byId("temperature").setAttribute("aria-pressed", String(Boolean(showTemperature && isotherms)));
+  byId("temperature").textContent = showTemperature && isotherms ? "気温線を外す" : "気温線を表示";
+  byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols) && !(showGeography && geography) && !(showTemperature && isotherms);
   byId("geography-toggle").disabled = byId("geography-opacity").disabled = !ready || !geography;
   byId("geography-toggle").setAttribute("aria-pressed", String(Boolean(showGeography && geography)));
   byId("geography-toggle").textContent = showGeography && geography ? "陸海を外す" : "陸海を表示";
@@ -99,9 +107,10 @@ function controls() {
   paper.dataset.jet = String(Boolean(showJet && candidates));
   paper.dataset.wind = String(Boolean(showWind && windBands));
   paper.dataset.symbols = String(Boolean(showSymbols && symbols));
+  paper.dataset.temperature = String(Boolean(showTemperature && isotherms));
   paper.dataset.geography = showGeography && geography ? geographyStyle : "off";
-  const layers = [showGeography && geography ? `陸海：${ChartGeography.patterns.find(p => p.id === geographyStyle).label} ${Math.round(geographyOpacity * 100)}%` : "", showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showWind && windBands ? "300hPa 風速を色分け中" : "", showTrough && candidates ? `トラフ候補${candidates.troughs.length}本` : "", showJet && candidates ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
-  byId("status").textContent = loadingError || (!ready ? "図を読み込み中" : [geographyError, terrainError, symbolError, analysisError].filter(Boolean).join("・") || [currentSelection?.product.code, ...(layers.length ? layers : ["原図を表示中"])].filter(Boolean).join("・"));
+  const layers = [showGeography && geography ? `陸海：${ChartGeography.patterns.find(p => p.id === geographyStyle).label} ${Math.round(geographyOpacity * 100)}%` : "", showSymbols && symbols ? "L・H・C・Wの文字を色分け中" : "", showTemperature && isotherms ? "300hPa 気温線を表示中" : "", showWind && windBands ? "300hPa 風速を色分け中" : "", showTrough && candidates ? `トラフ候補${candidates.troughs.length}本` : "", showJet && candidates ? `強風軸候補${candidates.jets.length}本` : "", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
+  byId("status").textContent = loadingError || (!ready ? "図を読み込み中" : [geographyError, terrainError, symbolError, temperatureError, analysisError].filter(Boolean).join("・") || [currentSelection?.product.code, ...(layers.length ? layers : ["原図を表示中"])].filter(Boolean).join("・"));
 }
 
 function drawGeography() {
@@ -184,13 +193,26 @@ byId("symbol-color").addEventListener("click", () => {
   if (!ready || !symbols) return;
   showSymbols = !showSymbols; drawSymbols(); controls();
 });
+for (const [index, value] of [-33, -39, -45, -51].entries()) {
+  const entry = document.createElement("span"), swatch = document.createElement("i");
+  swatch.style.borderColor = ChartAnalysis.isothermPalette[index]; swatch.setAttribute("aria-hidden", "true");
+  entry.append(swatch, `${value}℃`); byId("temperature-legend").append(entry);
+}
+function drawTemperature() {
+  temperatureContext.clearRect(0, 0, temperatureLayer.width, temperatureLayer.height);
+  if (ready && showTemperature && isotherms) ChartAnalysis.drawIsotherms(temperatureContext, isotherms);
+}
+byId("temperature").addEventListener("click", () => {
+  if (!ready || !isotherms) return;
+  showTemperature = !showTemperature; drawTemperature(); controls();
+});
 for (const id of ["analyze", "trough", "jet", "original"]) byId(id).addEventListener("click", () => {
   if (!ready || (id !== "original" && !candidates)) return;
   if (id === "analyze") showTrough = showJet = true;
   if (id === "trough") showTrough = !showTrough;
   if (id === "jet") showJet = !showJet;
-  if (id === "original") showWind = showTrough = showJet = showSymbols = showGeography = false;
-  drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); controls();
+  if (id === "original") showWind = showTrough = showJet = showSymbols = showGeography = showTemperature = false;
+  drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); drawTemperature(); controls();
 });
 
 function path(stroke) {
@@ -373,12 +395,15 @@ byId("save").addEventListener("click", () => {
   const output = document.createElement("canvas");
   const selectedGeography = ChartGeography.patterns.find(p => p.id === geographyStyle);
   const exportTerrain = Boolean(showGeography && geography && terrainImage && selectedGeography.terrain !== undefined);
-  output.width = ink.width; output.height = ink.height + (exportTerrain ? 340 : 260);
+  const exportTemperature = Boolean(showTemperature && isotherms);
+  const footerHeight = exportTerrain ? 340 : 260;
+  output.width = ink.width; output.height = ink.height + footerHeight + (exportTemperature ? 96 : 0);
   const ctx = output.getContext("2d");
   ctx.fillStyle = "white"; ctx.fillRect(0, 0, output.width, output.height);
   ctx.drawImage(chart, 0, 0);
   ctx.globalCompositeOperation = "multiply"; ctx.drawImage(geographyLayer, 0, 0); ctx.drawImage(windLayer, 0, 0); ctx.drawImage(analysisLayer, 0, 0);
   ctx.globalCompositeOperation = "source-over"; ctx.drawImage(jetLayer, 0, 0);
+  ctx.drawImage(temperatureLayer, 0, 0);
   ctx.drawImage(symbolLayer, 0, 0);
   ctx.globalCompositeOperation = "multiply"; ctx.drawImage(ink, 0, 0); ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = "#243247"; ctx.font = "24px sans-serif";
@@ -407,6 +432,16 @@ byId("save").addEventListener("click", () => {
       ctx.fillStyle = "#243247"; ctx.fillText(label, x + 39, ink.height + 307);
     }
   }
+  if (exportTemperature) {
+    const y = ink.height + footerHeight + 30;
+    ctx.fillStyle = "#243247"; ctx.font = "22px sans-serif"; ctx.fillText("300hPa 気温線", 26, y);
+    for (const [index, value] of [-33,-39,-45,-51].entries()) {
+      const x = 260 + index * 180;
+      ctx.strokeStyle = ChartAnalysis.isothermPalette[index]; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+38,y-8); ctx.stroke();
+      ctx.fillStyle = "#243247"; ctx.fillText(`${value}℃`,x+48,y);
+    }
+    ctx.fillText("原図の同じ気温の数字を結ぶ補助線。数字の間は滑らかな接続で、気温の格子データから算出した線ではありません。", 26, y+38, output.width-52);
+  }
   output.toBlob((blob) => {
     if (loadRevision !== exportRevision || currentSelection?.key !== selected.key || !ready) return;
     if (!blob) { byId("status").textContent = "保存できませんでした"; return; }
@@ -431,7 +466,7 @@ function initialize(selected) {
     canvas.width = chart.naturalWidth; canvas.height = chart.naturalHeight;
   }
   const reviewed = selected.variant.features === "reviewed-aupq35";
-  for (const canvas of [analysisLayer, jetLayer, windLayer, geographyLayer, symbolLayer, symbolMask]) {
+  for (const canvas of [analysisLayer, jetLayer, windLayer, geographyLayer, symbolLayer, symbolMask, temperatureLayer]) {
     canvas.width = reviewed ? chart.naturalWidth : 1;
     canvas.height = reviewed ? chart.naturalHeight : 1;
     canvas.hidden = !reviewed;
@@ -443,7 +478,7 @@ function initialize(selected) {
   }
   paper.style.aspectRatio = `${ink.width} / ${ink.height}`;
   ready = true; paper.hidden = false; paper.dataset.ready = "true"; paper.dataset.chart = selected.product.id; paper.dataset.source = selected.variant.id;
-  selectMode(byId("manual").open ? "paint" : "move"); render(); drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); fit(); controls();
+  selectMode(byId("manual").open ? "paint" : "move"); render(); drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); drawTemperature(); fit(); controls();
 }
 async function fetchJSON(path, signal) {
   const response = await fetch(path, { cache: "no-store", signal });
@@ -467,7 +502,7 @@ async function checkedImage(path, expectedHash, width, height, signal, retry = f
 function keepDrawing() {
   if (!ready || !currentSelection) return;
   if (pointer !== null) finish({ pointerId: pointer });
-  drawingStates.set(currentSelection.key, { history: [...history], future: [...future], showWind, showTrough, showJet, showSymbols, showGeography, geographyStyle, geographyOpacity });
+  drawingStates.set(currentSelection.key, { history: [...history], future: [...future], showWind, showTrough, showJet, showSymbols, showGeography, geographyStyle, geographyOpacity, showTemperature });
 }
 function setOptions(select, records, value) {
   select.replaceChildren();
@@ -500,13 +535,14 @@ async function loadSelection(retry = false) {
   const selected = ChartCatalog.selection(catalog, byId("chart-select").value, byId("source-select").value, Number(byId("page-select").value));
   currentSelection = selected; ready = false; paper.hidden = true; paper.dataset.ready = "false";
   active = pointer = pan = originalPixels = null;
-  geography = satelliteImage = elevationData = terrainImage = symbols = windBands = candidates = null;
-  loadingError = geographyError = terrainError = symbolError = analysisError = "";
+  geography = satelliteImage = elevationData = terrainImage = symbols = windBands = candidates = isotherms = null;
+  loadingError = geographyError = terrainError = symbolError = analysisError = temperatureError = "";
   history.length = future.length = 0;
   const state = drawingStates.get(selected.key);
   if (state) { history.push(...state.history); future.push(...state.future); }
   showWind = state?.showWind || false; showTrough = state?.showTrough || false; showJet = state?.showJet || false;
   showSymbols = state?.showSymbols ?? true; showGeography = state?.showGeography ?? true;
+  showTemperature = state?.showTemperature ?? true;
   geographyStyle = state?.geographyStyle || "dots"; geographyOpacity = state?.geographyOpacity ?? 0.4;
   byId("geography-opacity").value = String(Math.round(geographyOpacity * 100));
   fitView = true;
@@ -551,6 +587,12 @@ async function loadFeatures(selected, revision, signal) {
     return;
   }
   await Promise.allSettled([
+    (async () => {
+      try {
+        const checked = ChartAnalysis.validateIsotherms(await fetchJSON("isotherms.json", signal), data);
+        if (current()) { isotherms = checked; drawTemperature(); controls(); }
+      } catch (error) { if (current() && error.name !== "AbortError") { temperatureError = "気温線の資料を確認できません。原図の気温表示は残ります。"; controls(); } }
+    })(),
     (async () => {
       try {
         const [contours, wind, guides] = await Promise.all(["contours.json", "wind-bands.json", "jet-guides.json"].map(path => fetchJSON(path, signal)));

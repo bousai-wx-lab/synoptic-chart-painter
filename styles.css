@@ -41,6 +41,10 @@ h1 { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; letter-s
 .symbol-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; margin: 8px 0 0; }
 .symbol-l { color: #dc2626; } .symbol-h { color: #2563eb; } .symbol-c { color: #38bdf8; } .symbol-w { color: #f97316; }
 #symbol-color { width: 100%; }
+#temperature { width: 100%; }
+.temperature-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; margin-top: 10px; font-size: 11px; }
+.temperature-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.temperature-legend i { display: inline-block; width: 22px; border-top: 3px solid; }
 h2 { margin: 0 0 9px; font-size: 12px; color: #164b68; }
 .analysis-buttons { flex-wrap: wrap; }
 #analyze { width: 100%; margin-bottom: 2px; }
@@ -95,6 +99,7 @@ input[type='color'] { display: block; border: 0; padding: 0; width: 30px; height
 #analysis-layer { z-index: 3; }
 #jet-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
 #symbol-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+#temperature-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 #ink { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; cursor: crosshair; touch-action: none; z-index: 6; }
 #ink[data-mode='move'] { cursor: grab; } #ink[data-dragging='true'][data-mode='move'] { cursor: grabbing; }
 footer { display: flex; justify-content: space-between; flex-wrap: wrap; flex-shrink: 0; gap: 2px 14px; font-size: 10px; color: #68778b; background: #fff; border-top: 1px solid #d4dce6; padding: 4px 12px; }
