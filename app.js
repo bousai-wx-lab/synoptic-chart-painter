@@ -168,7 +168,11 @@ function controls() {
 
 function drawGeography() {
   geographyContext.clearRect(0, 0, geographyLayer.width, geographyLayer.height);
-  if (ready && showGeography && geography) ChartGeography.draw(geographyContext, geography, geographyStyle, geographyOpacity, satelliteImage, terrainImage);
+  if (!ready || !showGeography || !geography) return;
+  const style = ChartGeography.patterns.find(p => p.id === geographyStyle);
+  // A restored style can arrive before its independently validated image.
+  if ((style.satellite && !satelliteImage) || (style.terrain !== undefined && !terrainImage)) return;
+  ChartGeography.draw(geographyContext, geography, geographyStyle, geographyOpacity, satelliteImage, terrainImage);
 }
 for (const [index, style] of ChartGeography.patterns.entries()) {
   const button = document.createElement("button"), preview = document.createElement("canvas"), label = document.createElement("span");
@@ -669,7 +673,7 @@ async function loadFeatures(selected, revision, signal) {
         geography = checked; drawGeography(); controls();
         try {
           const image = await checkedImage(checked.satellite.path, checked.satellite.image_sha256, checked.satellite.width, checked.satellite.height, signal);
-          if (current()) { satelliteImage = image; ChartGeography.preview(byId("geography-patterns").querySelector('[data-pattern="satellite"] canvas'), "satellite", image); controls(); }
+          if (current()) { satelliteImage = image; ChartGeography.preview(byId("geography-patterns").querySelector('[data-pattern="satellite"] canvas'), "satellite", image); drawGeography(); controls(); }
         } catch (error) { if (current() && error.name !== "AbortError") { geographyError = "衛星画像を確認できません。ほかの塗り方は使えます。"; controls(); } }
       } catch (error) { if (current() && error.name !== "AbortError") { geographyError = "陸海の資料を確認できません。ほかの色分けは使えます。"; controls(); } }
     })(),
