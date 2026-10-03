@@ -9,43 +9,49 @@ const actual = JSON.parse(fs.readFileSync(path.join(root, "contours.json")));
 const chart = JSON.parse(fs.readFileSync(path.join(root, "chart.json")));
 const temperatures = JSON.parse(fs.readFileSync(path.join(root, "isotherms.json")));
 analysis.validateIsotherms(temperatures, chart);
-assert.deepEqual(temperatures.levels.map(l => l.temperature_c), [-33,-39,-45,-51]);
-assert.deepEqual(temperatures.levels.map(l => l.labels.length), [29,27,23,31]);
-assert.deepEqual(temperatures.levels.at(-1).lines.map(l => l.length), [27,2,2], "separate northern runs must not be bridged");
-for (const key of ["source_sha256","image_sha256","observation_time","width","height","unit","pressure_hpa"]) assert.throws(() => analysis.validateIsotherms({...temperatures,[key]:"wrong"},chart));
+assert.deepEqual(temperatures.panels.map(p=>p.pressure_hpa),[300,500]);
+assert.deepEqual(temperatures.panels.map(p=>p.levels.map(l=>l.temperature_c)),[[-27,-33,-39,-45,-51],[-3,-6,-9,-12,-15,-18,-21,-24,-27,-30]]);
+assert.deepEqual(temperatures.panels[0].levels.at(-1).lines.map(l=>l.points.length),[30,3],"include northern stamps, preserve the real gap");
+for (const key of ["source_sha256","image_sha256","observation_time","width","height","unit"]) assert.throws(()=>analysis.validateIsotherms({...temperatures,[key]:"wrong"},chart));
 for (const change of [
-  d => { d.levels[0].temperature_c = -36; },
-  d => { d.levels[0].lines[0][1][1] = 2000; },
-  d => { d.levels[0].lines[0][1][0] = NaN; },
-  d => { d.levels[0].labels[0][0] += 3; },
-  d => { d.levels.at(-1).lines = [d.levels.at(-1).lines.flat()]; },
-  d => { d.bounds[3] = chart.height; }
-]) { const bad = structuredClone(temperatures); change(bad); assert.throws(() => analysis.validateIsotherms(bad,chart)); }
-const temperatureStrokes = [], temperaturePoints = [], temperatureClip = [];
-const temperatureCtx = { save(){},restore(){},beginPath(){},rect(){},clip(rule){temperatureClip.push(rule);},moveTo(){},bezierCurveTo(...coords){temperaturePoints.push(coords);},stroke(){temperatureStrokes.push(this.strokeStyle);},fill(){throw Error("temperature area fill forbidden");} };
-analysis.drawIsotherms(temperatureCtx, temperatures);
-assert.deepEqual(temperatureStrokes, [analysis.isothermPalette[0],analysis.isothermPalette[1],analysis.isothermPalette[2],...Array(3).fill(analysis.isothermPalette[3])]);
-assert.deepEqual(temperatureClip,["evenodd"],"original temperature stamps must have holes around them");
-assert.ok(temperaturePoints.flat().every(Number.isFinite));
-const roundedBend = analysis.isothermSegments([[100,100],[200,100],[200,200]]);
-const incoming = roundedBend[0].end.map((v,k)=>v-roundedBend[0].c2[k]);
-const outgoing = roundedBend[1].c1.map((v,k)=>v-roundedBend[1].start[k]);
-assert.ok(incoming.every(v=>v>0) && outgoing.every(v=>v>0),"a right-angle stamp sequence needs a soft shared tangent");
-assert.ok(Math.abs(incoming[0]*outgoing[1]-incoming[1]*outgoing[0])<1e-8,"curve direction must be continuous through a stamp");
-for (const level of temperatures.levels) for (const points of level.lines) {
-  const segments=analysis.isothermSegments(points);
-  for (let i=1;i<segments.length;i++) {
-    const u=segments[i-1].end.map((v,k)=>v-segments[i-1].c2[k]),v=segments[i].c1.map((n,k)=>n-segments[i].start[k]);
-    assert.ok(Math.abs(u[0]*v[1]-u[1]*v[0])<1e-6,"all printed stamp connections must preserve tangent direction");
-    assert.ok(u[0]*v[0]+u[1]*v[1]>=0,"no tangent reversal at a stamp");
-  }
+ d=>{d.panels.reverse();},
+ d=>{d.panels[1].pressure_hpa=850;},
+ d=>{d.panels[0].levels[0].temperature_c=-36;},
+ d=>{d.panels[0].levels[0].lines[0].points[1][1]=2000;},
+ d=>{d.panels[1].levels[0].lines[0].points[1][1]=900;},
+ d=>{d.panels[1].levels[0].lines[0].points[1][0]=NaN;},
+ d=>{d.panels[0].levels[0].lines[0].closed=false;},
+ d=>{d.panels[1].levels[0].labels[0][0]+=3;},
+ d=>{d.panels[0].levels.at(-1).lines=[{points:d.panels[0].levels.at(-1).lines.flatMap(l=>l.points),closed:false}];},
+ d=>{d.panels[1].bounds[1]=100;}
+]) {const bad=structuredClone(temperatures);change(bad);assert.throws(()=>analysis.validateIsotherms(bad,chart));}
+for (const pressure of [300,500]) {
+ const strokes=[],coords=[],clips=[],rects=[];
+ const ctx={save(){},restore(){},beginPath(){},rect(...r){rects.push(r);},clip(rule){clips.push(rule);},moveTo(){},bezierCurveTo(...c){coords.push(c);},stroke(){strokes.push(this.strokeStyle);},fill(){throw Error("temperature area fill forbidden");}};
+ analysis.drawIsotherms(ctx,temperatures,[pressure]);
+ const panel=temperatures.panels.find(p=>p.pressure_hpa===pressure),scale=analysis.isothermScales.find(s=>s.pressure_hpa===pressure);
+ assert.deepEqual(strokes,panel.levels.flatMap((l,i)=>Array(l.lines.length).fill(scale.colors[i])));
+ assert.deepEqual(clips,["evenodd"],"protect printed stamps in each independently clipped panel");
+ assert.deepEqual(rects[0],[panel.bounds[0],panel.bounds[1],panel.bounds[2]-panel.bounds[0],panel.bounds[3]-panel.bounds[1]]);
+ assert.ok(coords.flat().every(Number.isFinite));
+ assert.ok(coords.every(c=>c.filter((_,i)=>i%2).every(y=>pressure===300?y<chart.height/2:y>chart.height/2)),"never draw a plane's temperature guide on the other panel");
+ const brightness=scale.colors.map(c=>c.slice(1).match(/../g).map(v=>parseInt(v,16))).map(rgb=>rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722);
+ assert.ok(brightness.every((v,i)=>i===0||v<brightness[i-1]),"each colder step must become darker");
 }
-assert.ok(temperaturePoints.every(coords => coords.filter((_,i)=>i%2).every(y=>y<chart.height/2)),"500hPa remains untouched");
-const temperatureBrightness = analysis.isothermPalette.map(color => {
-  const rgb=color.slice(1).match(/../g).map(v=>parseInt(v,16));return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
-});
-assert.ok(temperatureBrightness.every((v,i)=>i===0 || v<temperatureBrightness[i-1]),"colder lines must become darker");
-console.log("TEMPERATURE_LINES_OK values=4 stamps=110 separate_runs=6 binding=checked malformed_data=blocked text_protected=checked cold_darkening=checked lower_panel=untouched");
+const roundedBend=analysis.isothermSegments([[100,100],[200,100],[200,200]]);
+assert.ok(roundedBend[0].end.every((v,k)=>v-roundedBend[0].c2[k]>0),"soft tangent at right-angle stamp sequence");
+for (const panel of temperatures.panels) for (const level of panel.levels) for (const line of level.lines) {
+ const segments=analysis.isothermSegments(line.points,line.closed);
+ assert.equal(segments.length,line.points.length-1+Number(line.closed));
+ for (let i=Number(!line.closed);i<segments.length;i++) {
+  const previous=segments[(i+segments.length-1)%segments.length],current=segments[i];
+  assert.deepEqual(previous.end,current.start,"curves interpolate every stamp, including loop closure");
+  const u=previous.end.map((v,k)=>v-previous.c2[k]),v=current.c1.map((n,k)=>n-current.start[k]);
+  assert.ok(Math.abs(u[0]*v[1]-u[1]*v[0])<1e-6,"continuous tangent through all points and the closed seam");
+  assert.ok(u[0]*v[0]+u[1]*v[1]>=-1e-8,"no tangent reversal");
+ }
+}
+console.log("TEMPERATURE_LINES_OK 300hPa=5_levels_6_runs 500hPa=10_levels_24_runs closed_seams=smooth binding=checked plane_isolation=checked labels=protected cold_darkening=checked");
 analysis.validateSymbols(marks, chart);
 for (const [hpa, expected] of [[300, {L:5,H:5,C:9,W:6}], [500, {L:2,H:3,C:9,W:11}]]) {
   const counts = Object.fromEntries(Object.keys(expected).map(letter => [letter, marks.symbols.filter(s => s.letter === letter && s.pressure_hpa === hpa).length]));

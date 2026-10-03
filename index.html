@@ -9,10 +9,10 @@
   <meta name="application-name" content="Weather Chart Analysis Master">
   <title>天気図解析マスター | Weather Chart Analysis Master | Bousai Wx Lab</title>
   <link rel="stylesheet" href="styles.css?v=82f42aea5d2b533d">
-  <script src="analysis.js?v=48cc9b9fd74617ff" defer></script>
+  <script src="analysis.js?v=729b22b69fb25a63" defer></script>
   <script src="geography.js?v=f05742dc0ce1b78a" defer></script>
   <script src="catalog.js?v=9d1519ba693ab9cf" defer></script>
-  <script src="app.js?v=dbe78f1dbd7cf2dc" defer></script>
+  <script src="app.js?v=dbafb2278cd144af" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -49,7 +49,7 @@
       <div class="layer-group" data-layer-group><h3>300 hPa <span>上段</span></h3>
       <article class="layer-tool" data-layer="temperature">
         <div class="layer-row"><button type="button" id="temperature" class="layer-toggle" aria-pressed="false" disabled>気温線</button><button type="button" class="layer-detail-button" data-layer-detail="temperature" aria-label="気温線の詳細" aria-expanded="false" aria-controls="detail-temperature">詳細 <span aria-hidden="true">⌄</span></button></div>
-        <div id="detail-temperature" class="layer-details" hidden><div id="temperature-legend" class="temperature-legend" aria-label="300hPaの気温線。暖かいほど薄い青、冷たいほど濃い紫"></div><p class="gesture-note">−33・−39・−45・−51℃の数字を結ぶ補助線です。数字の間は滑らかにつなぎ、離れた並びは分けます。</p></div>
+        <div id="detail-temperature" class="layer-details" hidden><div id="temperature-legend" class="temperature-legend" aria-label="300hPaの気温線。暖かいほど薄い青、冷たいほど濃い紫"></div><p class="gesture-note">−27〜−51℃の全5段階。原図の同じ気温の数字を滑らかにつなぐ補助線です。</p></div>
       </article>
       <article class="layer-tool" data-layer="wind">
         <div class="layer-row"><button type="button" id="wind" class="layer-toggle" aria-pressed="false" disabled>風速の色塗り</button><button type="button" class="layer-detail-button" data-layer-detail="wind" aria-label="風速の色塗りの詳細" aria-expanded="false" aria-controls="detail-wind">詳細 <span aria-hidden="true">⌄</span></button></div>
@@ -59,7 +59,12 @@
         <div class="layer-row"><button type="button" id="jet" class="layer-toggle" aria-pressed="false" disabled>強風軸候補</button><button type="button" class="layer-detail-button" data-layer-detail="jet" aria-label="強風軸候補の詳細" aria-expanded="false" aria-controls="detail-jet">詳細 <span aria-hidden="true">⌄</span></button></div>
         <div id="detail-jet" class="layer-details" hidden><span class="legend jet-key">赤い矢印 · 300hPa</span><p class="gesture-note">各強風帯の最も強い帯の中心をたどります。流れの経路はこの1枚で確認してください。</p></div>
       </article>
-      </div><div class="layer-group" data-layer-group><h3>500 hPa <span>下段</span></h3>      <article class="layer-tool" data-layer="trough">
+      </div><div class="layer-group" data-layer-group><h3>500 hPa <span>下段</span></h3>
+      <article class="layer-tool" data-layer="temperature500">
+        <div class="layer-row"><button type="button" id="temperature500" class="layer-toggle" aria-pressed="false" disabled>気温線</button><button type="button" class="layer-detail-button" data-layer-detail="temperature500" aria-label="500hPaの気温線の詳細" aria-expanded="false" aria-controls="detail-temperature500">詳細 <span aria-hidden="true">⌄</span></button></div>
+        <div id="detail-temperature500" class="layer-details" hidden><div id="temperature500-legend" class="temperature-legend" aria-label="500hPaの気温線。暖かいほど薄い青、冷たいほど濃い紫"></div><p class="gesture-note">−3〜−30℃の全10段階。原図の気温の破線に沿って、閉じた線も滑らかに色を重ねます。</p></div>
+      </article>
+      <article class="layer-tool" data-layer="trough">
         <div class="layer-row"><button type="button" id="trough" class="layer-toggle" aria-pressed="false" disabled>トラフ候補</button><button type="button" class="layer-detail-button" data-layer-detail="trough" aria-label="トラフ候補の詳細" aria-expanded="false" aria-controls="detail-trough">詳細 <span aria-hidden="true">⌄</span></button></div>
         <div id="detail-trough" class="layer-details" hidden><span class="legend trough-key">茶色の二重線 · 500hPa</span><p class="gesture-note">等高度線の曲がりから推定した候補です。</p></div>
       </article>
@@ -130,7 +135,7 @@
         <canvas id="wind-layer" aria-label="300hPa等風速線に沿った緑色の塗り分け"></canvas>
         <canvas id="analysis-layer" aria-label="500hPaのトラフの推定候補"></canvas>
         <canvas id="jet-layer" aria-label="300hPaの強風帯の中心を流れに沿ってたどる赤い矢印"></canvas>
-        <canvas id="temperature-layer" aria-label="300hPaの−33から−51℃の気温表示を結ぶ青から紫の補助線"></canvas>
+        <canvas id="temperature-layer" aria-label="300hPaの−27から−51℃、500hPaの−3から−30℃の気温線。暖かい薄い青から寒い濃い紫"></canvas>
         <canvas id="symbol-layer" aria-label="原図のLは赤、Hは青、Cは水色、Wはオレンジ。文字部分だけの色分け"></canvas>
         <canvas id="ink" aria-label="天気図の色塗り面"></canvas>
       </div>

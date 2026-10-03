@@ -194,34 +194,45 @@ const ChartAnalysis = (() => {
     }
     ctx.restore();
   }
-  const isothermPalette = ["#74b9ef", "#558ee0", "#7460cb", "#4c1d95"];
+  const isothermScales = [
+    { pressure_hpa:300, values:[-27,-33,-39,-45,-51], colors:["#a0d8fa","#74b9ef","#558ee0","#7460cb","#4c1d95"] },
+    { pressure_hpa:500, values:[-3,-6,-9,-12,-15,-18,-21,-24,-27,-30], colors:["#a0d8fa","#85c5f1","#6aafe8","#5799df","#5485d7","#6071ce","#6d5dc4","#6847b3","#5932a4","#4c1d95"] }
+  ];
+  const isothermPalette = isothermScales[0].colors;
   function validateIsotherms(data, chart) {
-    if (data?.schema_version !== 1 || data.source_sha256 !== chart.source_sha256 || data.image_sha256 !== chart.image_sha256 || data.observation_time !== chart.observation_time || data.width !== chart.width || data.height !== chart.height || data.pressure_hpa !== 300 || data.unit !== "degC" || !Array.isArray(data.bounds) || data.bounds.length !== 4 || !data.bounds.every(Number.isFinite) || !Array.isArray(data.levels) || data.levels.length !== 4) throw Error("気温線の資料が原図と一致しません");
-    const [left, top, right, bottom] = data.bounds;
-    if (!(left > 0 && left < right && right < chart.width && top > 0 && top < bottom && bottom < chart.height / 2)) throw Error("気温線の気圧面を確認できません");
-    const sizes = [[29], [27], [23], [27, 2, 2]];
-    for (const [index, level] of data.levels.entries()) {
-      if (level.temperature_c !== [-33, -39, -45, -51][index] || !Array.isArray(level.lines) || level.lines.length !== sizes[index].length || !Array.isArray(level.labels) || level.labels.length !== sizes[index].reduce((a,b) => a+b,0)) throw Error("気温線の値と並びを確認できません");
-      const points = level.lines.flat();
-      for (const [j, line] of level.lines.entries()) {
-        if (!Array.isArray(line) || line.length !== sizes[index][j] || !line.every(p => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && p[0] >= left && p[0] <= right && p[1] >= top && p[1] <= bottom)) throw Error("気温線の位置を確認できません");
-        for (let k = 1; k < line.length; k++) {
-          const distance = Math.hypot(line[k][0]-line[k-1][0], line[k][1]-line[k-1][1]);
-          if (distance < .1 || distance >= 110) throw Error("気温線の接続を確認できません");
+    if (data?.schema_version !== 2 || data.source_sha256 !== chart.source_sha256 || data.image_sha256 !== chart.image_sha256 || data.observation_time !== chart.observation_time || data.width !== chart.width || data.height !== chart.height || data.unit !== "degC" || !Array.isArray(data.panels) || data.panels.length !== 2) throw Error("気温線の資料が原図と一致しません");
+    const runCounts = [[1,1,1,1,2],[7,2,1,1,1,2,1,1,6,2]];
+    const labelCounts = [[20,29,27,23,33],[5,2,1,1,1,1,1,1,3,2]];
+    const closures = [[[true],[false],[false],[false],[false,false]], [Array(7).fill(true),[false,true],[false],[false],[false],[false,false],[false],[false],[false,true,true,true,true,true],[false,true]]];
+    for (const [plane, panel] of data.panels.entries()) {
+      if (panel.pressure_hpa !== isothermScales[plane].pressure_hpa || !Array.isArray(panel.bounds) || panel.bounds.length !== 4 || !panel.bounds.every(Number.isFinite) || !Array.isArray(panel.levels) || panel.levels.length !== isothermScales[plane].values.length) throw Error("気温線の気圧面を確認できません");
+      const [left, top, right, bottom] = panel.bounds;
+      if (!(left>0 && left<right && right<chart.width && top>0 && top<bottom && bottom<chart.height && (plane===0 ? bottom<chart.height/2 : top>chart.height/2))) throw Error("気温線の気圧面を確認できません");
+      for (const [index, level] of panel.levels.entries()) {
+        if (level.temperature_c !== isothermScales[plane].values[index] || !Array.isArray(level.lines) || level.lines.length !== runCounts[plane][index] || !Array.isArray(level.labels) || level.labels.length !== labelCounts[plane][index]) throw Error("気温線の値と並びを確認できません");
+        const points = level.lines.flatMap(line=>line.points || []);
+        for (const [run, line] of level.lines.entries()) {
+          if (line.closed!==closures[plane][index][run] || !Array.isArray(line.points) || line.points.length < (line.closed?3:2) || line.points.length>1500 || (plane===0 && line.points.length!==[[20],[29],[27],[23],[30,3]][index][run]) || !line.points.every(p => Array.isArray(p) && p.length===2 && p.every(Number.isFinite) && p[0]>=left && p[0]<=right && p[1]>=top && p[1]<=bottom)) throw Error("気温線の位置を確認できません");
+          const pairs = line.points.slice(1).map((q,i)=>[line.points[i],q]);
+          if (line.closed) pairs.push([line.points.at(-1),line.points[0]]);
+          for (const [p,q] of pairs) {
+            const distance = Math.hypot(q[0]-p[0],q[1]-p[1]);
+            if (distance<.1 || distance >= (plane===0?110:85)) throw Error("気温線の接続を確認できません");
+          }
         }
-      }
-      for (const [j, box] of level.labels.entries()) {
-        if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || !(left <= box[0] && box[0] < box[2] && box[2] <= right && top <= box[1] && box[1] < box[3] && box[3] <= bottom && box[2]-box[0] < 30 && box[3]-box[1] < 15) || Math.hypot(points[j][0]-(box[0]+box[2])/2, points[j][1]-(box[1]+box[3])/2) > .02) throw Error("原図の気温表示との対応を確認できません");
+        for (const box of level.labels) {
+          if (!Array.isArray(box) || box.length!==4 || !box.every(Number.isFinite) || !(left<=box[0] && box[0]<box[2] && box[2]<=right && top<=box[1] && box[1]<box[3] && box[3]<=bottom && box[2]-box[0]<(plane===0?30:60) && box[3]-box[1]<(plane===0?15:30)) || !points.some(p=>Math.hypot(p[0]-(box[0]+box[2])/2,p[1]-(box[1]+box[3])/2)<.02)) throw Error("原図の気温表示との対応を確認できません");
+        }
       }
     }
     return data;
   }
-  function isothermSegments(points) {
+  function isothermSegments(points, closed=false) {
     const segments = [];
-    for (let i = 1; i < points.length; i++) {
-      const p = points[i-1], q = points[i];
-      const before = points[i-2] || p.map((v,k) => 2*v-q[k]);
-      const after = points[i+1] || q.map((v,k) => 2*v-p[k]);
+    for (let i = 1; i < points.length + Number(closed); i++) {
+      const p = points[i-1], q = points[i%points.length];
+      const before = points[i-2] || (closed?points.at(-1):p.map((v,k) => 2*v-q[k]));
+      const after = points[i+1] || (closed?points[(i+1)%points.length]:q.map((v,k) => 2*v-p[k]));
       const a = Math.sqrt(Math.hypot(p[0]-before[0],p[1]-before[1]));
       const b = Math.sqrt(Math.hypot(q[0]-p[0],q[1]-p[1]));
       const c = Math.sqrt(Math.hypot(after[0]-q[0],after[1]-q[1]));
@@ -233,22 +244,26 @@ const ChartAnalysis = (() => {
     }
     return segments;
   }
-  function drawIsotherms(ctx, data) {
+  function drawIsotherms(ctx, data, pressures=[300,500]) {
+    for (const panel of data.panels) {
+    if (!pressures.includes(panel.pressure_hpa)) continue;
     ctx.save();
     ctx.globalCompositeOperation = "source-over";
-    const [left, top, right, bottom] = data.bounds;
+    const [left, top, right, bottom] = panel.bounds;
     // Leave the printed temperatures legible, including other levels' stamps.
     ctx.beginPath(); ctx.rect(left, top, right-left, bottom-top);
-    for (const level of data.levels) for (const [x0,y0,x1,y1] of level.labels) ctx.rect(x0-2,y0-2,x1-x0+4,y1-y0+4);
+    for (const level of panel.levels) for (const [x0,y0,x1,y1] of level.labels) ctx.rect(x0-2,y0-2,x1-x0+4,y1-y0+4);
     ctx.clip("evenodd");
     ctx.lineWidth = 4.5; ctx.lineCap = ctx.lineJoin = "round";
-    for (const [index, level] of data.levels.entries()) for (const points of level.lines) {
-      ctx.strokeStyle = isothermPalette[index]; ctx.beginPath(); ctx.moveTo(...points[0]);
-      for (const segment of isothermSegments(points)) ctx.bezierCurveTo(...segment.c1,...segment.c2,...segment.end);
+    const scale = isothermScales.find(s=>s.pressure_hpa===panel.pressure_hpa);
+    for (const [index, level] of panel.levels.entries()) for (const line of level.lines) {
+      ctx.strokeStyle = scale.colors[index]; ctx.beginPath(); ctx.moveTo(...line.points[0]);
+      for (const segment of isothermSegments(line.points,line.closed)) ctx.bezierCurveTo(...segment.c1,...segment.c2,...segment.end);
       ctx.stroke();
     }
     ctx.restore();
+    }
   }
-  return { validate, analyze, troughs, jets, validateWindBands, drawWindBands, windPalette, validateJetGuides, strongestCenter, drawJetAxes, symbolPalette, validateSymbols, drawSymbols, isothermPalette, validateIsotherms, drawIsotherms, isothermSegments };
+  return { validate, analyze, troughs, jets, validateWindBands, drawWindBands, windPalette, validateJetGuides, strongestCenter, drawJetAxes, symbolPalette, validateSymbols, drawSymbols, isothermPalette, isothermScales, validateIsotherms, drawIsotherms, isothermSegments };
 })();
 if (typeof module !== "undefined") module.exports = ChartAnalysis;

@@ -36,6 +36,7 @@ const temperatureLayer = byId("temperature-layer");
 const temperatureContext = temperatureLayer.getContext("2d");
 let isotherms = null;
 let showTemperature = true;
+let showTemperature500 = true;
 let temperatureError = "";
 let windBands = null;
 let showWind = false;
@@ -67,6 +68,7 @@ const analysisTools = [
   { id: "temperature", button: "temperature", label: "気温線", plane: "300hPa" },
   { id: "wind", button: "wind", label: "風速の色塗り", plane: "300hPa" },
   { id: "jet", button: "jet", label: "強風軸候補", plane: "300hPa" },
+  { id: "temperature500", button: "temperature500", label: "気温線", plane: "500hPa" },
   { id: "trough", button: "trough", label: "トラフ候補", plane: "500hPa" },
   { id: "symbols", button: "symbol-color", label: "L・H・C・Wの文字", plane: "300/500hPa" },
   { id: "geography", button: "geography-toggle", label: "陸海・地形", plane: "300/500hPa" }
@@ -134,7 +136,9 @@ function controls() {
   byId("temperature").disabled = !ready || !isotherms;
   byId("temperature").setAttribute("aria-pressed", String(Boolean(showTemperature && isotherms)));
   byId("temperature").textContent = "気温線";
-  byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols) && !(showGeography && geography) && !(showTemperature && isotherms);
+  byId("temperature500").disabled = !ready || !isotherms;
+  byId("temperature500").setAttribute("aria-pressed", String(Boolean(showTemperature500 && isotherms)));
+  byId("original").disabled = !showWind && !showTrough && !showJet && !(showSymbols && symbols) && !(showGeography && geography) && !((showTemperature || showTemperature500) && isotherms);
   byId("geography-toggle").disabled = byId("geography-opacity").disabled = !ready || !geography;
   byId("geography-toggle").setAttribute("aria-pressed", String(Boolean(showGeography && geography)));
   byId("geography-opacity-value").textContent = `${Math.round(geographyOpacity * 100)}%`;
@@ -160,6 +164,7 @@ function controls() {
   paper.dataset.wind = String(Boolean(showWind && windBands));
   paper.dataset.symbols = String(Boolean(showSymbols && symbols));
   paper.dataset.temperature = String(Boolean(showTemperature && isotherms));
+  paper.dataset.temperature500 = String(Boolean(showTemperature500 && isotherms));
   paper.dataset.geography = showGeography && geography ? geographyStyle : "off";
   const layerCount = updateAnalysisPanel();
   const layers = [layerCount ? `解析${layerCount}項目` : "原図", paintCount ? `手描き${paintCount}筆` : ""].filter(Boolean);
@@ -250,25 +255,29 @@ byId("symbol-color").addEventListener("click", () => {
   if (!ready || !symbols) return;
   showSymbols = !showSymbols; drawSymbols(); controls();
 });
-for (const [index, value] of [-33, -39, -45, -51].entries()) {
+for (const scale of ChartAnalysis.isothermScales) for (const [index, value] of scale.values.entries()) {
   const entry = document.createElement("span"), swatch = document.createElement("i");
-  swatch.style.borderColor = ChartAnalysis.isothermPalette[index]; swatch.setAttribute("aria-hidden", "true");
-  entry.append(swatch, `${value}℃`); byId("temperature-legend").append(entry);
+  swatch.style.borderColor = scale.colors[index]; swatch.setAttribute("aria-hidden", "true");
+  entry.append(swatch, `${value}℃`); byId(scale.pressure_hpa===300 ? "temperature-legend" : "temperature500-legend").append(entry);
 }
 function drawTemperature() {
   temperatureContext.clearRect(0, 0, temperatureLayer.width, temperatureLayer.height);
-  if (ready && showTemperature && isotherms) ChartAnalysis.drawIsotherms(temperatureContext, isotherms);
+  if (ready && isotherms) ChartAnalysis.drawIsotherms(temperatureContext, isotherms, [showTemperature?300:null,showTemperature500?500:null]);
 }
 byId("temperature").addEventListener("click", () => {
   if (!ready || !isotherms) return;
   showTemperature = !showTemperature; drawTemperature(); controls();
+});
+byId("temperature500").addEventListener("click", () => {
+  if (!ready || !isotherms) return;
+  showTemperature500 = !showTemperature500; drawTemperature(); controls();
 });
 for (const id of ["analyze", "trough", "jet", "original"]) byId(id).addEventListener("click", () => {
   if (!ready || (id !== "original" && !candidates)) return;
   if (id === "analyze") showTrough = showJet = true;
   if (id === "trough") showTrough = !showTrough;
   if (id === "jet") showJet = !showJet;
-  if (id === "original") showWind = showTrough = showJet = showSymbols = showGeography = showTemperature = false;
+  if (id === "original") showWind = showTrough = showJet = showSymbols = showGeography = showTemperature = showTemperature500 = false;
   drawAnalysis(); drawWind(); drawSymbols(); drawGeography(); drawTemperature(); controls();
 });
 
@@ -451,9 +460,9 @@ byId("save").addEventListener("click", () => {
   const output = document.createElement("canvas");
   const selectedGeography = ChartGeography.patterns.find(p => p.id === geographyStyle);
   const exportTerrain = Boolean(showGeography && geography && terrainImage && selectedGeography.terrain !== undefined);
-  const exportTemperature = Boolean(showTemperature && isotherms);
+  const exportTemperatures = isotherms ? ChartAnalysis.isothermScales.filter(s=>s.pressure_hpa===300 ? showTemperature : showTemperature500) : [];
   const footerHeight = exportTerrain ? 340 : 260;
-  output.width = ink.width; output.height = ink.height + footerHeight + (exportTemperature ? 96 : 0);
+  output.width = ink.width; output.height = ink.height + footerHeight + (exportTemperatures.length ? exportTemperatures.length*40+56 : 0);
   const ctx = output.getContext("2d");
   ctx.fillStyle = "white"; ctx.fillRect(0, 0, output.width, output.height);
   ctx.drawImage(chart, 0, 0);
@@ -488,15 +497,17 @@ byId("save").addEventListener("click", () => {
       ctx.fillStyle = "#243247"; ctx.fillText(label, x + 39, ink.height + 307);
     }
   }
-  if (exportTemperature) {
-    const y = ink.height + footerHeight + 30;
-    ctx.fillStyle = "#243247"; ctx.font = "22px sans-serif"; ctx.fillText("300hPa 気温線", 26, y);
-    for (const [index, value] of [-33,-39,-45,-51].entries()) {
-      const x = 260 + index * 180;
-      ctx.strokeStyle = ChartAnalysis.isothermPalette[index]; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+38,y-8); ctx.stroke();
+  if (exportTemperatures.length) {
+    for (const [row,scale] of exportTemperatures.entries()) {
+    const y = ink.height + footerHeight + 30 + row*40;
+    ctx.fillStyle = "#243247"; ctx.font = "22px sans-serif"; ctx.fillText(`${scale.pressure_hpa}hPa 気温線`, 26, y);
+    for (const [index, value] of scale.values.entries()) {
+      const x = 230 + index * 170;
+      ctx.strokeStyle = scale.colors[index]; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+38,y-8); ctx.stroke();
       ctx.fillStyle = "#243247"; ctx.fillText(`${value}℃`,x+48,y);
     }
-    ctx.fillText("原図の同じ気温の数字を結ぶ補助線。数字の間は滑らかな接続で、気温の格子データから算出した線ではありません。", 26, y+38, output.width-52);
+    }
+    ctx.fillText("原図の気温表示・破線をもとに滑らかにつなぐ補助線。気温の格子データから算出した線ではありません。", 26, ink.height+footerHeight+exportTemperatures.length*40+28, output.width-52);
   }
   output.toBlob((blob) => {
     if (loadRevision !== exportRevision || currentSelection?.key !== selected.key || !ready) return;
@@ -558,7 +569,7 @@ async function checkedImage(path, expectedHash, width, height, signal, retry = f
 function keepDrawing() {
   if (!ready || !currentSelection) return;
   if (pointer !== null) finish({ pointerId: pointer });
-  drawingStates.set(currentSelection.key, { history: [...history], future: [...future], showWind, showTrough, showJet, showSymbols, showGeography, geographyStyle, geographyOpacity, showTemperature });
+  drawingStates.set(currentSelection.key, { history: [...history], future: [...future], showWind, showTrough, showJet, showSymbols, showGeography, geographyStyle, geographyOpacity, showTemperature, showTemperature500 });
 }
 function setOptions(select, records, value) {
   select.replaceChildren();
@@ -599,6 +610,7 @@ async function loadSelection(retry = false) {
   showWind = state?.showWind || false; showTrough = state?.showTrough || false; showJet = state?.showJet || false;
   showSymbols = state?.showSymbols ?? true; showGeography = state?.showGeography ?? true;
   showTemperature = state?.showTemperature ?? true;
+  showTemperature500 = state?.showTemperature500 ?? true;
   geographyStyle = state?.geographyStyle || "dots"; geographyOpacity = state?.geographyOpacity ?? 0.4;
   byId("geography-opacity").value = String(Math.round(geographyOpacity * 100));
   fitView = true;
