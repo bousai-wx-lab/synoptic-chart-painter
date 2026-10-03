@@ -42,7 +42,7 @@ h1 { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; letter-s
 .symbol-l { color: #dc2626; } .symbol-h { color: #2563eb; } .symbol-c { color: #38bdf8; } .symbol-w { color: #f97316; }
 .temperature-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; margin-top: 10px; font-size: 11px; }
 .temperature-legend span { display: inline-flex; align-items: center; gap: 6px; }
-.temperature-legend i { display: inline-block; width: 22px; border-top: 3px solid; }
+.temperature-legend i { display: inline-block; width: 22px; border-top: 2px solid; }
 #temperature500-legend i { width: 32px; border-top-style: dashed; }
 h2 { margin: 0 0 9px; font-size: 12px; color: #164b68; }
 .analysis-buttons { flex-wrap: wrap; }

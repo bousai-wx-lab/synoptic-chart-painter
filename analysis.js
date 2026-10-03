@@ -254,7 +254,7 @@ const ChartAnalysis = (() => {
     ctx.beginPath(); ctx.rect(left, top, right-left, bottom-top);
     for (const level of panel.levels) for (const [x0,y0,x1,y1] of level.labels) ctx.rect(x0-2,y0-2,x1-x0+4,y1-y0+4);
     ctx.clip("evenodd");
-    ctx.lineWidth = 4.5; ctx.lineCap = ctx.lineJoin = "round";
+    ctx.lineWidth = 3.5; ctx.lineCap = ctx.lineJoin = "round";
     const scale = isothermScales.find(s=>s.pressure_hpa===panel.pressure_hpa);
     ctx.setLineDash(scale.dash); ctx.lineDashOffset = 0;
     if (panel.pressure_hpa===500) ctx.lineCap = "butt";

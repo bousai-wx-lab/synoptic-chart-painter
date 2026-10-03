@@ -505,7 +505,7 @@ byId("save").addEventListener("click", () => {
     for (const [index, value] of scale.values.entries()) {
       const x = 230 + index * 170;
       const length = scale.pressure_hpa===500 ? 56 : 38;
-      ctx.strokeStyle = scale.colors[index]; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+length,y-8); ctx.stroke();
+      ctx.strokeStyle = scale.colors[index]; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x+length,y-8); ctx.stroke();
       ctx.fillStyle = "#243247"; ctx.fillText(`${value}℃`,x+length+10,y);
     }
     ctx.restore();
